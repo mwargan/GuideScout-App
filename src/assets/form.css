@@ -1,0 +1,126 @@
+/* This file simply adds a .input class that behaves like the semantic input styling with Pico. This is used to render StripeElements to look like other inputs */
+
+/* Any invalid */
+:where(input, select, textarea, .input):not([type=checkbox], [type=radio], [type=date], [type=datetime-local], [type=month], [type=time], [type=week], :placeholder-shown, :focus):invalid {
+  background-image: var(--pico-icon-invalid);
+  padding-right: calc(var(--pico-form-element-spacing-horizontal) + 1.5rem) !important;
+  padding-left: var(--pico-form-element-spacing-horizontal);
+  -webkit-padding-start: var(--pico-form-element-spacing-horizontal) !important;
+  padding-inline-start: var(--pico-form-element-spacing-horizontal) !important;
+  -webkit-padding-end: calc(var(--pico-form-element-spacing-horizontal) + 1.5rem) !important;
+  padding-inline-end: calc(var(--pico-form-element-spacing-horizontal) + 1.5rem) !important;
+  background-position: center right .75rem;
+  background-size: 1rem auto;
+  background-repeat: no-repeat;
+}
+
+:where(input, select, textarea, .input):not(:placeholder-shown, :focus):invalid {
+  --pico-border-color: var(--pico-form-element-invalid-border-color);
+}
+
+:where(input, select, textarea, .input):not(:placeholder-shown, :focus):invalid+small {
+  color: var(--pico-del-color);
+}
+
+.input {
+  padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
+  margin-bottom: var(--pico-spacing);
+  width: 100%;
+  min-width: 280px;
+  --background-color: var(--pico-form-element-background-color);
+  --pico-border-color: var(--pico-form-element-border-color);
+  --color: var(--pico-form-element-color);
+  --box-shadow: none;
+  border: var(--pico-border-width) solid var(--pico-form-element-border-color);
+  border-radius: var(--pico-border-radius);
+  outline: 0;
+  background-color: var(--pico-form-element-background-color);
+  box-shadow: var(--pico-box-shadow);
+  color: var(--pico-color);
+  font-weight: var(--pico-font-weight);
+  transition: background-color var(--pico-transition),
+    border-color var(--pico-transition), color var(--pico-transition),
+    box-shadow var(--pico-transition);
+  font-size: 1rem;
+  line-height: var(--pico-line-height);
+  font-family: inherit;
+  letter-spacing: inherit;
+  height: calc(1rem * var(--pico-line-height) + var(--pico-form-element-spacing-vertical) * 2 + var(--pico-border-width) * 2);
+  /* Below helps with Stripe input */
+  overflow: hidden;
+}
+
+.input::placeholder {
+  color: var(--pico-form-element-placeholder-color);
+}
+
+/* Custom radio/checkbox box */
+.radio-checkbox-container {
+  display: block;
+  position: relative;
+
+  --pico-background-color: var(--pico-form-element-background-color);
+  --pico-border-color: var(--pico-form-element-border-color);
+  --pico-color: var(--pico-form-element-color);
+  --pico-box-shadow: none;
+  border: var(--pico-border-width) solid var(--pico-border-color);
+  border-radius: var(--pico-border-radius);
+  background-color: var(--pico-background-color);
+  box-shadow: var(--pico-box-shadow);
+  color: var(--pico-color);
+  font-weight: var(--pico-font-weight);
+  transition: background-color var(--pico-transition), border-color var(--pico-transition), color var(--pico-transition), box-shadow var(--pico-transition);
+
+
+  padding: var(--pico-form-element-spacing-vertical) var(--pico-form-element-spacing-horizontal);
+
+  min-width: calc(var(--pico-spacing)* 4);
+
+  padding-right: calc(var(--pico-form-element-spacing-horizontal) * 2);
+
+  &:focus {
+    --pico-box-shadow: 0 0 0 var(--pico-outline-width) var(--pico-form-element-focus-color);
+  }
+
+  &:hover {
+    --pico-background-color: var(--pico-form-element-active-background-color);
+  }
+
+  &:has(input:checked) {
+    --pico-border-color: var(--pico-form-element-active-border-color);
+    --pico-background-color: var(--pico-form-element-active-background-color);
+  }
+
+  &:has(input:disabled) {
+    opacity: 0.5;
+  }
+
+  >small {
+    display: block;
+    color: var(--pico-muted-color);
+  }
+
+  /* Style for the radio button */
+  input[type="radio"],
+  input[type="checkbox"] {
+    vertical-align: middle;
+    position: absolute;
+    right: 0;
+    top: var(--pico-form-element-spacing-vertical);
+
+    +small {
+      margin: unset;
+    }
+  }
+
+  &:has(>input[type="checkbox"]:required)::after,
+  &:has(>input[type="radio"]:required)::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}
+
+label:has(input[type="checkbox"]:disabled) {
+  opacity: 0.5;
+}

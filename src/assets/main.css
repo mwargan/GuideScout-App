@@ -1,0 +1,582 @@
+@import "@picocss/pico";
+@import "./form.css";
+
+body {
+  min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+main {
+  gap: 40px;
+  display: flex;
+  flex-direction: column;
+}
+
+main>* {
+  margin-bottom: 0;
+  margin-top: 0;
+}
+
+nav~main {
+  margin-top: var(--pico-spacing);
+}
+
+main~footer {
+  margin-top: 40px;
+}
+
+dialog>*>article {
+  width: unset;
+}
+
+article>header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  overflow-wrap: anywhere;
+  align-items: flex-start;
+}
+
+/* Article/cards header and footer children should not have a margin-bottom */
+article>header>div>*,
+article>header>hgroup,
+article>footer>* {
+  margin-bottom: 0px;
+}
+
+/* If the articles last child is not a footer, remove margin-bottom */
+article>:last-child:not(footer) {
+  margin-bottom: 0;
+}
+
+/* If the last child is the header,  */
+article>:last-child:is(header) {
+  margin-bottom: calc(var(--pico-block-spacing-vertical)* -1);
+}
+
+/* If the .images are the first child, remove margin-top and add a margin-bottom */
+article>:first-child:is(.images) {
+  margin-top: calc(var(--pico-block-spacing-vertical)* -1);
+  margin-bottom: var(--pico-block-spacing-vertical);
+  margin-left: calc(var(--pico-block-spacing-horizontal)* -1);
+  margin-right: calc(var(--pico-block-spacing-horizontal)* -1);
+
+  width: calc(100% + var(--pico-block-spacing-horizontal)* 2);
+}
+
+/* If the last child is images, remove margin-bottom */
+article>:last-child:is(.images) {
+  margin-bottom: calc(var(--pico-block-spacing-vertical)* -1);
+}
+
+/* If the last child is the footer, remove the margin-top */
+article>:first-child:is(footer) {
+  margin-top: calc(var(--pico-block-spacing-vertical)* -1);
+}
+
+/* make a simple slider with flex */
+.images {
+  width: 100%;
+  display: flex;
+  height: 300px;
+
+  /* Scroll snap */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
+  scroll-padding: 0 10px;
+}
+
+.images>img {
+  width: 90%;
+  height: auto;
+  object-fit: cover;
+  flex-shrink: 0;
+  /* Scroll snap seems to sometimes cause the container to scroll all the way to the right on load - @todo investigate */
+  /* scroll-snap-align: center; */
+}
+
+/* If there is only one image, it should be 100% */
+.images>img:only-child {
+  width: 100%;
+}
+
+a:has(>article),
+a:has(>article):is([aria-current]) {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  --pico-color: var(--pico-text-color);
+}
+
+a:has(>article):hover {
+  text-decoration: none;
+  color: inherit;
+  --pico-color: var(--pico-text-color);
+}
+
+main~footer ul {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+main~footer ul>li {
+  list-style: none;
+}
+
+nav form {
+  margin: 0;
+}
+
+.page-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+/* Fixes iframe (especially for 3DS from Stripe) not being inter-actable due to parent modal pointer-event setting */
+.modal-is-open iframe {
+  pointer-events: initial;
+}
+
+/* we will explain what these classes do next! */
+.v-enter-active,
+.v-leave-active {
+  transition: opacity 0.1s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+}
+
+/* If there's an label and the next element is a required input/select, add a star to the label */
+label:has(+input:required)::after,
+label:has(+textarea:required)::after,
+label:has(+select:required)::after,
+/* If label has child checkbox, the text will be after the child input */
+label:has(>input[type="checkbox"]:required)::after,
+label:has(>input[type="radio"]:required)::after {
+  content: "*";
+  color: var(--pico-del-color);
+  margin-left: calc(var(--pico-nav-link-spacing-vertical) / 2);
+}
+
+/**
+* Fix for overflow
+* @see https://github.com/picocss/pico/issues/485
+*/
+[role=button],
+[type=button],
+[type=file]::file-selector-button,
+[type=reset],
+[type=submit],
+button {
+  max-width: 100%;
+}
+
+/** Fix SVG color */
+:where([role=button],
+  [role=status],
+  [type=button],
+  [type=file]::file-selector-button,
+  [type=reset],
+  [type=submit],
+  button) svg {
+  fill: var(--pico-color);
+  height: 1rem;
+  width: 1rem;
+  vertical-align: -0.125em;
+  margin-inline-end: calc(var(--pico-spacing)* .5);
+}
+
+/** hide any icon and replace by spinner if loading */
+:where([aria-busy="true"]:not(input, select, textarea, html)) svg {
+  display: none;
+}
+
+/* If the last element of the child is an SVG, remove the margin-right to keep the size consistent */
+[aria-busy=true]:not(input, select, textarea, html):has(:last-child:is(svg))::before,
+:where([role=button],
+  [role=status],
+  [type=button],
+  [type=file]::file-selector-button,
+  [type=reset],
+  [type=submit],
+  button):has(:last-child:is(svg)) svg {
+  margin-inline-end: 2px;
+  margin-inline-start: 2px;
+
+}
+
+[aria-busy="true"]:not(input, select, textarea, html) {
+  white-space: unset;
+}
+
+[role=group],
+[role=search] {
+  overflow-wrap: anywhere;
+}
+
+[role=group] input+button {
+  overflow-wrap: normal;
+}
+
+/**
+* Limit dropwdown height of each item by limiting lines
+* @see https://github.com/picocss/pico/issues/486
+*/
+details.dropdown summary+ul li,
+details.dropdown summary+ul li>a {
+  white-space: break-spaces;
+}
+
+details.dropdown summary:not([role]) {
+  height: auto;
+}
+
+/** Fix for contrast issue on open dropdown in nav */
+details[open]>summary:not([role]):not(:focus) {
+  --pico-accordion-open-summary-color: var(--pico-form-element-placeholder-color);
+}
+
+[aria-label="Pagination"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Not the first and last buttons in a [aria-label="Pagination"] */
+[aria-label="Pagination"] button:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+
+/* The first button should have no border-radius on the right */
+[aria-label="Pagination"] button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+/* The  last button should have no border-radius on the left */
+[aria-label="Pagination"] button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+input[type="search"][aria-busy="true"] {
+  background-image: var(--pico-icon-loading);
+}
+
+/* Fix for input margin in table cell */
+td>input:not([type=checkbox], [type=radio]),
+td>select,
+td>textarea {
+  margin-bottom: 0;
+}
+
+/* Fix min-width causing input not to be visible */
+input:not([type=checkbox], [type=radio]),
+select,
+textarea {
+  min-width: calc(var(--pico-spacing)* 4);
+}
+
+/** Fix for inputs like checkboxes in dropdown */
+details.dropdown summary+ul li label {
+  display: block;
+  margin: calc(var(--pico-form-element-spacing-vertical) * -.5) calc(var(--pico-form-element-spacing-horizontal) * -1);
+  padding: calc(var(--pico-form-element-spacing-vertical) * .5) var(--pico-form-element-spacing-horizontal);
+  overflow: hidden;
+  border-radius: 0;
+  color: var(--pico-dropdown-color);
+  text-decoration: none;
+  text-overflow: ellipsis;
+}
+
+details.dropdown summary {
+  text-overflow: ellipsis;
+}
+
+/* If the summary data-has-value is true, color the text */
+details.dropdown summary[data-has-value=true] {
+  color: var(--pico-color);
+}
+
+ul>li>input[type="search"] {
+  border: none;
+  /* padding-left: 2rem; */
+  margin-bottom: 0;
+  margin-left: -1rem;
+  width: calc(100% + 2rem);
+  background-color: unset;
+  /* background-position: left calc(var(--pico-form-element-spacing-horizontal) + .125rem); */
+  border-radius: 0;
+}
+
+details.dropdown summary+ul li:where(:has(input[type="search"])) {
+  position: sticky;
+  top: 0;
+  padding-top: calc(var(--pico-form-element-spacing-vertical) * .5);
+  background: white;
+  /* border-bottom: var(--pico-border-width) solid var(--pico-form-element-border-color); */
+  border-radius: var(--pico-border-radius);
+  background-color: var(--pico-dropdown-background-color);
+  box-shadow: var(--pico-dropdown-box-shadow);
+  padding-top: 0;
+  padding-bottom: 0;
+  z-index: 1;
+}
+
+/** animate the dropdown height */
+details.dropdown[open] summary+ul {
+  max-height: 0;
+  animation: dropdownHeight 0.2s ease forwards;
+  overflow-y: auto;
+}
+
+@keyframes dropdownHeight {
+  0% {
+    max-height: 0;
+  }
+
+  100% {
+    max-height: 400px;
+  }
+}
+
+.go-to-page {
+  width: 3rem;
+}
+
+.gl-animate-skeleton-loader {
+  display: inline-block;
+  height: 1em;
+  position: relative;
+  overflow: hidden;
+  background-color: var(--pico-muted-border-color);
+  width: 100%;
+  border-radius: var(--pico-border-radius);
+}
+
+.gl-animate-skeleton-loader::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  transform: translateX(-100%);
+  background-image: linear-gradient(90deg, rgba(255, 255, 255, 0) 0, rgba(255, 255, 255, 0.2) 20%, var(--pico-muted-border-color) 60%, rgba(255, 255, 255, 0));
+  animation: shimmer 2s infinite ease-in-out;
+  content: "";
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+nav[aria-label=Pagination],
+nav.tab-nav {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+article {
+  position: relative;
+}
+
+.tab-nav li {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.tab-nav button {
+  background: unset;
+  color: var(--pico-muted-color);
+  border-top: none;
+  border-left: none;
+  border-right: none;
+
+  /* We keep the bottom border so we don't get layout shifts on active and non-active tabs */
+  border-color: transparent;
+  border-radius: 0;
+
+  /* Do not wrap more than 2 lines */
+  white-space: nowrap;
+
+}
+
+.tab-nav button:focus {
+  outline: var(--pico-border-width) solid var(--pico-muted-border-color);
+}
+
+.tab-nav button:active {
+  color: var(--pico-text-color);
+  border-color: var(--pico-border-color);
+}
+
+.tab-nav button.active {
+  color: var(--pico-text-color);
+  border-color: var(--pico-border-color);
+  border-bottom: var(--pico-border-width) solid var(--pico-border-color);
+}
+
+/** Fix for dropdown input helptext inconsistent with other inputs */
+.dropdown+small {
+  display: block;
+  width: 100%;
+  margin-top: calc(var(--pico-spacing)* -.75);
+  margin-bottom: var(--pico-spacing);
+  color: var(--pico-muted-color);
+}
+
+.dropdown:has(summary[aria-invalid=true])+small {
+  color: var(--pico-del-color);
+}
+
+.dropdown:has(summary[aria-invalid=false])+small {
+  color: var(--pico-ins-color);
+}
+
+[role=status] {
+  display: inline-block;
+
+  padding: calc(var(--pico-form-element-spacing-vertical) / 5) calc(var(--pico-form-element-spacing-horizontal) / 3);
+
+  text-align: center;
+  vertical-align: text-top;
+  white-space: nowrap;
+
+  --pico-background-color: var(--pico-primary-background);
+  --pico-border-color: var(--pico-primary-border);
+  --pico-color: var(--pico-primary-inverse);
+  --pico-box-shadow: var(--pico-button-box-shadow, 0 0 0 rgba(0, 0, 0, 0));
+  --pico-line-height: 1;
+  --pico-font-size: 13px;
+
+  font-size: var(--pico-font-size);
+
+  line-height: var(--pico-line-height);
+
+  border: var(--pico-border-width) solid var(--pico-border-color);
+  border-radius: calc(var(--pico-border-radius) * 3);
+  outline: 0;
+  background-color: var(--pico-background-color);
+  box-shadow: var(--pico-box-shadow);
+  color: var(--pico-color);
+  font-weight: var(--pico-font-weight);
+
+  margin-left: 0.5ch;
+
+  /* Set max width to 4 letters */
+  max-width: 15ch;
+
+  /* When overflowing, the ellipses should be a + */
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* Max one line */
+  line-clamp: 1;
+  word-break: break-all;
+}
+
+[role=status] svg {
+  height: var(--pico-font-size);
+  width: var(--pico-font-size);
+  vertical-align: bottom;
+}
+
+/* On load the role=status should pop animate in to draw attention */
+[role=status]:not([aria-busy=true]) {
+  animation: pop 0.2s ease-in-out;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.5);
+  }
+
+  80% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+[role=status][aria-busy=true] {
+  white-space: nowrap;
+}
+
+[role=status][aria-busy=true]::before {
+  height: var(--pico-font-size);
+  width: var(--pico-font-size);
+  vertical-align: bottom;
+}
+
+[role=status].secondary {
+  --pico-background-color: var(--pico-secondary-background);
+  --pico-border-color: var(--pico-secondary-border);
+  --pico-color: var(--pico-secondary-inverse);
+}
+
+[role=status].contrast {
+  --pico-background-color: var(--pico-contrast-background);
+  --pico-border-color: var(--pico-contrast-border);
+  --pico-color: var(--pico-contrast-inverse);
+}
+
+[role=status].notification {
+  --pico-background-color: var(--pico-del-color);
+  --pico-border-color: var(--pico-del-color);
+  --pico-color: var(--pico-contrast-inverse);
+}
+
+[role=status].outline {
+  --pico-background-color: transparent;
+  --pico-color: var(--pico-primary);
+}
+
+[role=status].outline.secondary {
+  --pico-color: var(--pico-secondary);
+}
+
+[role=status].outline.contrast {
+  --pico-color: var(--pico-contrast);
+}
+
+[role=status].outline.notification {
+  --pico-color: var(--pico-del-color);
+}
+
+[role=status][aria-busy=true]:not(.outline)::before {
+  /* Set the bg color to white */
+  filter: brightness(0) invert(1);
+}
+
+/* If the badge is empty, make it a circle */
+[role=status]:empty {
+  border-radius: 50%;
+  height: 0.5rem;
+  width: 0.5rem;
+  padding: 0;
+}
+
+[role=status]:empty[aria-busy=true]::before {
+  height: 0.5rem;
+  width: 0.5rem;
+  vertical-align: bottom;
+}
