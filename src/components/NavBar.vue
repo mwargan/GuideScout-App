@@ -58,7 +58,7 @@ const blur = () => {
             <summary :aria-busy="user.isLoading">
               <base-avatar :name="`${user.user.name} ${user.user.surname}`" />
             </summary>
-            <ul @click="blur()">
+            <ul @click="blur()" style="left: unset; right: 0">
               <li>
                 <router-link to="/settings">{{ $t("Settings") }}</router-link>
               </li>
