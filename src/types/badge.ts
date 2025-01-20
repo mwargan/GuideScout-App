@@ -10,5 +10,6 @@ export type BadgeObject = {
     | "outline"
     | "outline secondary"
     | "outline contrast"
-    | "outline notification";
+    | "outline notification"
+    | "success";
 };

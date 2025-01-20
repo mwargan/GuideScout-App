@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { useUserStore } from "@/stores/user";
 import { ref } from "vue";
+import BaseBadge from "./BaseBadge.vue";
+import BaseAvatar from "./BaseAvatar.vue";
 
 const user = useUserStore();
 
@@ -15,17 +17,38 @@ const blur = () => {
 <template>
   <nav>
     <ul>
-      <li>
-        <router-link
-          to="/"
-          aria-roledescription="logo"
-          aria-label="Click the logo to go home"
-          ><strong>{{ appName }}</strong></router-link
-        >
-      </li>
+      <template v-if="user.isAuthenticated && user.user">
+        <li>
+          <router-link
+            to="/"
+            aria-roledescription="logo"
+            aria-label="Click the logo to go home"
+            ><b>Guide</b>Scout</router-link
+          >
+        </li>
+        <li>
+          <base-badge class="success">€0,00</base-badge>
+
+          <base-badge class="success" style="max-width: unset"
+            >+ €{{ user.user.potential_earnings_from_referrals }}
+            {{ $t("from referrals") }}</base-badge
+          >
+        </li>
+      </template>
+      <template v-else>
+        <li>
+          <router-link
+            to="/"
+            aria-roledescription="logo"
+            aria-label="Click the logo to go home"
+          >
+            <b>Guide</b>Scout
+          </router-link>
+        </li>
+      </template>
     </ul>
     <ul>
-      <template v-if="user.isAuthenticated">
+      <template v-if="user.isAuthenticated && user.user">
         <li :aria-busy="user.isLoading">
           <details
             class="dropdown"
@@ -33,7 +56,7 @@ const blur = () => {
             v-show="!user.isLoading"
           >
             <summary :aria-busy="user.isLoading">
-              {{ $t("My Account") }}
+              <base-avatar :name="`${user.user.name} ${user.user.surname}`" />
             </summary>
             <ul @click="blur()">
               <li>

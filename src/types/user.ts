@@ -16,6 +16,26 @@ export interface User {
   pm_last_four: string | null;
   trial_ends_at: string | null;
   personal_access_tokens?: PersonalAccessToken[];
+  phone: string | null;
+  potential_earnings_from_referrals?: number;
+  referral_code: string | null;
+  guide_profile?: GuideProfile;
+}
+
+export interface GuideProfile {
+  user_id: number;
+  city_id: number;
+  description: null;
+  created_at: Date;
+  updated_at: Date;
+  verified_at: null;
+  city: City;
+}
+
+export interface City {
+  id: number;
+  name: string;
+  country_code: string;
 }
 
 export interface PersonalAccessToken {

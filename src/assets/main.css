@@ -1,6 +1,25 @@
 @import "@picocss/pico";
 @import "./form.css";
 
+:root,
+:root:not([data-theme=dark]),
+[data-theme=light] {
+  --pico-card-box-shadow: none;
+  --pico-card-sectioning-background-color: none;
+  --pico-card-border-color: none;
+  --pico-primary: black;
+  --pico-primary-background: black;
+  --pico-primary-inverse: white;
+  --pico-border-radius: 0.5rem;
+}
+
+:root:not([data-theme=light]),
+[data-theme=dark] {
+  --pico-primary: white;
+  --pico-primary-background: white;
+  --pico-primary-inverse: black;
+}
+
 body {
   min-height: 100vh;
   text-rendering: optimizeLegibility;
@@ -9,14 +28,27 @@ body {
 }
 
 main {
-  gap: 40px;
+  gap: 8px;
   display: flex;
   flex-direction: column;
+  min-height: 70svh;
+  max-width: 75ch;
+  margin: 0 auto;
+}
+
+nav,
+footer {
+  max-width: 75ch;
+  margin: 0 auto;
 }
 
 main>* {
   margin-bottom: 0;
   margin-top: 0;
+}
+
+main {
+  margin-top: calc(var(--pico-spacing) * 2);
 }
 
 nav~main {
@@ -395,6 +427,7 @@ nav.tab-nav {
 
 article {
   position: relative;
+  border: var(--pico-border-width) solid var(--pico-color);
 }
 
 .tab-nav li {
@@ -550,6 +583,11 @@ article {
   --pico-color: var(--pico-primary);
 }
 
+[role=status].success {
+  --pico-background-color: var(--pico-ins-color);
+  --pico-border-color: var(--pico-ins-color);
+}
+
 [role=status].outline.secondary {
   --pico-color: var(--pico-secondary);
 }
@@ -579,4 +617,62 @@ article {
   height: 0.5rem;
   width: 0.5rem;
   vertical-align: bottom;
+}
+
+.avatar {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  border-radius: 50%;
+  aspect-ratio: 1;
+  background-color: var(--pico-muted-border-color);
+  border: var(--pico-border-width) solid var(--pico-muted-border-color);
+  object-fit: cover;
+}
+
+/* Summary that has an avatar child */
+nav details.dropdown>summary:has(>.avatar) {
+  background: transparent;
+  border: none;
+  height: unset;
+  width: unset;
+  aspect-ratio: 1;
+  padding: 0;
+
+  /* After */
+  &::after {
+    content: none;
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+[aria-roledescription="logo"] {
+  color: var(--pico-primary);
+}
+
+hgroup>:not(:first-child):last-child {
+  font-size: revert;
+  --pico-font-weight: 700;
+  --pico-color: unset;
+}
+
+hgroup>p {
+  --pico-color: var(--pico-muted-color);
+  --pico-font-weight: unset;
+  font-size: 1rem;
 }

@@ -16,6 +16,7 @@ const { t } = useI18n();
 const authForm = reactive({
   name: "",
   surname: "",
+  phone: "",
   password: "",
 });
 
@@ -83,7 +84,8 @@ const register = async () => {
     userStore.userEmail,
     authForm.password,
     authForm.name,
-    authForm.surname
+    authForm.surname,
+    authForm.phone
   );
 
   // const data = await response.json();
@@ -186,6 +188,18 @@ const goBack = async () => {
         minlength="2"
         pattern=".{2,}"
         autocomplete="family-name"
+        required
+      />
+      <label for="phone">{{ $t("Phone") }}</label>
+      <input
+        type="tel"
+        id="phone"
+        name="phone"
+        :placeholder="$t('Phone')"
+        v-model="authForm.phone"
+        minlength="5"
+        pattern=".{5,}"
+        autocomplete="tel"
         required
       />
       <label for="password">{{ $t("Password") }}</label>

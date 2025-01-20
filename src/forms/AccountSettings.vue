@@ -7,10 +7,13 @@ const userStore = useUserStore();
 
 // Email, password, and remember me
 const email = ref(userStore.user?.email);
+const isEmailVerified = ref(userStore.user?.email_verified_at !== null);
 
 // Name, Surname
 const name = ref(userStore.user?.name);
 const surname = ref(userStore.user?.surname);
+
+const phone = ref(userStore.user?.phone);
 
 const baseFormRef = ref();
 
@@ -18,7 +21,7 @@ const emit = defineEmits(["updated"]);
 
 // The submit function. If there is just the email, check if the email is valid. If it is not, set the register mode. If it is, set the login mode.
 const submitForm = async () => {
-  if (!email.value || !name.value || !surname.value) {
+  if (!email.value || !name.value || !surname.value || !phone.value) {
     return;
   }
 
@@ -33,6 +36,9 @@ const submitForm = async () => {
   if (userStore.user?.email !== email.value) {
     changedValues.email = email.value;
   }
+  if (userStore.user?.phone !== phone.value) {
+    changedValues.phone = phone.value;
+  }
 
   // If there are no changed values, return
   if (Object.keys(changedValues).length === 0) {
@@ -43,7 +49,8 @@ const submitForm = async () => {
   const response = await userStore.update(
     name.value,
     surname.value,
-    email.value
+    email.value,
+    phone.value
   );
 
   if (response === true) {
@@ -105,9 +112,27 @@ const submitForm = async () => {
       autofocus
       required
     />
-    <small>{{
+    <small v-if="!isEmailVerified">
+      {{
+        $t(
+          "You have not confirmed your email address. Please check your inbox for the confirmation email."
+        )
+      }}
+    </small>
+    <small v-else>{{
       $t("If you change your email address you will have to confirm it again.")
     }}</small>
+
+    <label for="phone">{{ $t("Phone Number (starting with +)") }}</label>
+    <input
+      type="tel"
+      id="phone"
+      name="phone"
+      :placeholder="$t('Phone')"
+      v-model="phone"
+      required
+    />
+
     <!-- </TransitionGroup> -->
   </base-form>
 </template>

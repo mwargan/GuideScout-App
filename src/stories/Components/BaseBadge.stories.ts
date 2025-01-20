@@ -32,6 +32,7 @@ const meta: Meta<typeof BaseBadge> = {
         "outline secondary",
         "outline contrast",
         "outline notification",
+        "success",
       ],
       control: { type: "select" },
       table: { category: "Props" },

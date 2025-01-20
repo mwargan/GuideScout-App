@@ -36,13 +36,24 @@ const handleDeleteToken = (id: string) => {
   });
   accessTokens.value.splice(accessTokenIndex);
 };
+
+const showDeveloperSettings = ref(false);
 </script>
 <template>
   <h1>{{ $t("My Account") }}</h1>
   <card-element :titleHeadingLevel="2" :title="$t('Settings')">
     <account-settings @updated="handleUpdate"></account-settings>
   </card-element>
-  <card-element :titleHeadingLevel="2" :title="$t('Payment methods')">
+  <card-element :titleHeadingLevel="2" :title="$t('Guide profile')">
+    <p v-if="!userStore.user?.guide_profile?.verified_at">
+      {{ $t("Your profile is still being verified.") }}
+    </p>
+  </card-element>
+  <card-element
+    v-if="userStore.user?.pm_type"
+    :titleHeadingLevel="2"
+    :title="$t('Payment methods')"
+  >
     <div v-if="userStore.user?.pm_type">
       <p>
         {{ $t("Default payment method") }}:
@@ -69,7 +80,7 @@ const handleDeleteToken = (id: string) => {
       {{ $t("Add a payment method") }}
     </button>
   </card-element>
-  <card-element :titleHeadingLevel="2" title="API">
+  <card-element v-if="showDeveloperSettings" :titleHeadingLevel="2" title="API">
     <template v-if="accessTokens.length > 0">
       <ul>
         <li v-for="token in accessTokens" :key="'token-' + token.id">

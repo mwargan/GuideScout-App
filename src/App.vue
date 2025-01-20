@@ -20,6 +20,9 @@ const router = useRouter();
 router.isReady().then(() => {
   isReady.value = true;
 });
+
+// Show nav is in the meta of the current route
+const showNav = !router.currentRoute.value.meta.hideNav;
 </script>
 
 <template>
@@ -30,7 +33,7 @@ router.isReady().then(() => {
       :indeterminate="true"
     />
   </Transition>
-  <NavBar />
+  <NavBar v-if="!router.currentRoute.value.meta.hideNav" />
   <main>
     <RouterView v-if="isReady" />
     <article v-else :aria-busy="true"></article>

@@ -14,5 +14,8 @@
     "pm_type": "visa",
     "pm_last_four": "4242",
     "trial_ends_at": null,
-    "is_public": false
+    "is_public": false,
+    "phone": "+123456789",
+    "potential_earnings_from_referrals": 150,
+    "referral_code": "michal"
 }

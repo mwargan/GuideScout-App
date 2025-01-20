@@ -12,6 +12,7 @@ const router = createRouter({
       path: "/",
       name: "home",
       meta: {
+        gates: ["auth"],
         // Notice how we pass the translation key rather than the actual string. This is because Vue Router will cache our meta, so if we just passed the translated string it would not update on language change.
         title: "Home",
       },

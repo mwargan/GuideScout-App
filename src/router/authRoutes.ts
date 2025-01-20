@@ -30,11 +30,19 @@ export default [
   {
     path: "/sign-up",
     name: "sign-up",
-    component: () => import("../views/Auth/LoginOrRegisterView.vue"),
+    redirect: { name: "sign-up-as-guide" },
+  },
+
+  {
+    path: "/sign-up-as-guide",
+    name: "sign-up-as-guide",
+    component: () => import("../views/Auth/CreateGuideProfileView.vue"),
     meta: {
       gates: ["guest"],
+      hideNav: true,
     },
   },
+
   {
     path: "/forgot-password",
     name: "forgot-password",

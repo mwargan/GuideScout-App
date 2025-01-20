@@ -14,5 +14,7 @@
     "pm_type": null,
     "pm_last_four": null,
     "trial_ends_at": null,
-    "is_public": false
+    "is_public": false,
+    "phone": "+123456789",
+    "potential_earnings_from_referrals": 150
 }

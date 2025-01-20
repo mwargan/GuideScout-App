@@ -125,17 +125,17 @@ export const useUserStore = defineStore("user", () => {
    */
   async function register(
     email: string,
-    password: string,
+    password: string | null = null,
     name: string,
-    surname: string
+    surname: string,
+    phone: string,
+    city: string | null = null,
+    languages: string[] = [],
+    qualifications: string[] = [],
+    referralCode: string | null = null
   ) {
     // Check if the email is valid
     if (!email) {
-      return;
-    }
-
-    // Check if the password is valid
-    if (!password) {
       return;
     }
 
@@ -149,16 +149,26 @@ export const useUserStore = defineStore("user", () => {
       return;
     }
 
+    // Check if the phone is valid
+    if (!phone) {
+      return;
+    }
+
     isLoading.value = true;
 
     try {
       // Check if the email is already in use
       await axios.post("register", {
-        email: email,
-        password: password,
+        email,
+        password,
         password_confirmation: password,
-        name: name,
-        surname: surname,
+        name,
+        surname,
+        phone,
+        city,
+        languages,
+        qualifications,
+        referral_code: referralCode,
       });
       await getUser();
       $bus.$emit(eventTypes.registered);
@@ -384,13 +394,19 @@ export const useUserStore = defineStore("user", () => {
    * @param {string} email
    * @return {*}
    */
-  async function update(name: string, surname: string, email: string) {
+  async function update(
+    name: string,
+    surname: string,
+    email: string,
+    phone: string
+  ) {
     isLoading.value = true;
     try {
       await axios.put("user/profile-information", {
         name: name ?? user.value?.name,
         surname: surname ?? user.value?.surname,
         email: email ?? user.value?.email,
+        phone: phone ?? user.value?.phone,
       });
       await getUser();
       $bus.$emit(eventTypes.updated_user);
