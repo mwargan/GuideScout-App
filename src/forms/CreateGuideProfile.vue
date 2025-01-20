@@ -264,6 +264,6 @@ onMounted(() => {
 form {
   display: grid;
   grid-template-rows: 1fr auto;
-  min-height: 70svh;
+  min-height: 79svh;
 }
 </style>

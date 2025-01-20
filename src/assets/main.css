@@ -31,7 +31,7 @@ main {
   gap: 8px;
   display: flex;
   flex-direction: column;
-  min-height: 70svh;
+  min-height: 83svh;
   max-width: 75ch;
   margin: 0 auto;
 }
