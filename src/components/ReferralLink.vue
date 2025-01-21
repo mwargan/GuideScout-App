@@ -10,7 +10,7 @@ const referral = ref(userStore.user?.referral_code);
 const copiedTimeout = ref(null as any | null);
 
 const copyUrl = () => {
-  const url = `https://app.guidescout.com/sign-up-as-guide?referral=${referral.value}`;
+  const url = `https://app.guidescout.net/sign-up-as-guide?referral=${referral.value}`;
   navigator.clipboard.writeText(url);
 
   // If there is a timeout, clear it
@@ -28,7 +28,7 @@ const copyUrl = () => {
 <template>
   <input
     type="text"
-    :value="`https://app.guidescout.com/sign-up-as-guide?referral=${referral}`"
+    :value="`https://app.guidescout.net/sign-up-as-guide?referral=${referral}`"
     readonly
   />
   <button @click="copyUrl">
