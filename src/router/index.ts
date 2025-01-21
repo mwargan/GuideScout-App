@@ -43,6 +43,14 @@ const router = createRouter({
       },
     },
     {
+      path: "/admin/send-email",
+      name: "admin-send-email",
+      component: () => import("../views/Admin/SendEmailView.vue"),
+      meta: {
+        gates: ["auth", "isMasterUser"],
+      },
+    },
+    {
       path: "/referrals",
       name: "referrals",
       component: () => import("../views/ReferralsView.vue"),

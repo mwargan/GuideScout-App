@@ -4,6 +4,8 @@ import { baseGate } from "@m-media/vue3-gate-keeper";
 
 /** A middleware that checks if the user is authenticated */
 export default class extends baseGate {
+  form = "LoginOrRegister";
+
   async handle() {
     const store = useUserStore();
     await store.isReady;
@@ -15,7 +17,7 @@ export default class extends baseGate {
 
   route(): false | RouteLocationRaw {
     return {
-      name: "/",
+      name: "home",
     };
   }
 }
