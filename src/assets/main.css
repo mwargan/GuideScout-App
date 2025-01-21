@@ -531,6 +531,10 @@ article {
   word-break: break-all;
 }
 
+[role=status].rectangular {
+  border-radius: calc(var(--pico-border-radius) * 1);
+}
+
 [role=status] svg {
   height: var(--pico-font-size);
   width: var(--pico-font-size);

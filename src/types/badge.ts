@@ -8,8 +8,10 @@ export type BadgeObject = {
     | "contrast"
     | "notification"
     | "outline"
+    | "success"
     | "outline secondary"
     | "outline contrast"
     | "outline notification"
-    | "success";
+    | "outline success"
+    | "success rectangular";
 };
