@@ -6,13 +6,16 @@ const userStore = useUserStore();
 
 const referral = ref(userStore.user?.referral_code);
 
+// A copied message timeout
+const copiedTimeout = ref(null as any | null);
+
 const copyUrl = () => {
   const url = `https://app.guidescout.com/sign-up-as-guide?referral=${referral.value}`;
   navigator.clipboard.writeText(url);
 
   // If there is a timeout, clear it
   if (copiedTimeout.value) {
-    clearTimeout(copiedTimeout);
+    clearTimeout(copiedTimeout.value);
   }
   // Set a timeout to remove the copied message
   copiedTimeout.value = setTimeout(() => {
@@ -21,9 +24,6 @@ const copyUrl = () => {
 
   // Set the copied message
 };
-
-// A copied message timeout
-const copiedTimeout: number | null = ref(null);
 </script>
 <template>
   <input

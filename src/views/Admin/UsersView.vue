@@ -3,21 +3,22 @@ import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 import type { User } from "@/types/user";
 
-const users = ref([] as User[]);
+const users = ref<User[]>([]);
 
 const fetchUsers = async () => {
   const response = await axios.get("/api/users");
   users.value = response.data;
 };
 
-const keys = computed(() => {
+const keys = computed<(keyof User)[]>(() => {
   if (!users.value.length) {
     return [];
   }
-  //   Return all keys, except other objects or arrays
-  return Object.keys(users.value[0]).filter(
-    (key) => typeof users.value[0][key as any] !== "object"
-  );
+
+  return Object.keys(users.value[0]).filter((key) => {
+    const value = users.value[0][key as keyof User];
+    return typeof value !== "object";
+  }) as (keyof User)[];
 });
 
 onMounted(() => {
@@ -35,7 +36,7 @@ onMounted(() => {
       </thead>
       <tbody>
         <tr v-for="user in users" :key="user.id">
-          <td v-for="key in keys" :key="key">{{ user[key as any] }}</td>
+          <td v-for="key in keys" :key="key">{{ user[key as keyof User] }}</td>
         </tr>
       </tbody>
     </table>
