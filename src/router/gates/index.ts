@@ -5,6 +5,7 @@ import hasPaymentMethod from "./hasPaymentMethod";
 import confirmedPassword from "./confirmedPassword";
 import confirmedEmail from "./confirmedEmail";
 import unconfirmedEmail from "./unconfirmedEmail";
+import isMasterUser from "./isMasterUser";
 
 export default {
   auth,
@@ -14,4 +15,5 @@ export default {
   confirmedPassword,
   confirmedEmail,
   unconfirmedEmail,
+  isMasterUser,
 };

@@ -1,16 +1,19 @@
 @import "@picocss/pico";
 @import "./form.css";
 
-:root,
+:root {
+
+  --pico-border-radius: 0.5rem;
+}
+
 :root:not([data-theme=dark]),
 [data-theme=light] {
-  --pico-card-box-shadow: none;
-  --pico-card-sectioning-background-color: none;
-  --pico-card-border-color: none;
   --pico-primary: black;
   --pico-primary-background: black;
   --pico-primary-inverse: white;
-  --pico-border-radius: 0.5rem;
+  --pico-card-box-shadow: none;
+  --pico-card-sectioning-background-color: none;
+  --pico-card-border-color: none;
 }
 
 :root:not([data-theme=light]),
@@ -18,6 +21,9 @@
   --pico-primary: white;
   --pico-primary-background: white;
   --pico-primary-inverse: black;
+  --pico-card-box-shadow: none;
+  --pico-card-sectioning-background-color: none;
+  --pico-card-border-color: none;
 }
 
 body {
@@ -666,7 +672,7 @@ nav details.dropdown>summary:has(>.avatar) {
 }
 
 hgroup>:not(:first-child):last-child {
-  font-size: revert;
+  font-size: var(--pico-font-size);
   --pico-font-weight: 700;
   --pico-color: unset;
 }
@@ -675,4 +681,8 @@ hgroup>p {
   --pico-color: var(--pico-muted-color);
   --pico-font-weight: unset;
   font-size: 1rem;
+}
+
+input[type="checkbox"] {
+  background-blend-mode: difference;
 }

@@ -29,10 +29,16 @@ const blur = () => {
         <li>
           <base-badge class="success">€0,00</base-badge>
 
-          <base-badge class="success" style="max-width: unset"
-            >+ €{{ user.user.potential_earnings_from_referrals }}
-            {{ $t("from referrals") }}</base-badge
+          <router-link
+            to="/referrals"
+            aria-roledescription="logo"
+            aria-label="Click the logo to go home"
           >
+            <base-badge class="success" style="max-width: unset"
+              >+ €{{ user.user.potential_earnings_from_referrals }}
+              {{ $t("from referrals") }}</base-badge
+            >
+          </router-link>
         </li>
       </template>
       <template v-else>

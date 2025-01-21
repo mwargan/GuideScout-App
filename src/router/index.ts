@@ -35,6 +35,22 @@ const router = createRouter({
       },
     },
     {
+      path: "/admin/users",
+      name: "admin-users",
+      component: () => import("../views/Admin/UsersView.vue"),
+      meta: {
+        gates: ["auth", "isMasterUser"],
+      },
+    },
+    {
+      path: "/referrals",
+      name: "referrals",
+      component: () => import("../views/ReferralsView.vue"),
+      meta: {
+        gates: ["auth"],
+      },
+    },
+    {
       path: "/about",
       name: "about",
       meta: {
