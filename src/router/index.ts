@@ -12,7 +12,7 @@ const router = createRouter({
       path: "/",
       name: "home",
       meta: {
-        gates: ["auth"],
+        gates: ["auth", "confirmedEmail"],
         // Notice how we pass the translation key rather than the actual string. This is because Vue Router will cache our meta, so if we just passed the translated string it would not update on language change.
         title: "Home",
       },
@@ -31,7 +31,7 @@ const router = createRouter({
       name: "add-payment-method",
       component: () => import("../views/AddPaymentMethodView.vue"),
       meta: {
-        gates: ["auth"],
+        gates: ["auth", "confirmedEmail"],
       },
     },
     {
@@ -39,7 +39,7 @@ const router = createRouter({
       name: "admin-users",
       component: () => import("../views/Admin/UsersView.vue"),
       meta: {
-        gates: ["auth", "isMasterUser"],
+        gates: ["auth", "confirmedEmail", "isMasterUser"],
       },
     },
     {
@@ -47,7 +47,7 @@ const router = createRouter({
       name: "admin-send-email",
       component: () => import("../views/Admin/SendEmailView.vue"),
       meta: {
-        gates: ["auth", "isMasterUser"],
+        gates: ["auth", "confirmedEmail", "isMasterUser"],
       },
     },
     {
@@ -55,7 +55,7 @@ const router = createRouter({
       name: "referrals",
       component: () => import("../views/ReferralsView.vue"),
       meta: {
-        gates: ["auth"],
+        gates: ["auth", "confirmedEmail"],
       },
     },
     {
