@@ -3,13 +3,16 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 import CardElement from "@/components/CardElement.vue";
 import ReferralLink from "@/components/ReferralLink.vue";
+import { useUserStore } from "@/stores/user";
 
 const users = ref([] as any[]);
 const loading = ref(true);
 
+const userStore = useUserStore();
+
 const fetchUsers = async () => {
   loading.value = true;
-  const response = await axios.get("/api/user/referrals");
+  const response = await axios.get(`/api/users/${userStore.user.id}/referrals`);
   users.value = response.data;
   loading.value = false;
 };

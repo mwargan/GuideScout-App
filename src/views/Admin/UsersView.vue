@@ -21,6 +21,14 @@ const keys = computed<(keyof User)[]>(() => {
   }) as (keyof User)[];
 });
 
+const verifyGuideProfile = async (id: number) => {
+  const response = await axios.post(`/api/guide-profiles/${id}/verify`);
+  if (response.data) {
+    alert("Guide profile verified");
+    fetchUsers();
+  }
+};
+
 onMounted(() => {
   fetchUsers();
 });
@@ -32,11 +40,17 @@ onMounted(() => {
       <thead>
         <tr>
           <th v-for="key in keys" :key="key">{{ key }}</th>
+          <th>{{ $t("Actions") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="user in users" :key="user.id">
           <td v-for="key in keys" :key="key">{{ user[key as keyof User] }}</td>
+          <td>
+            <button @click="verifyGuideProfile(user.id)">
+              {{ $t("Verify guide profile") }}
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
