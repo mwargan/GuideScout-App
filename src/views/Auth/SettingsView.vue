@@ -7,6 +7,8 @@ import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import type { PersonalAccessToken } from "@/types/user";
 import { ref } from "vue";
+import { Vue3Lottie } from "vue3-lottie";
+import radarJSON from "@/assets/lottie/verified.json";
 
 const userStore = useUserStore();
 
@@ -48,6 +50,15 @@ const showDeveloperSettings = ref(false);
     <p v-if="!userStore.user?.guide_profile?.verified_at">
       {{ $t("Your profile is still being verified.") }}
     </p>
+    <Vue3Lottie v-else :animationData="radarJSON" :height="200" :width="200" />
+
+    <label for="city">{{ $t("City") }}</label>
+    <input
+      type="text"
+      id="city"
+      :value="userStore.user?.guide_profile?.city.name"
+      readonly
+    />
   </card-element>
   <card-element
     v-if="userStore.user?.pm_type"
