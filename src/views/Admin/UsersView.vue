@@ -47,7 +47,7 @@ onMounted(() => {
         <tr v-for="user in users" :key="user.id">
           <td v-for="key in keys" :key="key">{{ user[key as keyof User] }}</td>
           <td>
-            <button @click="verifyGuideProfile(user.id)">
+            <button v-if="user.id" @click="verifyGuideProfile(user.id)">
               {{ $t("Verify guide profile") }}
             </button>
           </td>

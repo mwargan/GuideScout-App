@@ -64,5 +64,12 @@
     "Refer a friend": "Référez un ami",
     "Change email": "Changer l'e-mail",
     "Phone Number (starting with +)": "Numéro de téléphone (commençant par +)",
-    "Guide profile": "Profil du guide"
+    "Guide profile": "Profil du guide",
+    "You have not confirmed your phone number.": "Vous n'avez pas confirmé votre numéro de téléphone.",
+    "If you change your phone number you will have to confirm it again.": "Si vous changez votre numéro de téléphone, vous devrez le confirmer à nouveau.",
+    "A new code has been sent to you.": "Un nouveau code vous a été envoyé.",
+    "Confirm code": "Confirmer le code",
+    "Send confirmation code": "Envoyer le code de confirmation",
+    "Change phone number": "Changer le numéro de téléphone",
+    "Please confirm your phone number to continue.": "Veuillez confirmer votre numéro de téléphone pour continuer."
 }

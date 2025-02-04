@@ -5,7 +5,10 @@ import hasPaymentMethod from "./hasPaymentMethod";
 import confirmedPassword from "./confirmedPassword";
 import confirmedEmail from "./confirmedEmail";
 import unconfirmedEmail from "./unconfirmedEmail";
+import confirmedPhone from "./confirmedPhone";
+import unconfirmedPhone from "./unconfirmedPhone";
 import isMasterUser from "./isMasterUser";
+import hasGivenLocationPermission from "./hasGivenLocationPermission";
 
 export default {
   auth,
@@ -16,4 +19,7 @@ export default {
   confirmedEmail,
   unconfirmedEmail,
   isMasterUser,
+  hasGivenLocationPermission,
+  unconfirmedPhone,
+  confirmedPhone,
 };

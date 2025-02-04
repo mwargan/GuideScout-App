@@ -12,7 +12,7 @@ const userStore = useUserStore();
 
 const fetchUsers = async () => {
   loading.value = true;
-  const response = await axios.get(`/api/users/${userStore.user.id}/referrals`);
+  const response = await axios.get(`/api/users/${userStore.user?.id}/referrals`);
   users.value = response.data;
   loading.value = false;
 };

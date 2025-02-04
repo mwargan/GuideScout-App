@@ -203,6 +203,28 @@ export const useUserStore = defineStore("user", () => {
   }
 
   /**
+   * Resend a confirm-phone text to the user
+   *
+   * @return {*}
+   */
+  async function resendPhoneConfirmation() {
+    if (!user.value) {
+      return;
+    }
+    isLoading.value = true;
+    try {
+      await axios.post("phone/verification-notification", {
+        phone: user.value.phone,
+      });
+      return true;
+    } catch (error) {
+      return false;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  /**
    * Send a reset-password email/request
    *
    * @param {string} email
@@ -490,6 +512,80 @@ export const useUserStore = defineStore("user", () => {
       });
   }
 
+  async function saveUserLocation(latitude: number, longitude: number) {
+    try {
+      await axios.post(`api/users/${user.value?.id}/locations`, {
+        latitude,
+        longitude,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  // Fetch the current users location using the browser's geolocation API
+  async function fetchUserLocation(): Promise<{
+    latitude: number;
+    longitude: number;
+  }> {
+    return new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          });
+        },
+        (error) => {
+          reject(error);
+        }
+      );
+    });
+  }
+
+  // fetchAndSaveUserLocation is a function that fetches the user's location and saves it to the server
+  async function fetchAndSaveUserLocation() {
+    try {
+      const location = await fetchUserLocation();
+      await saveUserLocation(location.latitude, location.longitude);
+    } catch (error) {
+      console.error("Error fetching user location", error);
+      throw error;
+    }
+  }
+
+  async function sendPhoneOtpCode() {
+    if (!user.value) {
+      return false;
+    }
+
+    await axios.post(`user/send-phone-otp`);
+
+    $bus.$emit(eventTypes.sent_phone_otp);
+
+    return true;
+  }
+
+  async function verifyPhoneOtpCode(otp: string) {
+    if (!user.value) {
+      return false;
+    }
+
+    const response = await axios.post(`user/verify-phone-otp`, {
+      otp,
+    });
+
+    if (response.status !== 200) {
+      return false;
+    }
+
+    user.value.phone_verified_at = new Date().toISOString();
+
+    $bus.$emit(eventTypes.confirmed_phone);
+
+    return true;
+  }
+
   return {
     isAuthenticated,
     checkEmail,
@@ -514,5 +610,9 @@ export const useUserStore = defineStore("user", () => {
     getPersonalAccessTokens,
     createPersonalAccessToken,
     deletePersonalAccessToken,
+    resendPhoneConfirmation,
+    fetchAndSaveUserLocation,
+    sendPhoneOtpCode,
+    verifyPhoneOtpCode,
   };
 });

@@ -8,6 +8,7 @@ const userStore = useUserStore();
 // Email, password, and remember me
 const email = ref(userStore.user?.email);
 const isEmailVerified = ref(userStore.user?.email_verified_at !== null);
+const isPhoneVerified = ref(userStore.user?.phone_verified_at !== null);
 
 // Name, Surname
 const name = ref(userStore.user?.name);
@@ -132,6 +133,12 @@ const submitForm = async () => {
       v-model="phone"
       required
     />
+    <small v-if="!isPhoneVerified">
+      {{ $t("You have not confirmed your phone number.") }}
+    </small>
+    <small v-else>{{
+      $t("If you change your phone number you will have to confirm it again.")
+    }}</small>
 
     <!-- </TransitionGroup> -->
   </base-form>

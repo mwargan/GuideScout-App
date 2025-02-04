@@ -76,6 +76,14 @@ export default [
     },
   },
   {
+    path: "/confirm-phone",
+    name: "confirm-phone",
+    component: () => import("../views/Auth/ConfirmPhoneView.vue"),
+    meta: {
+      gates: ["auth", "unconfirmedPhone"],
+    },
+  },
+  {
     path: "/confirm/:element",
     name: "confirm",
     component: () => import("../views/ConfirmView.vue"),

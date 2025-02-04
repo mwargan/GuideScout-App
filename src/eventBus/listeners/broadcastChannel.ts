@@ -27,6 +27,11 @@ bc.onmessage = (event) => {
     router.go(0);
   }
 
+  if (event.data.type === eventTypes.confirmed_phone) {
+    // refresh the page
+    router.go(0);
+  }
+
   if (event.data.type === eventTypes.changed_locale) {
     setI18nLanguage(i18n, event.data.data, false);
   }
@@ -64,6 +69,12 @@ export default {
   confirmed_email: (e: any) => {
     bc.postMessage({
       type: eventTypes.confirmed_email,
+      data: e,
+    });
+  },
+  confirmed_phone: (e: any) => {
+    bc.postMessage({
+      type: eventTypes.confirmed_phone,
       data: e,
     });
   },

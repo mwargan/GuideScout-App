@@ -64,5 +64,12 @@
     "Refer a friend": "Refer a friend",
     "Change email": "Change email",
     "Phone Number (starting with +)": "Phone Number (starting with +)",
-    "Guide profile": "Guide profile"
+    "Guide profile": "Guide profile",
+    "You have not confirmed your phone number.": "You have not confirmed your phone number.",
+    "If you change your phone number you will have to confirm it again.": "If you change your phone number you will have to confirm it again.",
+    "A new code has been sent to you.": "A new code has been sent to you.",
+    "Confirm code": "Confirm code",
+    "Send confirmation code": "Send confirmation code",
+    "Change phone number": "Change phone number",
+    "Please confirm your phone number to continue.": "Please confirm your phone number to continue."
 }
