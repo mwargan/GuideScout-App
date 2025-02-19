@@ -10,6 +10,7 @@ export const useUserStore = defineStore("user", () => {
   const isLoading = ref(false);
   const user = ref(null) as Ref<User | null>;
   const attemptedToFetchUser = ref(false);
+  const location = ref(null as GeolocationPosition | null);
 
   const $bus = useEventsBus();
   // A promise that returns true when isLoading is false and attemptedToFetchUser is true
@@ -513,11 +514,17 @@ export const useUserStore = defineStore("user", () => {
       });
   }
 
-  async function saveUserLocation(latitude: number, longitude: number) {
+  async function saveUserLocation() {
+    if (!user.value) {
+      return;
+    }
+    if (!location.value) {
+      return;
+    }
     try {
-      await axios.post(`api/users/${user.value?.id}/locations`, {
-        latitude,
-        longitude,
+      await axios.post(`api/users/${user.value.id}/locations`, {
+        latitude: location.value.coords.latitude,
+        longitude: location.value.coords.longitude,
       });
     } catch (error) {
       console.log(error);
@@ -532,9 +539,10 @@ export const useUserStore = defineStore("user", () => {
     return new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          location.value = position;
           resolve({
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+            latitude: location.value.coords.latitude,
+            longitude: location.value.coords.longitude,
           });
         },
         (error) => {
@@ -552,9 +560,9 @@ export const useUserStore = defineStore("user", () => {
   // fetchAndSaveUserLocation is a function that fetches the user's location and saves it to the server
   async function fetchAndSaveUserLocation() {
     try {
-      const location = await fetchUserLocation();
-      await saveUserLocation(location.latitude, location.longitude);
-      return location;
+      await fetchUserLocation();
+      await saveUserLocation();
+      return location.value?.coords;
     } catch (error) {
       console.error("Error fetching user location", error);
       alert(

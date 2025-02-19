@@ -95,6 +95,8 @@ const createPax = async () => {
     if (!props.paxId) {
       resetForm();
     }
+  } else if (response.status === 200) {
+    alert("Passenger updated.");
   }
 };
 

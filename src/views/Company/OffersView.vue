@@ -17,6 +17,23 @@ const fetchOffers = async () => {
   offers.value = response.data;
 };
 
+const deleteOffer = async (id: number) => {
+  // Confirm
+  if (!confirm("Are you sure you want to delete this offer?")) {
+    return;
+  }
+
+  axios
+    .delete(`/api/offers/${id}`)
+    .then(() => {
+      fetchOffers();
+    })
+    .catch((error) => {
+      console.error(error);
+      alert("Failed to delete offer - " + error.response.data.message);
+    });
+};
+
 // Split the offers into two arrays: past and future
 const splitOffers = computed(() => {
   const now = new Date();
@@ -54,6 +71,7 @@ onMounted(() => {
           <th>Pax</th>
           <th>Guides</th>
           <th>Resources</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -104,6 +122,11 @@ onMounted(() => {
                 .map((resource) => resource.name)
                 .join(", ")
             }}
+          </td>
+          <td>
+            <base-button @click="deleteOffer(offer.id)" class="danger">{{
+              $t("Delete")
+            }}</base-button>
           </td>
         </tr>
       </tbody>

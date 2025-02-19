@@ -48,11 +48,11 @@ const getDriveTimeToOffice = () => {
     return;
   }
 
-  const success = async (pos: any) => {
+  const success = async (pos: GeolocationCoordinates) => {
     const getData = {
       origin: {
-        lat: pos.coords.latitude,
-        lon: pos.coords.longitude,
+        lat: pos.latitude,
+        lon: pos.longitude,
       },
       destination: {
         lat: data.value[0].company.latitude,
@@ -70,10 +70,12 @@ const getDriveTimeToOffice = () => {
     console.log("error");
   };
 
-  navigator.geolocation.getCurrentPosition(success, error, {
-    enableHighAccuracy: true,
-    timeout: 5000,
-    maximumAge: 60000,
+  userStore.fetchAndSaveUserLocation().then((location) => {
+    if (location) {
+      success(location);
+    } else {
+      error();
+    }
   });
 };
 
@@ -409,13 +411,6 @@ const screens = computed(() => {
       ],
       headerActions: [],
       actions: [
-        {
-          title: "Open dropoff planner",
-          class: "secondary",
-          action: () => {
-            router.push("/router");
-          },
-        },
         {
           title: "End tour",
           action: () => {
