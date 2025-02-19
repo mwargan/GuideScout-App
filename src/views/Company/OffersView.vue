@@ -43,7 +43,7 @@ onMounted(() => {
     </div>
   </div>
   <h2>{{ $t("Current and future offers") }}</h2>
-  <div class="overflow-auto full-width">
+  <div class="overflow-auto full-width" v-if="splitOffers.futureOffers.length">
     <table class="striped">
       <thead>
         <tr>
@@ -109,8 +109,11 @@ onMounted(() => {
       </tbody>
     </table>
   </div>
+  <div v-else>
+    <p>{{ $t("No current or future offers") }}</p>
+  </div>
   <h2>{{ $t("Past offers") }}</h2>
-  <div class="overflow-auto full-width">
+  <div class="overflow-auto full-width" v-if="splitOffers.pastOffers.length">
     <table class="striped">
       <thead>
         <tr>
@@ -182,6 +185,9 @@ onMounted(() => {
         </tr>
       </tbody>
     </table>
+  </div>
+  <div v-else>
+    <p>{{ $t("No past offers") }}</p>
   </div>
 </template>
 <style scoped>
