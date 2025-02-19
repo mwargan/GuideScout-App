@@ -81,6 +81,7 @@ export interface Pax {
   pickup_time: string;
   pickup: Pickup;
   primary: Primary;
+  foodPreferences: string;
 }
 
 export interface Primary {
