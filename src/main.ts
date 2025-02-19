@@ -10,7 +10,10 @@ import router from "./router";
 import "./eventBus/listeners/index";
 
 import VueGtagPlugin from "vue-gtag";
+
 import "./assets/main.css";
+import "vue3-openlayers/styles.css";
+
 import i18n, { SUPPORT_LOCALES } from "./locales/i18n";
 import { ThemePlugin } from "./themes/useTheme";
 import { gatePlugin } from "@m-media/vue3-gate-keeper";
@@ -18,6 +21,7 @@ import { gatePlugin } from "@m-media/vue3-gate-keeper";
 import gates from "./router/gates";
 import { metaTagPlugin } from "@m-media/vue3-meta-tags";
 import { EventsPlugin } from "./eventBus/events";
+import { useUserStore } from "./stores/user";
 
 const app = createApp(App);
 
@@ -74,5 +78,33 @@ app.use(
 app.use(EventsPlugin);
 
 app.use(ThemePlugin);
+
+// Intercept axios 401 response and redirect to login
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    console.log(
+      error.request,
+      error.response,
+      error.config.url,
+      router.currentRoute.value.fullPath
+    );
+    if (error.response?.status === 403) {
+      alert("You are not allowed to do this action.");
+      // Go back one page
+      router.go(-1);
+    }
+
+    if (error.response?.status === 401 && error.config.url !== "api/user") {
+      // Set the userStore isAuthenticated to false
+      const userStore = useUserStore();
+      userStore.isAuthenticated = false;
+      router.push({
+        name: "login",
+      });
+    }
+    return Promise.reject(error);
+  }
+);
 
 app.mount("#app");

@@ -12,11 +12,26 @@ const router = createRouter({
       path: "/",
       name: "home",
       meta: {
-        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+        gates: [
+          "auth",
+          "confirmedEmail",
+          "confirmedPhone",
+          "hasGivenLocationPermission",
+        ],
         // Notice how we pass the translation key rather than the actual string. This is because Vue Router will cache our meta, so if we just passed the translated string it would not update on language change.
         title: "Home",
       },
       component: () => import("../views/HomeView.vue"),
+    },
+    {
+      path: "/tours",
+      name: "tours",
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+        // Notice how we pass the translation key rather than the actual string. This is because Vue Router will cache our meta, so if we just passed the translated string it would not update on language change.
+        title: "Tours",
+      },
+      component: () => import("../views/SingleView.vue"),
     },
     {
       path: "/settings",
@@ -32,6 +47,15 @@ const router = createRouter({
       component: () => import("../views/AddPaymentMethodView.vue"),
       meta: {
         gates: ["auth", "confirmedEmail"],
+      },
+    },
+    {
+      path: "/confirm-location-permission",
+      name: "confirm-location-permission",
+      component: () =>
+        import("../views/Auth/ConfirmLocationPermissionView.vue"),
+      meta: {
+        gates: ["auth"],
       },
     },
     {
@@ -57,6 +81,66 @@ const router = createRouter({
       meta: {
         gates: ["auth", "confirmedEmail", "confirmedPhone"],
       },
+    },
+
+    // A company path /companies/;ID/offers
+    {
+      path: "/companies/:id/offers",
+      name: "company-offers",
+      component: () => import("../views/Company/OffersView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+    },
+
+    {
+      path: "/companies/:companyId/offers/create",
+      name: "company-offers-create",
+      component: () => import("../views/Company/CreateOfferView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+      props: true,
+    },
+
+    {
+      path: "/offers/:offerId/passengers/create",
+      name: "offer-passengers-create",
+      component: () => import("../views/Company/CreateOrEditPaxView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+      props: true,
+    },
+
+    {
+      path: "/offers/:offerId/passengers/:paxId/edit",
+      name: "offer-passengers-edit",
+      component: () => import("../views/Company/CreateOrEditPaxView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+      props: true,
+    },
+
+    {
+      path: "/companies/:companyId",
+      name: "company",
+      component: () => import("../views/SingleCompanyView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+      props: true,
+    },
+
+    {
+      path: "/users/:userId",
+      name: "user",
+      component: () => import("../views/SingleGuideView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+      props: true,
     },
     {
       path: "/about",

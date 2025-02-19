@@ -690,3 +690,20 @@ hgroup>p {
 input[type="checkbox"] {
   background-blend-mode: difference;
 }
+
+button.danger {
+  --pico-background-color: var(--pico-del-color);
+  --pico-border-color: var(--pico-del-color);
+  --pico-color: var(--pico-contrast-inverse);
+}
+
+/* Media query for min-width 75ch */
+@media (min-width: 75ch) {
+  .full-width {
+
+    width: 100vw;
+
+    /* We need to compute the negative left margin, which needs to break free from the 75ch limit on max-width in the body */
+    margin-left: calc((100vw - 75ch) / -2);
+  }
+}

@@ -59,6 +59,19 @@ const showDeveloperSettings = ref(false);
       :value="userStore.user?.guide_profile?.city.name"
       readonly
     />
+
+    <template
+      v-for="{ attribute } in userStore.user?.user_attributes"
+      :key="attribute.id"
+    >
+      <label :for="attribute.name">{{ attribute.type }}</label>
+      <input
+        type="text"
+        :id="attribute.name"
+        :value="attribute.name"
+        readonly
+      />
+    </template>
   </card-element>
   <card-element
     v-if="userStore.user?.pm_type"

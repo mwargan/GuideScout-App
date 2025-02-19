@@ -31,12 +31,16 @@
     "@m-media/vue3-meta-tags": "^0.0.7",
     "@picocss/pico": "^2.0.6",
     "@stripe/stripe-js": "^4.4",
+    "ol": "^10.4.0",
+    "ol-contextmenu": "^5.5.0",
+    "ol-ext": "^4.0.26",
     "pinia": "^2.2",
     "vue": "^3.5",
     "vue-gtag": "^2.0.1",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.1.5",
-    "vue3-lottie": "^3.3.1"
+    "vue3-lottie": "^3.3.1",
+    "vue3-openlayers": "^11.3.0"
   },
   "devDependencies": {
     "@pinia/testing": "^0.1.5",

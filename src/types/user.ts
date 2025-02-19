@@ -1,3 +1,5 @@
+import type { Location } from "./tour";
+
 export interface User {
   id?: number;
   username: string;
@@ -18,9 +20,13 @@ export interface User {
   trial_ends_at: string | null;
   personal_access_tokens?: PersonalAccessToken[];
   phone: string | null;
+  phone_country_code: string;
   potential_earnings_from_referrals?: number;
   referral_code: string | null;
   guide_profile?: GuideProfile;
+  user_attributes?: UserAttribute[];
+  companies?: Company[];
+  gravatar: string;
 }
 
 export interface GuideProfile {
@@ -61,6 +67,52 @@ export interface Client {
   personal_access_client: boolean;
   password_client: boolean;
   revoked: boolean;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface Company {
+  id: number;
+  name: string;
+  description: string;
+  email: string;
+  phone: string;
+  osm_id: null;
+  website: string;
+  address: string;
+  location: Location;
+  city_id: number;
+  created_at: Date;
+  updated_at: Date;
+  latitude: number;
+  longitude: number;
+  pivot: Pivot;
+}
+
+export enum Role {
+  Guide = "guide",
+  Manager = "manager",
+}
+
+export interface Pivot {
+  user_id: number;
+  company_id: number;
+  role: Role;
+}
+
+export interface UserAttribute {
+  user_id: number;
+  attribute_id: number;
+  created_at: Date;
+  updated_at: Date;
+  attribute: Attribute;
+}
+
+export interface Attribute {
+  id: number;
+  name: string;
+  type: string;
+  self_assignable: number;
   created_at: Date;
   updated_at: Date;
 }

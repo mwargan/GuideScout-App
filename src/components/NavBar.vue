@@ -62,7 +62,10 @@ const blur = () => {
             v-show="!user.isLoading"
           >
             <summary :aria-busy="user.isLoading">
-              <base-avatar :name="`${user.user.name} ${user.user.surname}`" />
+              <base-avatar
+                :name="`${user.user.name} ${user.user.surname}`"
+                :src="user.user.gravatar"
+              />
             </summary>
             <ul @click="blur()" style="left: unset; right: 0">
               <li>
@@ -71,6 +74,20 @@ const blur = () => {
               <li>
                 <router-link to="/logout">{{ $t("Logout") }}</router-link>
               </li>
+              <li v-if="user.user.companies?.length">
+                <hr />
+                <b>{{ $t("Manage companies") }}</b>
+              </li>
+              <template
+                v-for="company in user.user.companies"
+                :key="company.id"
+              >
+                <li v-if="company.pivot.role !== 'guide'">
+                  <router-link :to="'/companies/' + company.id + '/offers'">{{
+                    company.name
+                  }}</router-link>
+                </li>
+              </template>
             </ul>
           </details>
         </li>

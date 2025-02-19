@@ -38,7 +38,7 @@ export default class extends baseGate {
 
   route(): false | RouteLocationRaw {
     return {
-      name: "add-payment-method",
+      name: "confirm-location-permission",
     };
   }
 }

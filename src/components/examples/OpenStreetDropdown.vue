@@ -14,7 +14,7 @@ const getGeolocationData = async (query: string) => {
   }
   isLoadingGeoResults.value = true;
   const response = await fetch(
-    `https://nominatim.openstreetmap.org/search.php?q=${query}&format=jsonv2`,
+    `https://nominatim.openstreetmap.org/search?q=${query}&format=jsonv2`,
     {
       method: "GET",
       headers: {

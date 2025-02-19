@@ -75,5 +75,9 @@
     "Confirm your phone": "Confirmez votre téléphone",
     "Check back regularly for new offers": "Revenez régulièrement pour de nouvelles offres",
     "Looking for tours around you": "Recherche de visites autour de vous",
-    "Why not refer a friend to earn some money?": "Pourquoi ne pas recommander un ami pour gagner de l'argent ?"
+    "Why not refer a friend to earn some money?": "Pourquoi ne pas recommander un ami pour gagner de l'argent ?",
+    "Run tour TIME with X people": "Exécutez la visite {time} avec {people} personnes",
+    "Match": "Match",
+    "min drive from your location": "{min} min de route de votre emplacement",
+    "Meet DATETIME": "Rencontrez {datetime}"
 }

@@ -103,6 +103,7 @@ export const useUserStore = defineStore("user", () => {
       await axios.post("login", {
         email: email,
         password: password,
+        remember: true,
       });
       await getUser();
       $bus.$emit(eventTypes.logged_in);
@@ -538,6 +539,11 @@ export const useUserStore = defineStore("user", () => {
         },
         (error) => {
           reject(error);
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 5000,
+          maximumAge: 0,
         }
       );
     });
@@ -548,8 +554,12 @@ export const useUserStore = defineStore("user", () => {
     try {
       const location = await fetchUserLocation();
       await saveUserLocation(location.latitude, location.longitude);
+      return location;
     } catch (error) {
       console.error("Error fetching user location", error);
+      alert(
+        "Error fetching your location. You will not be able to use the app without location permissions."
+      );
       throw error;
     }
   }
@@ -614,5 +624,6 @@ export const useUserStore = defineStore("user", () => {
     fetchAndSaveUserLocation,
     sendPhoneOtpCode,
     verifyPhoneOtpCode,
+    fetchUserLocation,
   };
 });
