@@ -32,12 +32,14 @@ export const WithUserData: Story = {
     setup() {
       const user = useUserStore();
       user.isAuthenticated = true;
+
+      // @todo
       user.user = {
         ...userFixture,
         seen_at: new Date(),
         created_at: new Date(),
         updated_at: new Date(),
-      };
+      } as any;
     },
     template: "<settingsView />",
   }),

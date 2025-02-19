@@ -3,7 +3,7 @@ import { type PropType, computed, provide, ref, shallowRef, watch } from "vue";
 import { debounce } from "@/helpers/debounce";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import axios from "axios";
-import MapComponent from "@/components/MapComponent.vue";
+import MapComponent, { type Marker } from "@/components/MapComponent.vue";
 
 import { type Vue3OpenlayersGlobalOptions } from "vue3-openlayers";
 import { transform } from "ol/proj";
@@ -240,7 +240,7 @@ watch(
                 markerName: 'Company',
               }
             : null,
-        ].filter(Boolean)
+        ].filter(Boolean) as Marker[]
       "
       :showOpenInGoogleMaps="false"
     />

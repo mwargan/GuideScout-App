@@ -18,11 +18,8 @@ import {
   sortPickupTimes,
   sortToursByPickupTime,
 } from "@/helpers/tourHelpers";
-import { useRouter } from "vue-router";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import { useUserStore } from "@/stores/user";
-
-const router = useRouter();
 
 const data = ref<Tour[]>([]);
 const isLoading = ref(true);
@@ -231,18 +228,6 @@ const screens = computed(() => {
         ].filter(Boolean),
         actions: [
           {
-            title: "Request Front Desk to call client",
-            class: "secondary",
-            action: () => {
-              const url = getIsLateUrlWhatsappMessage(
-                pax.primary.name,
-                pax.pickup.time,
-                pax.primary.phone ?? undefined
-              );
-              window.open(url, "_blank");
-            },
-          },
-          {
             title: "Confirm pickup and start next one",
             action: () => {
               goToNextScreen();
@@ -278,9 +263,8 @@ const screens = computed(() => {
 
     console.log(prevTour);
 
-    return `previously with ${
-      prevTour.primaryGuide
-    }, ending at ${getTourEndTime(prevTour, false, true)}`;
+    // @todo
+    return `No info`;
   };
 
   const formattedResources = `${selectedTour.value.resources?.map(
@@ -307,7 +291,8 @@ const screens = computed(() => {
 
     if (nextTour) {
       const tourName = nextTour.tour.name;
-      const primaryGuide = nextTour.primaryGuide;
+      // @todo
+      const primaryGuide = "Primary guide";
       const finishTime = getTourStartTime(nextTour, true, true);
 
       return `Van ${
@@ -504,7 +489,6 @@ const selectTour = (index: number | null) => {
         v-for="action in activeScreen.actions"
         @click="action.action"
         :key="action.title"
-        :class="action.class"
       >
         {{ action.title }}
       </button>

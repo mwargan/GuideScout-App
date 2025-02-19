@@ -35,12 +35,13 @@ export const WithUserAlreadyAuthenticated: Story = {
       user.isAuthenticated = true;
       user.userEmail = userFixture.email;
 
+      // @todo
       user.user = {
         ...userFixture,
         seen_at: new Date(),
         created_at: new Date(),
         updated_at: new Date(),
-      };
+      } as any;
     },
     template: "<loginOrRegisterView />",
   }),
