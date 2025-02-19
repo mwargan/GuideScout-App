@@ -73,7 +73,7 @@ const getDriveTimeToOffice = () => {
   navigator.geolocation.getCurrentPosition(success, error, {
     enableHighAccuracy: true,
     timeout: 5000,
-    maximumAge: 0,
+    maximumAge: 60000,
   });
 };
 
