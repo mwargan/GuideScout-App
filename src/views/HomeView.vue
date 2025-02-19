@@ -103,7 +103,7 @@ const acceptTourOffer = async (offer: any) => {
   isAcceptingOffer.value = true;
 
   // First, send the users location to the backend
-  userLocation.value = await userStore.fetchAndSaveUserLocation();
+  userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
   const response = await axios
     .post(
