@@ -26,7 +26,7 @@ const userLocation = ref(
 const isAcceptingOffer = ref(false);
 
 const getTourOffers = async () => {
-  userLocation.value = await userStore.fetchAndSaveUserLocation();
+  userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
   const response = await axios.get(
     `/api/users/${userStore.user?.id}/tours/offers`

@@ -152,6 +152,7 @@ const goToNextScreen = () => {
   if (selectedScreen.value === screens.value.length - 1) {
     localStorage.setItem("tourEndTime", new Date().toISOString());
   }
+  getDriveTimeToOffice();
 };
 
 const goToPreviousScreen = () => {
