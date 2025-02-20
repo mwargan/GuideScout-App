@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import axios from "axios";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
-import type { Resource, Tour } from "@/types/tour.js";
+import type { Resource } from "@/types/tour.js";
 import MainScreen from "@/components/MainScreen.vue";
 import {
   filterOutCancelledPickups,
   getEarliestPickup,
   getSuggestedLeaveTimeForFirstPickup,
-  getSuggestedTimeInOffice,
   getTimeStringFromMinutes,
-  getTotalWorkedTime,
   getTourEndTime,
   getTourStartDayOfWeek,
   getTourStartTime,
@@ -21,10 +19,12 @@ import {
 import { useRouter } from "vue-router";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import { useUserStore } from "@/stores/user";
+import { formatDateTimeToTime } from "@/helpers/date";
+import type { Offer } from "@/types/offer";
 
 const router = useRouter();
 
-const data = ref<Tour[]>([]);
+const data = ref<Offer[]>([]);
 const isLoading = ref(true);
 
 const driveTimeFromLocationToOffice = ref<number | null>(null);
@@ -167,7 +167,9 @@ const screens = computed(() => {
     return [];
   }
 
-  const suggestedStartTime = getSuggestedTimeInOffice(selectedTour.value);
+  const suggestedStartTime = formatDateTimeToTime(
+    selectedTour.value.suggested_in_office_at
+  );
 
   const suggestedStartTimeDate = new Date(
     `${new Date().toDateString()} ${suggestedStartTime}`
@@ -265,16 +267,7 @@ const screens = computed(() => {
   };
 
   const formattedResources = `${selectedTour.value.resources?.map(
-    (resource) =>
-      ` ${resource.type} ${resource.name}${
-        resource.location
-          ? ` at ${resource.location}${
-              lastResourceTour(resource)
-                ? " (" + lastResourceTour(resource) + ")"
-                : ""
-            }`
-          : ""
-      }`
+    (resource) => ` ${resource.type} ${resource.name}`
   )}`;
 
   const resourcesRequired = (() => {
@@ -286,23 +279,26 @@ const screens = computed(() => {
         ?.name || ""
     );
 
+    const van = selectedTour.value.resources?.find(
+      (resource) => resource.type === "van"
+    )?.name;
+
     if (nextTour) {
       const tourName = nextTour.tour.name;
       // @todo
       const primaryGuide = "Primary guide";
       const finishTime = getTourStartTime(nextTour, true, true);
 
-      return `Van ${
-        selectedTour.value.resources?.find(
-          (resource) => resource.type === "van"
-        )?.name
-      } required for ${tourName} at ${finishTime} with ${primaryGuide}`;
+      return van
+        ? `Van ${
+            selectedTour.value.resources?.find(
+              (resource) => resource.type === "van"
+            )?.name
+          } required for ${tourName} at ${finishTime} with ${primaryGuide}`
+        : "";
     }
 
-    return `Last tour today for van ${
-      selectedTour.value.resources?.find((resource) => resource.type === "van")
-        ?.name
-    }`;
+    return van ? `Last tour today for van ${van}` : "";
   })();
 
   const totalGuests = `Total ${selectedTour.value.pax.reduce(
@@ -331,9 +327,9 @@ const screens = computed(() => {
       ],
       content: [
         selectedTour.value.tour.name,
-        `Tour runs ${getTourStartTime(selectedTour.value)} - ${getTourEndTime(
-          selectedTour.value
-        )}`,
+        `Tour runs ${formatDateTimeToTime(
+          selectedTour.value.starts_at
+        )} - ${formatDateTimeToTime(selectedTour.value.ends_at)}`,
         totalGuests,
         `${
           filterOutCancelledPickups(selectedTour.value).pax.length
@@ -421,11 +417,13 @@ const screens = computed(() => {
       ],
     },
     {
-      title: `${getSuggestedTimeInOffice(
-        selectedTour.value
-      )} - ${getTourEndTime(selectedTour.value, false, true)}`,
+      title: `${formatDateTimeToTime(
+        selectedTour.value.suggested_in_office_at
+      )} - ${formatDateTimeToTime(
+        selectedTour.value.suggested_out_of_office_at
+      )}`,
       subtitle:
-        getTimeStringFromMinutes(getTotalWorkedTime(selectedTour.value)) +
+        getTimeStringFromMinutes(selectedTour.value.total_duration_in_minutes) +
         " worked",
       justify: "center",
       content: [
@@ -433,10 +431,7 @@ const screens = computed(() => {
         // Determine when the van resource is next needed
         resourcesRequired,
         "Estimated earnings: €" +
-          (
-            (getTotalWorkedTime(selectedTour.value) / 60) *
-            (selectedTour.value.hourly_rate_eur_cents / 100)
-          ).toFixed(2),
+          ((selectedTour.value.total_cost_per_guide ?? 0) / 100).toFixed(2),
       ],
       headerActions: [],
       actions: [
@@ -512,7 +507,7 @@ const selectTour = (index: number | null) => {
         :value="
           getTourStartDayOfWeek(option) +
           ' ' +
-          getTourStartTime(option) +
+          formatDateTimeToTime(option.suggested_in_office_at) +
           ' - ' +
           option.tour.name
         "

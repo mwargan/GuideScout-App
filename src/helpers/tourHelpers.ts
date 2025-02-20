@@ -1,4 +1,6 @@
-import type { Pickup, Resource, Tour } from "@/types/tour";
+import type { Pickup, Resource } from "@/types/tour";
+import { formatDateTimeToTime } from "./date";
+import type { Offer as Tour } from "@/types/offer";
 
 export const getTimeStringFromMinutes = (inputMinutes: number): string => {
   let hours = Math.floor(inputMinutes / 60);
@@ -131,10 +133,7 @@ export const getTourStartTime = (
     : getLatestPickupTime(tour);
 
   if (!tourStartTime) {
-    return new Date(tour.starts_at).toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatDateTimeToTime(new Date(tour.starts_at));
   }
 
   let tourStartTimeAsMinutesFromMidnight =
@@ -178,10 +177,7 @@ export const getSuggestedLeaveTimeForFirstPickup = (tour: Tour): string => {
   const firstPickupTime = firstPickup?.time;
 
   if (!firstPickupTime) {
-    return new Date(tour.starts_at).toLocaleTimeString(undefined, {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
+    return formatDateTimeToTime(new Date(tour.starts_at));
   }
 
   const firstPickupTimeAsMinutesFromMidnight =

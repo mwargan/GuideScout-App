@@ -10,6 +10,7 @@ import BaseForm from "@/forms/BaseForm.vue";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { Offer } from "@/types/offer";
 import type { Company } from "@/types/user";
+import { formatDateTimeToTime } from "@/helpers/date";
 
 const userStore = useUserStore();
 
@@ -70,13 +71,7 @@ const getTourDuration = (offer: any) => {
   const end = new Date(offer.ends_at);
 
   // Format using JS date functions
-  return `${start.toLocaleTimeString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-  })} - ${end.toLocaleTimeString(undefined, {
-    hour: "2-digit",
-    minute: "2-digit",
-  })}`;
+  return `${formatDateTimeToTime(start)} - ${formatDateTimeToTime(end)}`;
 };
 
 const getTourRunningTimeInHours = (offer: any) => {

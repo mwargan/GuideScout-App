@@ -25,11 +25,14 @@ export interface Offer {
   suggested_out_of_office_at: Date;
   total_cost?: number;
   total_cost_per_guide?: number;
+  resources: AssignedCompanyResource[];
+  total_duration_in_minutes: number;
 }
 
 export interface AssignedCompanyResource {
   id: number;
   name: string;
+  type: string;
   description: null;
   resource_type_id: number;
   company_id: number;
