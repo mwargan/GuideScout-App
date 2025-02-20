@@ -27,6 +27,7 @@ export interface Offer {
   total_cost_per_guide?: number;
   resources: AssignedCompanyResource[];
   total_duration_in_minutes: number;
+  leave_for_earliest_pickup_at: Date;
 }
 
 export interface AssignedCompanyResource {

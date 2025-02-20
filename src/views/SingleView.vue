@@ -6,9 +6,7 @@ import MainScreen from "@/components/MainScreen.vue";
 import {
   filterOutCancelledPickups,
   getEarliestPickup,
-  getSuggestedLeaveTimeForFirstPickup,
   getTimeStringFromMinutes,
-  getTourEndTime,
   getTourStartDayOfWeek,
   getTourStartTime,
   nextTourResourceRequiredOn,
@@ -172,7 +170,7 @@ const screens = computed(() => {
   );
 
   const suggestedStartTimeDate = new Date(
-    `${new Date().toDateString()} ${suggestedStartTime}`
+    selectedTour.value.suggested_in_office_at
   );
 
   const pickupScreens = sortPickupTimes(selectedTour.value)
@@ -241,13 +239,11 @@ const screens = computed(() => {
         item && self.findIndex((i) => i?.title === item.title) === index
     );
 
-  const firstPickupTime = getSuggestedLeaveTimeForFirstPickup(
-    selectedTour.value
+  const firstPickupTimeDate = new Date(
+    selectedTour.value.leave_for_earliest_pickup_at
   );
 
-  const firstPickupTimeDate = new Date(
-    `${new Date().toDateString()} ${firstPickupTime}`
-  );
+  const firstPickupTime = formatDateTimeToTime(firstPickupTimeDate);
 
   const lastResourceTour = (resource: Resource) => {
     if (!selectedTour.value) return null;
@@ -388,12 +384,8 @@ const screens = computed(() => {
     },
     ...pickupScreens,
     {
-      title: `${getTourEndTime(selectedTour.value)} @Office`,
-      subtitle: `End ${relativeRealtime(
-        new Date(
-          `${new Date().toDateString()} ${getTourEndTime(selectedTour.value)}`
-        )
-      )}`,
+      title: `${formatDateTimeToTime(selectedTour.value.ends_at)} @Office`,
+      subtitle: `End ${relativeRealtime(new Date(selectedTour.value.ends_at))}`,
       justify: "space-between",
       content: [
         selectedTour.value.tour.name,
