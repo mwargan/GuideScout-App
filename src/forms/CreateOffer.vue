@@ -4,11 +4,17 @@ import DropdownSelect from "@/components/DropdownSelect.vue";
 import BaseForm from "@/forms/BaseForm.vue";
 import axios from "axios";
 import type { TourType } from "@/types/tour";
+import AttributeDropdown from "@/components/AttributeDropdown.vue";
+import CompanyUserDropdown from "@/components/CompanyUserDropdown.vue";
 
 const props = defineProps({
   companyId: {
     type: Number,
     required: true,
+  },
+  allowManualGuideAssignment: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -31,6 +37,8 @@ const formData = reactive({
   // starts at default to today + 2 hours
   starts_at: minDateTime,
   payment_amount: 12.5,
+  required_attribute_ids: [],
+  guide_ids: [],
 });
 
 const getTourData = async () => {
@@ -47,9 +55,19 @@ const getTourData = async () => {
   isLoadingTourResults.value = false;
 };
 
-const selectedTourResult = ref({} as any);
+const selectedTourResult = ref({} as TourType | null);
 const selectedTourResultId = ref([] as string[]);
 const tourSearchTerm = ref("");
+
+const tourRequiredAttributes = ref([] as number[]);
+
+const tourRequiredAttributeNames = computed(() => {
+  return tourRequiredAttributes.value.map((attrId) => {
+    return currentTourResults.value
+      .flatMap((tour) => tour.hard_required_guide_attributes)
+      .find((attr) => attr.id === attrId)?.name;
+  });
+});
 
 const selectResult = (result: string[]) => {
   console.log(result);
@@ -59,10 +77,20 @@ const selectResult = (result: string[]) => {
   isOpen.value = false;
   // Set the selected result
 
-  selectedTourResult.value = currentTourResults.value.find(
-    // @ts-ignore
-    (item) => item.id == result
-  );
+  selectedTourResult.value =
+    currentTourResults.value.find(
+      // @ts-ignore
+      (item) => item.id == result
+    ) ?? null;
+
+  if (!selectedTourResult.value) {
+    return;
+  }
+
+  tourRequiredAttributes.value =
+    selectedTourResult.value.hard_required_guide_attributes.map(
+      (attr) => attr.id
+    );
 };
 
 const optionsToShow = computed(() => {
@@ -77,12 +105,18 @@ const optionsToShow = computed(() => {
 });
 
 const totalGuideCost = computed(() => {
+  if (!selectedTourResult.value) {
+    return 0;
+  }
   return (
     formData.payment_amount * (selectedTourResult.value?.minutesDuration / 60)
   );
 });
 
 const totalPrepCleanupCost = computed(() => {
+  if (!selectedTourResult.value) {
+    return 0;
+  }
   return (
     (selectedTourResult.value?.prepMinutes +
       selectedTourResult.value?.cleanupMinutes) *
@@ -167,6 +201,35 @@ const createOffer = async () => {
     />
 
     <details>
+      <summary>{{ $t("Advanced options") }}</summary>
+      <div>
+        <label>{{ $t("Required guide attributes") }}</label>
+        <attribute-dropdown
+          v-model="formData.required_attribute_ids"
+        ></attribute-dropdown>
+        <small>
+          {{
+            $t(
+              "Select the attributes that the guide must have specifically for this offer, in addition to the tours already required attributes: "
+            )
+          }}
+          {{ tourRequiredAttributeNames.join(", ") }}
+        </small>
+        <template v-if="allowManualGuideAssignment">
+          <label>{{ $t("Assign guides manually") }}</label>
+          <company-user-dropdown
+            :companyId="props.companyId"
+            v-model="formData.guide_ids"
+            :attributeIds="[
+              ...formData.required_attribute_ids,
+              ...tourRequiredAttributes,
+            ]"
+          ></company-user-dropdown>
+        </template>
+      </div>
+    </details>
+
+    <details v-if="selectedTourResult?.id">
       <summary>
         Total cost:
         {{
