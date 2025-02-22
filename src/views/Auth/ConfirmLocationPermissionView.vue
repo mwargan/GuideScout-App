@@ -2,6 +2,8 @@
 import CardElement from "@/components/CardElement.vue";
 import BaseForm from "@/forms/BaseForm.vue";
 import { useUserStore } from "@/stores/user";
+import { Vue3Lottie } from "vue3-lottie";
+import locationJSON from "@/assets/lottie/location.json";
 
 const store = useUserStore();
 
@@ -27,6 +29,9 @@ const requestLocationPermissions = async () => {
 <template>
   <h1>{{ $t("Allow location permissions") }}</h1>
   <card-element :title="$t('Allow location permissions')">
+    <template #images>
+      <Vue3Lottie :animationData="locationJSON" />
+    </template>
     <p>
       {{
         $t(

@@ -48,13 +48,19 @@ defineProps({
     :to="to ? to : undefined"
   >
     <article>
-      <div class="images overflow-auto" v-if="images" tabindex="0">
-        <img
-          v-for="image in images"
-          :src="image.src"
-          :alt="image.alt"
-          :key="image.alt"
-        />
+      <div
+        class="images overflow-auto"
+        v-if="images || $slots.images"
+        tabindex="0"
+      >
+        <slot name="images">
+          <img
+            v-for="image in images"
+            :src="image.src"
+            :alt="image.alt"
+            :key="image.alt"
+          />
+        </slot>
       </div>
 
       <header v-if="title || subtitle || $slots.headerActions || $slots.header">
