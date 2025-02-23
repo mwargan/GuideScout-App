@@ -1,12 +1,18 @@
 <script lang="ts" setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import axios from "axios";
 import type { User } from "@/types/user";
+import AttributeDropdown from "@/components/AttributeDropdown.vue";
 
 const users = ref<User[]>([]);
+const attributeIds = ref<string[]>([]);
 
 const fetchUsers = async () => {
-  const response = await axios.get("/api/users");
+  const response = await axios.get("/api/users", {
+    params: {
+      attributes: attributeIds.value,
+    },
+  });
   users.value = response.data;
 };
 
@@ -29,12 +35,17 @@ const verifyGuideProfile = async (id: number) => {
   }
 };
 
-onMounted(() => {
-  fetchUsers();
-});
+watch(
+  attributeIds,
+  () => {
+    fetchUsers();
+  },
+  { immediate: true }
+);
 </script>
 <template>
-  <h1>{{ $t("Users") }}</h1>
+  <h1>{{ users.length }} {{ $t("Users") }}</h1>
+  <attribute-dropdown v-model="attributeIds"></attribute-dropdown>
   <div class="overflow-auto">
     <table>
       <thead>
@@ -44,7 +55,7 @@ onMounted(() => {
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users" :key="user.id">
+        <tr v-for="user in users.reverse()" :key="user.id">
           <td v-for="key in keys" :key="key">{{ user[key as keyof User] }}</td>
           <td>
             <button

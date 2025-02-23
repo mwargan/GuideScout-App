@@ -75,6 +75,14 @@ const router = createRouter({
       },
     },
     {
+      path: "/admin/attributes",
+      name: "admin-attributes",
+      component: () => import("../views/Admin/AttributesView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "isMasterUser"],
+      },
+    },
+    {
       path: "/referrals",
       name: "referrals",
       component: () => import("../views/ReferralsView.vue"),
