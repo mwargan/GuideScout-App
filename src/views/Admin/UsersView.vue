@@ -55,7 +55,7 @@ watch(
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users.reverse()" :key="user.id">
+        <tr v-for="user in users" :key="user.id">
           <td v-for="key in keys" :key="key">{{ user[key as keyof User] }}</td>
           <td>
             <button
