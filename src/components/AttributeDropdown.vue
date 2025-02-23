@@ -61,6 +61,7 @@ getAttributes();
     :multiple="true"
     v-model:search="searchTerm"
     v-model:isOpen="isOpen"
+    :showSelectedFirst="true"
   >
     <template #optionSlot="{ option, updateModelValue }">
       <label>

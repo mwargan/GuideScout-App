@@ -35,6 +35,18 @@ const verifyGuideProfile = async (id: number) => {
   }
 };
 
+const updateUsersAttributes = async (
+  userId: number,
+  newAttributeIds: string[]
+) => {
+  await axios.put(`/api/users/${userId}/attributes`, {
+    attributeIds: newAttributeIds,
+  });
+
+  // Refresh the users list
+  await fetchUsers();
+};
+
 watch(
   attributeIds,
   () => {
@@ -51,12 +63,23 @@ watch(
       <thead>
         <tr>
           <th v-for="key in keys" :key="key">{{ key }}</th>
+          <th>{{ $t("Attributes") }}</th>
           <th>{{ $t("Actions") }}</th>
         </tr>
       </thead>
       <tbody>
         <tr v-for="user in users" :key="user.id">
           <td v-for="key in keys" :key="key">{{ user[key as keyof User] }}</td>
+          <td v-if="user.id" style="min-width: 296px">
+            <attribute-dropdown
+              :modelValue="
+                user.user_attributes?.map((attr) =>
+                  attr.attribute_id.toString()
+                ) ?? []
+              "
+              @update:modelValue="updateUsersAttributes(user.id, $event)"
+            ></attribute-dropdown>
+          </td>
           <td>
             <button
               v-if="user.id && !user.guide_profile?.verified_at"
