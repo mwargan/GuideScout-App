@@ -27,7 +27,14 @@ const blur = () => {
           >
         </li>
         <li>
-          <base-badge class="success rectangular">€0,00</base-badge>
+          <base-badge class="success rectangular">
+            {{
+              new Intl.NumberFormat(undefined, {
+                style: "currency",
+                currency: "EUR",
+              }).format(user.user.earnings ? user.user.earnings / 100 : 0)
+            }}</base-badge
+          >
 
           <router-link
             to="/referrals"

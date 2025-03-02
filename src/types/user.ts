@@ -21,6 +21,7 @@ export interface User {
   personal_access_tokens?: PersonalAccessToken[];
   phone: string | null;
   phone_country_code: string;
+  earnings?: number;
   potential_earnings_from_referrals?: number;
   referral_code: string | null;
   guide_profile?: GuideProfile;
