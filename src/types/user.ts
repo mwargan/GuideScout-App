@@ -29,6 +29,7 @@ export interface User {
   gravatar: string;
   latitude: number | null;
   longitude: number | null;
+  latest_location: Location | null;
 }
 
 export interface GuideProfile {

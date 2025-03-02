@@ -4,6 +4,7 @@ import axios from "axios";
 import type { User } from "@/types/user";
 import AttributeDropdown from "@/components/AttributeDropdown.vue";
 import MapComponent from "@/components/MapComponent.vue";
+import { relativeRealtime } from "@/helpers/relativeRealtime";
 
 const users = ref<User[]>([]);
 const attributeIds = ref<string[]>([]);
@@ -56,22 +57,18 @@ watch(
   { immediate: true }
 );
 
-function hasCoordinates(user: User): user is Omit<
-  User,
-  "latitude" | "longitude"
-> & {
-  latitude: number;
-  longitude: number;
-} {
-  return user.latitude !== null && user.longitude !== null;
-}
-
 const userMarkers = computed(() => {
-  return users.value.filter(hasCoordinates).map((user) => ({
-    latitude: user.latitude,
-    longitude: user.longitude,
-    markerName: user.name ?? user.email,
-  }));
+  return users.value
+    .filter((user) => user.latest_location)
+    .map((user: Omit<User, "latest_location"> & { latest_location: any }) => ({
+      latitude: user.latest_location.latitude,
+      longitude: user.latest_location.longitude,
+      markerName:
+        (user.name ?? user.email) +
+        " (" +
+        relativeRealtime(user.latest_location.created_at) +
+        ")",
+    }));
 });
 </script>
 <template>
