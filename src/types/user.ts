@@ -27,6 +27,8 @@ export interface User {
   user_attributes?: UserAttribute[];
   companies?: Company[];
   gravatar: string;
+  latitude: number | null;
+  longitude: number | null;
 }
 
 export interface GuideProfile {

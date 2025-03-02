@@ -7,6 +7,10 @@ const props = defineProps({
   modelValue: {
     type: Array as PropType<string[]>,
   },
+  typeFilter: {
+    type: String,
+    required: false,
+  },
 });
 
 const emit = defineEmits<{
@@ -21,11 +25,23 @@ const isLoading = ref(false);
 const isOpen = ref(false);
 
 const formattedOptions = computed(() => {
-  return attributes.value.map((attribute) => ({
-    id: `${attribute.id}`,
-    render: attribute.name,
-    raw: attribute,
-  }));
+  return attributes.value
+    .filter((attribute) => {
+      if (!props.typeFilter) {
+        return true;
+      }
+
+      return (
+        attribute.type === props.typeFilter ||
+        // Or is selected
+        props.modelValue?.includes(`${attribute.id}`)
+      );
+    })
+    .map((attribute) => ({
+      id: `${attribute.id}`,
+      render: attribute.name,
+      raw: attribute,
+    }));
 });
 
 const getAttributes = async () => {

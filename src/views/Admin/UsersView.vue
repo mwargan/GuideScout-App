@@ -3,6 +3,7 @@ import { computed, ref, watch } from "vue";
 import axios from "axios";
 import type { User } from "@/types/user";
 import AttributeDropdown from "@/components/AttributeDropdown.vue";
+import MapComponent from "@/components/MapComponent.vue";
 
 const users = ref<User[]>([]);
 const attributeIds = ref<string[]>([]);
@@ -54,9 +55,35 @@ watch(
   },
   { immediate: true }
 );
+
+function hasCoordinates(user: User): user is Omit<
+  User,
+  "latitude" | "longitude"
+> & {
+  latitude: number;
+  longitude: number;
+} {
+  return user.latitude !== null && user.longitude !== null;
+}
+
+const userMarkers = computed(() => {
+  return users.value.filter(hasCoordinates).map((user) => ({
+    latitude: user.latitude,
+    longitude: user.longitude,
+    markerName: user.name ?? user.email,
+  }));
+});
 </script>
 <template>
   <h1>{{ users.length }} {{ $t("Users") }}</h1>
+  <details v-if="userMarkers.length">
+    <summary>{{ $t("Map") }}</summary>
+    <map-component
+      class="full-width"
+      :markers="userMarkers"
+      :showOpenInGoogleMaps="false"
+    />
+  </details>
   <attribute-dropdown v-model="attributeIds"></attribute-dropdown>
   <div class="overflow-auto">
     <table>
