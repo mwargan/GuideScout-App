@@ -9,6 +9,7 @@ import confirmedPhone from "./confirmedPhone";
 import unconfirmedPhone from "./unconfirmedPhone";
 import isMasterUser from "./isMasterUser";
 import hasGivenLocationPermission from "./hasGivenLocationPermission";
+import hasValidCV from "./hasValidCV";
 
 export default {
   auth,
@@ -22,4 +23,5 @@ export default {
   hasGivenLocationPermission,
   unconfirmedPhone,
   confirmedPhone,
+  hasValidCV,
 };

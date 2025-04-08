@@ -9,6 +9,7 @@ import type { PersonalAccessToken } from "@/types/user";
 import { ref } from "vue";
 import { Vue3Lottie } from "vue3-lottie";
 import radarJSON from "@/assets/lottie/verified.json";
+import UploadCV from "@/forms/UploadCV.vue";
 
 const userStore = useUserStore();
 
@@ -51,6 +52,12 @@ const showDeveloperSettings = ref(false);
       {{ $t("Your profile is still being verified.") }}
     </p>
     <Vue3Lottie v-else :animationData="radarJSON" :height="200" :width="200" />
+
+    <p v-if="userStore.user?.latest_cv_status">
+      {{ $t("Your CV has been uploaded and is") }}
+      {{ userStore.user?.latest_cv_status }}.
+    </p>
+    <upload-c-v v-else />
 
     <label for="city">{{ $t("City") }}</label>
     <input

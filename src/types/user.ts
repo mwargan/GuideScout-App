@@ -31,6 +31,7 @@ export interface User {
   latitude: number | null;
   longitude: number | null;
   latest_location: Location | null;
+  latest_cv_status: "pending" | "accepted" | "rejected" | null;
 }
 
 export interface GuideProfile {

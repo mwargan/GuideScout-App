@@ -604,6 +604,27 @@ export const useUserStore = defineStore("user", () => {
     return true;
   }
 
+  async function uploadCV(file: File) {
+    if (!user.value) {
+      return false;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    await axios.post(`api/users/${user.value.id}/cvs`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+
+    user.value.latest_cv_status = "pending";
+
+    $bus.$emit(eventTypes.uploaded_cv);
+
+    return true;
+  }
+
   return {
     isAuthenticated,
     checkEmail,
@@ -633,5 +654,6 @@ export const useUserStore = defineStore("user", () => {
     sendPhoneOtpCode,
     verifyPhoneOtpCode,
     fetchUserLocation,
+    uploadCV,
   };
 });
