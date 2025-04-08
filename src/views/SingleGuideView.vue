@@ -73,7 +73,12 @@ onMounted(async () => {
       />
       {{ user.name }}
     </h1>
-    <p v-if="user.phone_country_code">From {{ user.phone_country_code }}</p>
+    <p>
+      Verified guide
+      <template v-if="user.phone_country_code"
+        >from {{ user.phone_country_code }}</template
+      >
+    </p>
   </hgroup>
 
   <ul>

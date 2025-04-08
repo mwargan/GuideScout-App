@@ -39,6 +39,7 @@ const formData = reactive({
   payment_amount: 12.5,
   required_attribute_ids: [],
   guide_ids: [],
+  description: "",
 });
 
 const getTourData = async () => {
@@ -226,6 +227,23 @@ const createOffer = async () => {
             ]"
           ></company-user-dropdown>
         </template>
+
+        <label>{{ $t("Offer description") }}</label>
+        <textarea
+          v-model="formData.description"
+          :placeholder="
+            $t('Description for the guide to see before accepting the offer')
+          "
+          rows="3"
+          cols="30"
+        ></textarea>
+        <small>
+          {{
+            $t(
+              "This description will be shown to the guide before they accept the offer."
+            )
+          }}
+        </small>
       </div>
     </details>
 
