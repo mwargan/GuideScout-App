@@ -225,6 +225,9 @@ const formattedOffers = computed(() => {
           }}
         </li>
       </ul>
+      <p v-if="offer.description">
+        {{ offer.description }}
+      </p>
       <template #footer>
         <base-form
           submitText="Match"
