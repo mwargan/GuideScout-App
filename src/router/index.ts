@@ -43,6 +43,14 @@ const router = createRouter({
       },
     },
     {
+      path: "/deals",
+      name: "deals",
+      component: () => import("../views/DealsView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+    },
+    {
       path: "/add-payment-method",
       name: "add-payment-method",
       component: () => import("../views/AddPaymentMethodView.vue"),
