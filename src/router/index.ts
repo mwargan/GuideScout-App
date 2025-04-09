@@ -113,6 +113,26 @@ const router = createRouter({
     },
 
     {
+      path: "/companies/:companyId/tours/create",
+      name: "company-tours-create",
+      component: () => import("../views/Company/CreateOrEditTourView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+      props: true,
+    },
+
+    {
+      path: "/companies/:companyId/tours/:tourId/edit",
+      name: "company-tours-edit",
+      component: () => import("../views/Company/CreateOrEditTourView.vue"),
+      meta: {
+        gates: ["auth", "confirmedEmail", "confirmedPhone"],
+      },
+      props: true,
+    },
+
+    {
       path: "/offers/:offerId/passengers/create",
       name: "offer-passengers-create",
       component: () => import("../views/Company/CreateOrEditPaxView.vue"),
