@@ -16,7 +16,6 @@ import {
   useVueTable,
 } from "@tanstack/vue-table";
 import { relativeTime } from "@/helpers/relativeRealtime";
-import BaseButton from "./BaseButton.vue";
 
 interface ColumnType {
   value: string | ColumnDef<any, any>;
@@ -32,16 +31,25 @@ const props = defineProps({
     type: Array,
     required: true,
   },
+  globalSearch: {
+    type: Boolean,
+    default: true,
+  },
+  columnSearch: {
+    type: Boolean,
+    default: false,
+  },
 });
 const columnHelper = createColumnHelper<any>();
 
 const headerFunction = (column: Column<any>) => {
+  // h('div', ['hello', h('span', 'hello')])
   return h(
-    BaseButton,
+    "a",
     {
       onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
     },
-    () => [column.id, h("span", { class: "ml-2 h-4 w-4" })]
+    [column.id]
   );
 };
 
@@ -71,6 +79,7 @@ const allColumns = computed(() => {
             alt: "Image",
           });
         },
+        enableGlobalFilter: false,
       });
     }
   });
@@ -81,6 +90,7 @@ const columnFilters = ref<ColumnFiltersState>([]);
 const columnVisibility = ref<VisibilityState>({});
 const rowSelection = ref({});
 const expanded = ref<ExpandedState>({});
+const globalFilter = ref<string>("");
 
 const table = useVueTable({
   get data() {
@@ -102,6 +112,21 @@ const table = useVueTable({
       sorting.value = updaterOrValue;
     }
   },
+  onGlobalFilterChange: (updaterOrValue) => {
+    if (updaterOrValue instanceof Function) {
+      globalFilter.value = updaterOrValue(globalFilter.value);
+    } else {
+      globalFilter.value = updaterOrValue;
+    }
+  },
+  onColumnFiltersChange: (updaterOrValue) => {
+    if (updaterOrValue instanceof Function) {
+      columnFilters.value = updaterOrValue(columnFilters.value);
+    } else {
+      columnFilters.value = updaterOrValue;
+    }
+  },
+  globalFilterFn: "includesString",
   state: {
     get sorting() {
       return sorting.value;
@@ -118,6 +143,9 @@ const table = useVueTable({
     get expanded() {
       return expanded.value;
     },
+    get globalFilter() {
+      return globalFilter.value;
+    },
   },
 });
 
@@ -126,6 +154,13 @@ const table = useVueTable({
 </script>
 
 <template>
+  <input
+    type="search"
+    placeholder="Search"
+    :value="table.getState().globalFilter ?? ''"
+    @input="(e) => table.setGlobalFilter(String((e.target as HTMLInputElement).value))"
+    v-if="globalSearch"
+  />
   <div class="overflow-auto">
     <table>
       <thead>
@@ -142,6 +177,18 @@ const table = useVueTable({
             <FlexRender
               :render="header.column.columnDef.header"
               :props="header.getContext()"
+            />
+
+            <input
+              style="min-width: 200px"
+              type="search"
+              :value="table.getColumn(header.id)?.getFilterValue() ?? ''"
+              @input="(e) => {
+                  table.getColumn(header.id)?.setFilterValue(
+                    (e.target as HTMLInputElement).value
+                  );
+                }"
+              v-if="columnSearch"
             />
           </th>
         </tr>
