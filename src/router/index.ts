@@ -198,6 +198,21 @@ const router = createRouter({
       name: "Examples",
       component: () => import("../views/Examples/DealsView.vue"),
     },
+    {
+      path: "/independent-contractor-agreement",
+      name: "IndependentContractorAgreement",
+      component: () => import("../views/IndependentContractorAgreement.vue"),
+    },
+    {
+      path: "/terms-of-service",
+      name: "TermsOfService",
+      component: () => import("../views/TermsOfServiceView.vue"),
+    },
+    {
+      path: "/privacy-policy",
+      name: "PrivacyPolicy",
+      component: () => import("../views/PrivacyPolicyView.vue"),
+    },
     // Add a catch-all 404 page
     {
       path: "/:pathMatch(.*)*",
