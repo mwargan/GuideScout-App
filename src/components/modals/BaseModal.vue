@@ -100,15 +100,14 @@ defineExpose({
 <template>
   <slot name="trigger" :openModal="openModal" :isOpen="isModalOpen">
     <!-- Button to trigger the modal -->
-    <button
+    <base-button
       v-if="showTrigger"
       :data-target="modalId"
       @click="openModal()"
       :aria-busy="isModalOpen"
-      type="button"
     >
       {{ triggerText ?? title }}
-    </button>
+    </base-button>
   </slot>
 
   <!-- Modal -->
@@ -134,7 +133,7 @@ defineExpose({
         <slot></slot>
       </div>
       <template #footer v-if="showFooter || $slots.footer">
-        <slot name="footer">
+        <slot name="footer" :closeModal="closeModal" :modalId="modalId">
           <base-button
             class="secondary"
             :data-target="modalId"

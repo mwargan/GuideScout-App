@@ -6,11 +6,14 @@ import radarJSON from "@/assets/lottie/radar.json";
 import axios from "axios";
 import { computed, ref } from "vue";
 import CardElement from "@/components/CardElement.vue";
-import BaseForm from "@/forms/BaseForm.vue";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { Offer } from "@/types/offer";
 import type { Company } from "@/types/user";
 import { formatDateTimeToTime } from "@/helpers/date";
+import BaseModal from "@/components/modals/BaseModal.vue";
+import BaseButton from "@/components/BaseButton.vue";
+import Markdown from "vue3-markdown-it";
+import source from "./IndependentContractorAgreement.md?raw";
 
 const userStore = useUserStore();
 
@@ -86,15 +89,6 @@ const computePrice = (offer: any) => {
 };
 
 const acceptTourOffer = async (offer: any) => {
-  // First show a confirm dialog
-  if (
-    !confirm(
-      "You will be contractually obligated to run this tour. No cancellations are allowed, you must show up at the time specified. Not showing up may result in you being banned from the platform."
-    )
-  ) {
-    return;
-  }
-
   isAcceptingOffer.value = true;
 
   // First, send the users location to the backend
@@ -229,11 +223,62 @@ const formattedOffers = computed(() => {
         {{ offer.description }}
       </p>
       <template #footer>
-        <base-form
-          submitText="Match"
-          @submit="acceptTourOffer(offer)"
-          :isLoading="isAcceptingOffer"
-        ></base-form>
+        <base-modal title="Accept tour offer" triggerText="Match">
+          <template #trigger="{ openModal, isOpen }">
+            <base-button
+              @click="openModal()"
+              :aria-busy="isOpen"
+              style="width: 100%"
+            >
+              {{ $t("Match") }}
+            </base-button>
+          </template>
+          <p>
+            {{ $t("You will be obligated to run this tour.") }}
+            {{
+              $t(
+                "No cancellations are allowed, you must show up at the time specified."
+              )
+            }}
+            {{
+              $t(
+                "Not showing up may result in you being banned from the platform."
+              )
+            }}
+          </p>
+          <details>
+            <summary>{{ $t("Independent Contractor Agreement") }}</summary>
+            <Markdown :source="source" />
+          </details>
+          <p>
+            {{
+              $t(
+                "By accepting this offer, you agree to the Independent Contractor Agreement, in addition to previously accepted terms and conditions."
+              )
+            }}
+          </p>
+
+          <template #footer="{ closeModal, modalId }">
+            <base-button
+              class="secondary"
+              :data-target="modalId"
+              @click.prevent="closeModal()"
+              :disabled="isAcceptingOffer"
+            >
+              {{ $t("Cancel") }}
+            </base-button>
+            <base-button
+              :data-target="modalId"
+              @click.prevent="
+                acceptTourOffer(offer);
+                closeModal();
+              "
+              :disabled="isAcceptingOffer"
+            >
+              {{ $t("Aceept tour offer") }}
+            </base-button>
+          </template>
+        </base-modal>
       </template>
     </card-element>
   </div>

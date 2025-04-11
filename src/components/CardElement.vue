@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PropType } from "vue";
+import { type PropType, Transition } from "vue";
 import type { RouteLocationRaw } from "vue-router";
 
 defineProps({
@@ -44,7 +44,7 @@ defineProps({
   <!-- @todo the animation breaks with component, need to fix. It works when article is direct child or when <template> (from Vue) is used, but not with <component>, even with an :is to a Vue template -->
   <component
     v-if="!loading"
-    :is="to ? 'router-link' : 'vue:template'"
+    :is="to ? 'router-link' : Transition"
     :to="to ? to : undefined"
   >
     <article>
