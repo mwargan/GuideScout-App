@@ -11,6 +11,8 @@ export const useUserStore = defineStore("user", () => {
   const user = ref(null) as Ref<User | null>;
   const attemptedToFetchUser = ref(false);
   const location = ref(null as GeolocationPosition | null);
+  const locationUpdatedAt = ref(null as Date | null);
+  const locationCacheTimeInSeconds = 30; // Minimum wait time in seconds before fetching the location again
 
   const $bus = useEventsBus();
   // A promise that returns true when isLoading is false and attemptedToFetchUser is true
@@ -559,9 +561,18 @@ export const useUserStore = defineStore("user", () => {
 
   // fetchAndSaveUserLocation is a function that fetches the user's location and saves it to the server
   async function fetchAndSaveUserLocation() {
+    // If we tried less than 1 minute ago, don't try again
+    if (
+      locationUpdatedAt.value &&
+      locationUpdatedAt.value >
+        new Date(Date.now() - locationCacheTimeInSeconds * 1000)
+    ) {
+      return location.value?.coords;
+    }
     try {
       await fetchUserLocation();
       await saveUserLocation();
+      locationUpdatedAt.value = new Date();
       return location.value?.coords;
     } catch (error) {
       console.error("Error fetching user location", error);
