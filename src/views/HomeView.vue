@@ -240,7 +240,12 @@ const formattedOffers = computed(() => {
           {{
             $t("Run tour TIME with X people", {
               time: getTourDuration(offer),
-              people: offer.total_pax,
+              people:
+                offer.total_pax > 0
+                  ? offer.total_pax
+                  : offer.tour.max_pax
+                  ? "up to " + offer.tour.max_pax
+                  : "an unknown number of",
             })
           }}
         </li>
