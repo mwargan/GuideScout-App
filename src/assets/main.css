@@ -6,8 +6,11 @@
   --pico-border-radius: 0.5rem;
 }
 
+/* Orange color for light color scheme (Default) */
+/* Can be forced with data-theme="light" */
+[data-theme=light],
 :root:not([data-theme=dark]),
-[data-theme=light] {
+:host:not([data-theme=dark]) {
   --pico-primary: black;
   --pico-primary-background: black;
   --pico-primary-inverse: white;
@@ -16,7 +19,23 @@
   --pico-card-border-color: none;
 }
 
-:root:not([data-theme=light]),
+/* Orange color for dark color scheme (Auto) */
+/* Automatically enabled if user has Dark mode enabled */
+@media only screen and (prefers-color-scheme: dark) {
+
+  :root:not([data-theme]),
+  :host:not([data-theme]) {
+    --pico-primary: white;
+    --pico-primary-background: white;
+    --pico-primary-inverse: black;
+    --pico-card-box-shadow: none;
+    --pico-card-sectioning-background-color: none;
+    --pico-card-border-color: none;
+  }
+}
+
+/* Orange color for dark color scheme (Forced) */
+/* Enabled if forced with data-theme="dark" */
 [data-theme=dark] {
   --pico-primary: white;
   --pico-primary-background: white;
