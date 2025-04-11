@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from "vue";
+import { onMounted, ref } from "vue";
 import axios from "axios";
 import type { Offer } from "@/types/offer";
 import { useRouter } from "vue-router";
@@ -18,24 +18,9 @@ const fetchOffers = async () => {
   const response = await axios.get(`/api/companies/${props.companyId}/offers`);
   offers.value = response.data;
 };
-const currentLocation = reactive({
-  lat: 0,
-  lng: 0,
-});
-
-const getCurrentLocation = () => {
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition((position) => {
-      console.log(position);
-      currentLocation.lat = position.coords.latitude;
-      currentLocation.lng = position.coords.longitude;
-    });
-  }
-};
 
 onMounted(() => {
   fetchOffers();
-  getCurrentLocation();
 });
 
 const router = useRouter();
