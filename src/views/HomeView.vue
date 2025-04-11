@@ -209,7 +209,19 @@ const formattedOffers = computed(() => {
         </hgroup>
       </template>
       <ul>
-        <li>{{ offer.tour.name }}</li>
+        <li>
+          <a
+            v-if="offer.tour.url"
+            :href="offer.tour.url"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {{ offer.tour.name }}
+          </a>
+          <template v-else>
+            {{ offer.tour.name }}
+          </template>
+        </li>
         <li>
           {{
             $t("Run tour TIME with X people", {
