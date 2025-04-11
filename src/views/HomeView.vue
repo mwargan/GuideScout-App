@@ -203,9 +203,23 @@ const formattedOffers = computed(() => {
             @<router-link :to="'/companies/' + offer.company.id">{{
               offer.company.name
             }}</router-link>
-            ({{ $t("min drive from your location", { min: offer.driveTime }) }})
+            <template v-if="offer.driveTime"
+              >({{
+                $t("min drive from your location", { min: offer.driveTime })
+              }})</template
+            >
           </p>
-          <h2>{{ formatPrice(offer.total_cost_per_guide ?? 0) }}</h2>
+          <h2
+            :data-tooltip="
+              formatPrice(offer.hourly_rate_eur_cents ?? 0) +
+              ' ' +
+              $t('per hour')
+            "
+            style="border-bottom: none; width: fit-content"
+          >
+            {{ formatPrice(offer.total_cost_per_guide ?? 0) }}
+            total
+          </h2>
         </hgroup>
       </template>
       <ul>
