@@ -17,10 +17,15 @@ export default class extends baseGate {
       .query({ name: "geolocation" })
       .then(async (result) => {
         if (result.state === "prompt") {
-          alert(
-            "You must give us location permissions to continue. Your location is used to show you the nearest tours available to you."
-          );
-          await store.fetchAndSaveUserLocation();
+          await store
+            .fetchAndSaveUserLocation()
+            .then(() => {})
+            .catch(() => {
+              alert(
+                "Error: we could not get your location. Your location is used to show you the nearest tours available to you."
+              );
+              return this.fail();
+            });
         } else if (result.state === "denied") {
           alert(
             "You did not give us location permissions. You must give us location permissions to continue. Your location is used to show you the nearest tours available to you."
