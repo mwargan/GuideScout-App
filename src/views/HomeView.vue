@@ -203,8 +203,8 @@ const formattedOffers = computed(() => {
             @<router-link :to="'/companies/' + offer.company.id">{{
               offer.company.name
             }}</router-link>
-            <template v-if="offer.driveTime"
-              >({{
+            <template v-if="offer.driveTime">
+              ({{
                 $t("min drive from your location", { min: offer.driveTime })
               }})</template
             >
