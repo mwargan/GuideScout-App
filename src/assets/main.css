@@ -726,3 +726,8 @@ button.danger {
     margin-left: calc((100vw - 75ch) / -2);
   }
 }
+
+ul,
+ol {
+  padding-inline-start: 1.5rem;
+}

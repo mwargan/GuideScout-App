@@ -162,7 +162,7 @@ const table = useVueTable({
     v-if="globalSearch"
   />
   <div class="overflow-auto">
-    <table>
+    <table class="striped">
       <thead>
         <tr
           v-for="headerGroup in table.getHeaderGroups()"

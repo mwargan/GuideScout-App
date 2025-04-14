@@ -187,6 +187,12 @@ const router = createRouter({
       },
       component: () => import("../views/AboutView.vue"),
     },
+    {
+      path: "/add-attribute",
+      name: "add-attribute",
+      component: () => import("../views/AddAttributeView.vue"),
+      props: true,
+    },
     // Example routes
     {
       path: "/examples/cartesio",
