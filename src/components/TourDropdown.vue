@@ -3,7 +3,7 @@ import { computed, ref, shallowRef } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import BaseForm from "@/forms/BaseForm.vue";
 import axios from "axios";
-import type { TourType } from "@/types/tour";
+import type { Tour } from "@/types/offer";
 
 const props = defineProps({
   companyId: {
@@ -12,7 +12,7 @@ const props = defineProps({
   },
 });
 
-const currentGeoResults = shallowRef<TourType[]>([]);
+const currentGeoResults = shallowRef<Tour[]>([]);
 const isLoadingGeoResults = ref(false);
 const isOpen = ref(false);
 
@@ -24,7 +24,7 @@ const getGeolocationData = async () => {
 
   const response = await axios.get(`/api/companies/${props.companyId}/tours`);
 
-  const json = (await response.data) as TourType[];
+  const json = (await response.data) as Tour[];
 
   currentGeoResults.value = json;
   isLoadingGeoResults.value = false;

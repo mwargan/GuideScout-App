@@ -3,7 +3,7 @@ import { computed, reactive, ref, shallowRef } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import BaseForm from "@/forms/BaseForm.vue";
 import axios from "axios";
-import type { TourType } from "@/types/tour";
+import type { Tour } from "@/types/offer";
 import AttributeDropdown from "@/components/AttributeDropdown.vue";
 import CompanyUserDropdown from "@/components/CompanyUserDropdown.vue";
 
@@ -24,7 +24,7 @@ const emit = defineEmits<{
 
 const platformFee = parseFloat(import.meta.env.VITE_PLATFORM_FEE_PERCENT);
 
-const currentTourResults = shallowRef<TourType[]>([]);
+const currentTourResults = shallowRef<Tour[]>([]);
 const isLoadingTourResults = ref(false);
 const isOpen = ref(false);
 
@@ -50,13 +50,13 @@ const getTourData = async () => {
 
   const response = await axios.get(`/api/companies/${props.companyId}/tours`);
 
-  const json = (await response.data) as TourType[];
+  const json = (await response.data) as Tour[];
 
   currentTourResults.value = json;
   isLoadingTourResults.value = false;
 };
 
-const selectedTourResult = ref({} as TourType | null);
+const selectedTourResult = ref({} as Tour | null);
 const selectedTourResultId = ref([] as string[]);
 const tourSearchTerm = ref("");
 
@@ -66,7 +66,7 @@ const tourRequiredAttributeNames = computed(() => {
   return tourRequiredAttributes.value.map((attrId) => {
     return currentTourResults.value
       .flatMap((tour) => tour.hard_required_guide_attributes)
-      .find((attr) => attr.id === attrId)?.name;
+      .find((attr) => attr && attr.id === attrId)?.name;
   });
 });
 
@@ -88,9 +88,9 @@ const selectResult = (result: string[]) => {
   }
 
   tourRequiredAttributes.value =
-    selectedTourResult.value.hard_required_guide_attributes.map(
+    selectedTourResult.value?.hard_required_guide_attributes?.map(
       (attr) => attr.id
-    );
+    ) ?? [];
 };
 
 const optionsToShow = computed(() => {

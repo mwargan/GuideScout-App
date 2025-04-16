@@ -13,7 +13,7 @@ export interface Offer {
   cancelled_at: Date | null;
   created_at: Date;
   updated_at: Date;
-  laravel_through_key: number;
+  laravel_through_key?: number;
   tour: Tour;
   assigned_company_resources: AssignedCompanyResource[];
   assigned_guides: AssignedGuide[];
