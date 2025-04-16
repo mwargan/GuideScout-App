@@ -8,7 +8,7 @@ import { ref } from "vue";
 import CardElement from "@/components/CardElement.vue";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { Offer } from "@/types/offer";
-import type { Company } from "@/types/user";
+import type { Company } from "@/types/company";
 import TourOffer from "@/components/TourOffer.vue";
 
 const userStore = useUserStore();

@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 import MapComponent from "@/components/MapComponent.vue";
 import { useUserStore } from "@/stores/user";
-import type { Company } from "@/types/user";
+import type { Company } from "@/types/company";
 
 const props = defineProps({
   /** The company ID */
