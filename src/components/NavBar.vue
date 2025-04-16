@@ -74,26 +74,60 @@ const blur = () => {
                 :src="user.user.gravatar"
               />
             </summary>
-            <ul @click="blur()" style="left: unset; right: 0">
+            <ul
+              @click="blur()"
+              style="left: unset; right: -3rem; min-width: 13rem"
+            >
               <li>
                 <router-link to="/settings">{{ $t("Settings") }}</router-link>
               </li>
               <li>
                 <router-link to="/logout">{{ $t("Logout") }}</router-link>
               </li>
-              <li v-if="user.user.companies?.length">
-                <hr />
-                <b>{{ $t("Manage companies") }}</b>
-              </li>
-              <template
-                v-for="company in user.user.companies"
-                :key="company.id"
-              >
-                <li v-if="company.pivot.role !== 'guide'">
-                  <router-link :to="'/companies/' + company.id + '/offers'">{{
-                    company.name
-                  }}</router-link>
+              <template v-if="user.user.companies?.length">
+                <li>
+                  <hr />
+                  <b>{{ $t("Manage company") }}</b>
                 </li>
+                <li>
+                  <router-link
+                    :to="'/companies/' + user.activeTeamId + '/offers/create'"
+                    >{{ $t("Create new offer") }}</router-link
+                  >
+                </li>
+                <li>
+                  <router-link
+                    :to="'/companies/' + user.activeTeamId + '/offers'"
+                    >{{ $t("See all offers") }}</router-link
+                  >
+                </li>
+                <li>
+                  <router-link
+                    :to="'/companies/' + user.activeTeamId + '/tours/create'"
+                    >{{ $t("Create new tour type") }}</router-link
+                  >
+                </li>
+                <template v-if="user.user.companies?.length > 1">
+                  <li>
+                    <hr />
+                    <b>{{ $t("Switch company") }}</b>
+                  </li>
+
+                  <template
+                    v-for="company in user.user.companies"
+                    :key="company.id"
+                  >
+                    <li
+                      v-if="company.pivot.role !== 'guide'"
+                      @click="user.setActiveTeam(company.id)"
+                    >
+                      <router-link
+                        :to="'/companies/' + company.id + '/offers'"
+                        >{{ company.name }}</router-link
+                      >
+                    </li>
+                  </template>
+                </template>
               </template>
             </ul>
           </details>

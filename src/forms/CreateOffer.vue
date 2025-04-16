@@ -71,7 +71,6 @@ const tourRequiredAttributeNames = computed(() => {
 });
 
 const selectResult = (result: string[]) => {
-  console.log(result);
   selectedTourResultId.value = result;
   formData.company_tour_id = result[0];
   // Close the dropdown

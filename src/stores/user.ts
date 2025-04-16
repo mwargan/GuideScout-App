@@ -12,6 +12,10 @@ export const useUserStore = defineStore("user", () => {
   const attemptedToFetchUser = ref(false);
   const location = ref(null as GeolocationPosition | null);
   const locationUpdatedAt = ref(null as Date | null);
+  const activeTeamId = ref(
+    localStorage.getItem("activeTeamId") as number | null
+  );
+
   const locationCacheTimeInSeconds = 30; // Minimum wait time in seconds before fetching the location again
 
   const $bus = useEventsBus();
@@ -40,6 +44,11 @@ export const useUserStore = defineStore("user", () => {
       const response = await axios.get("api/user");
       user.value = response.data;
       isAuthenticated.value = true;
+
+      if (user.value?.companies?.length === 1) {
+        setActiveTeam(user.value.companies[0].id);
+      }
+
       await getCsrfToken();
     } catch (error) {
       console.log(error);
@@ -636,6 +645,24 @@ export const useUserStore = defineStore("user", () => {
     return true;
   }
 
+  async function setActiveTeam(id: number) {
+    activeTeamId.value = id;
+    // Save in local storage
+    localStorage.setItem("activeTeamId", id.toString());
+  }
+
+  function getActiveTeam() {
+    if (activeTeamId.value && user.value?.companies?.length) {
+      const activeTeam = user.value.companies.find(
+        (company) => company.id === activeTeamId.value
+      );
+      if (activeTeam) {
+        return activeTeam;
+      }
+    }
+    return null;
+  }
+
   return {
     isAuthenticated,
     checkEmail,
@@ -666,5 +693,8 @@ export const useUserStore = defineStore("user", () => {
     verifyPhoneOtpCode,
     fetchUserLocation,
     uploadCV,
+    setActiveTeam,
+    activeTeamId,
+    getActiveTeam,
   };
 });
