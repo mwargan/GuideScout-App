@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
 import axios from "axios";
 import MapComponent from "@/components/MapComponent.vue";
 import { useUserStore } from "@/stores/user";
-import type { Tour } from "@/types/offer";
+import type { Offer, Tour } from "@/types/offer";
 import BaseButton from "@/components/BaseButton.vue";
+import TourOffer from "@/components/TourOffer.vue";
 
 const props = defineProps({
   companyId: {
@@ -67,6 +68,19 @@ onMounted(async () => {
   await fetchCurrentLocation();
   getDriveTimeData();
 });
+
+const formattedOffers = computed<Offer[]>(() => {
+  return (
+    tour.value?.future_offers?.map((item) => {
+      return {
+        ...item,
+        offer_id: item.id,
+        tour: tour.value as Tour,
+        company: tour.value?.company,
+      };
+    }) ?? []
+  );
+});
 </script>
 
 <template>
@@ -75,6 +89,35 @@ onMounted(async () => {
     <p>{{ tour.company?.name }}</p>
   </hgroup>
 
+  <nav
+    aria-label="Tab Navigation"
+    class="tab-nav"
+    style="width: 100%; white-space: nowrap"
+  >
+    <ul>
+      <li>
+        <a href="#start">Tour Start Point</a>
+      </li>
+      <li v-if="tour?.description">
+        <a href="#description">Description</a>
+      </li>
+      <li>
+        <a href="#duration">Duration</a>
+      </li>
+      <li>
+        <a href="#attributes">Required attributes</a>
+      </li>
+      <li v-if="tour?.url">
+        <a href="#website">Website</a>
+      </li>
+      <li v-if="formattedOffers?.length">
+        <a href="#offers">Offers</a>
+      </li>
+    </ul>
+  </nav>
+  <hr />
+
+  <h2 id="start">Start point</h2>
   <map-component
     class="full-width"
     v-if="tour?.company?.latitude && tour?.company?.longitude"
@@ -98,9 +141,11 @@ onMounted(async () => {
       },
     ]"
   />
+
+  <h2 id="description">Description</h2>
   <p v-if="tour?.description">{{ tour.description }}</p>
 
-  <h2>Duration</h2>
+  <h2 id="duration">Duration</h2>
   <p v-if="tour?.minutesDuration">{{ tour.minutesDuration }} minutes tour</p>
   <p v-if="tour?.prepMinutes">+ {{ tour.prepMinutes }} minutes prep time</p>
   <p v-if="tour?.cleanupMinutes">
@@ -111,21 +156,20 @@ onMounted(async () => {
     {{ tour.minutesDuration + tour.prepMinutes + tour.cleanupMinutes }} minutes
   </b>
 
-  <template v-if="tour?.hard_required_guide_attributes">
-    <h2>Required Guide Attributes</h2>
-    <ul>
-      <li
-        v-for="attribute in tour?.hard_required_guide_attributes"
-        :key="attribute.id"
-      >
-        <span :for="attribute.name">{{ attribute.type }}: </span>
-        <b>{{ attribute.name }}</b>
-      </li>
-    </ul>
-    <p>Offers for this tour may have additional attributes required.</p>
-  </template>
+  <h2 id="attributes">Required Guide Attributes</h2>
+  <ul v-if="tour?.hard_required_guide_attributes?.length">
+    <li
+      v-for="attribute in tour?.hard_required_guide_attributes"
+      :key="attribute.id"
+    >
+      <span :for="attribute.name">{{ attribute.type }}: </span>
+      <b>{{ attribute.name }}</b>
+    </li>
+  </ul>
+  <p>Offers for this tour may have additional attributes required.</p>
+
   <template v-if="tour?.url">
-    <h2>Tour Website</h2>
+    <h2 id="website">Tour Website</h2>
     <iframe
       :src="tour.url"
       width="100%"
@@ -136,5 +180,14 @@ onMounted(async () => {
     <base-button v-if="tour?.url" :href="tour.url" target="_blank">
       {{ $t("Open tour website") }}
     </base-button>
+  </template>
+
+  <template v-if="formattedOffers?.length">
+    <h2 id="offers">Offers</h2>
+    <tour-offer
+      :offer="offer"
+      v-for="offer in formattedOffers"
+      :key="offer.id"
+    />
   </template>
 </template>

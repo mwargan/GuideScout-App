@@ -53,7 +53,7 @@ body {
 }
 
 main {
-  gap: 8px;
+  gap: 1rem;
   display: flex;
   flex-direction: column;
   min-height: 83svh;
@@ -73,11 +73,13 @@ main>* {
 }
 
 main {
-  margin-top: calc(var(--pico-spacing) * 2);
+  /* margin-top: calc(var(--pico-spacing) * 2); */
+  margin-top: 0;
 }
 
 nav~main {
-  margin-top: var(--pico-spacing);
+  /* margin-top: var(--pico-spacing); */
+  margin-top: 0;
 }
 
 main~footer {
@@ -721,6 +723,8 @@ button.danger {
   .full-width {
 
     width: 100vw;
+
+    margin-inline: 0;
 
     /* We need to compute the negative left margin, which needs to break free from the 75ch limit on max-width in the body */
     margin-left: calc((100vw - 75ch) / -2);

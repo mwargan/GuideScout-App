@@ -76,7 +76,7 @@ const blur = () => {
             </summary>
             <ul
               @click="blur()"
-              style="left: unset; right: -3rem; min-width: 13rem"
+              style="left: unset; right: -1rem; min-width: 13rem"
             >
               <li>
                 <router-link to="/settings">{{ $t("Settings") }}</router-link>

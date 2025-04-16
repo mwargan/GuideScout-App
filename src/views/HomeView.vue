@@ -4,16 +4,12 @@ import { useUserStore } from "@/stores/user";
 import { Vue3Lottie } from "vue3-lottie";
 import radarJSON from "@/assets/lottie/radar.json";
 import axios from "axios";
-import { computed, ref } from "vue";
+import { ref } from "vue";
 import CardElement from "@/components/CardElement.vue";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { Offer } from "@/types/offer";
 import type { Company } from "@/types/user";
-import { formatDateTimeToTime } from "@/helpers/date";
-import BaseModal from "@/components/modals/BaseModal.vue";
-import BaseButton from "@/components/BaseButton.vue";
-import Markdown from "vue3-markdown-it";
-import source from "./IndependentContractorAgreement.md?raw";
+import TourOffer from "@/components/TourOffer.vue";
 
 const userStore = useUserStore();
 
@@ -27,8 +23,6 @@ const userLocation = ref(
   } | null
 );
 
-const isAcceptingOffer = ref(false);
-
 const getTourOffers = async () => {
   userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
@@ -40,6 +34,9 @@ const getTourOffers = async () => {
 
   const results = await Promise.all(
     tourOffers.value.map(async (offer) => {
+      if (!offer.company) {
+        return { id: offer.id, time: 0 };
+      }
       const time = await computeDriveTime(offer.company);
       return { id: offer.id, time };
     })
@@ -61,59 +58,6 @@ const getCurrentTour = async () => {
 
 getTourOffers();
 getCurrentTour();
-
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat("en-GB", {
-    style: "currency",
-    currency: "EUR",
-  }).format(price / 100);
-};
-
-const getTourDuration = (offer: any) => {
-  const start = new Date(offer.starts_at);
-  const end = new Date(offer.ends_at);
-
-  // Format using JS date functions
-  return `${formatDateTimeToTime(start)} - ${formatDateTimeToTime(end)}`;
-};
-
-const getTourRunningTimeInHours = (offer: any) => {
-  const start = new Date(offer.starts_at);
-  const end = new Date(offer.ends_at);
-
-  return (end.getTime() - start.getTime()) / 1000 / 60 / 60;
-};
-
-const computePrice = (offer: any) => {
-  return offer.hourly_rate_eur_cents * getTourRunningTimeInHours(offer);
-};
-
-const acceptTourOffer = async (offer: any) => {
-  isAcceptingOffer.value = true;
-
-  // First, send the users location to the backend
-  userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
-
-  const response = await axios
-    .post(
-      `/api/users/${userStore.user?.id}/tours/offers/${offer.offer_id}/accept`
-    )
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("Failed to match tour - " + error.response.data.message);
-    });
-
-  if (response && response.data) {
-    alert("Tour matched!");
-    getTourOffers();
-    getCurrentTour();
-  }
-
-  isAcceptingOffer.value = false;
-};
 
 const computeDriveTime = async (company: Company) => {
   if (!userLocation.value) {
@@ -137,15 +81,6 @@ const computeDriveTime = async (company: Company) => {
 };
 
 const driveTimes = ref<Record<number, number>>({});
-
-const formattedOffers = computed(() => {
-  return tourOffers.value.map((offer) => {
-    return {
-      ...offer,
-      driveTime: driveTimes.value[offer.id] ?? null, // Default to null if not fetched yet
-    };
-  });
-});
 </script>
 
 <template>
@@ -183,131 +118,15 @@ const formattedOffers = computed(() => {
     <referral-link />
   </div>
 
-  <div v-else-if="formattedOffers.length > 0">
-    <card-element v-for="offer in formattedOffers" :key="offer.id">
-      <template #header>
-        <hgroup>
-          <p>
-            {{
-              $t("Meet DATETIME", {
-                datetime: new Date(offer.suggested_in_office_at).toLocaleString(
-                  $i18n.locale,
-                  {
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    weekday: "short",
-                  }
-                ),
-              })
-            }}
-            @<router-link :to="'/companies/' + offer.company.id">{{
-              offer.company.name
-            }}</router-link>
-            <template v-if="offer.driveTime">
-              ({{
-                $t("min drive from your location", { min: offer.driveTime })
-              }})</template
-            >
-          </p>
-          <h2
-            :data-tooltip="
-              formatPrice(offer.hourly_rate_eur_cents ?? 0) +
-              ' ' +
-              $t('per hour')
-            "
-            style="border-bottom: none; width: fit-content"
-          >
-            {{ formatPrice(offer.total_cost_per_guide ?? 0) }}
-            total
-          </h2>
-        </hgroup>
-      </template>
-      <ul>
-        <li>
-          <router-link
-            :to="`/companies/${offer.company.id}/tours/${offer.tour.id}`"
-          >
-            {{ offer.tour.name }}
-          </router-link>
-        </li>
-        <li>
-          {{
-            $t("Run tour TIME with X people", {
-              time: getTourDuration(offer),
-              people:
-                offer.total_pax > 0
-                  ? offer.total_pax
-                  : offer.tour.max_pax
-                  ? "up to " + offer.tour.max_pax
-                  : "an unknown number of",
-            })
-          }}
-        </li>
-      </ul>
-      <p v-if="offer.description">
-        {{ offer.description }}
-      </p>
-      <template #footer>
-        <base-modal title="Accept tour offer" triggerText="Match">
-          <template #trigger="{ openModal, isOpen }">
-            <base-button
-              @click="openModal()"
-              :aria-busy="isOpen"
-              style="width: 100%"
-            >
-              {{ $t("Match") }}
-            </base-button>
-          </template>
-          <p>
-            {{ $t("You will be obligated to run this tour.") }}
-            {{
-              $t(
-                "No cancellations are allowed, you must show up at the time specified."
-              )
-            }}
-            {{
-              $t(
-                "Not showing up may result in you being banned from the platform."
-              )
-            }}
-          </p>
-          <details>
-            <summary>{{ $t("Independent Contractor Agreement") }}</summary>
-            <Markdown :source="source" />
-          </details>
-          <p>
-            {{
-              $t(
-                "By accepting this offer, you agree to the Independent Contractor Agreement, in addition to previously accepted terms and conditions."
-              )
-            }}
-          </p>
-
-          <template #footer="{ closeModal, modalId }">
-            <base-button
-              class="secondary"
-              :data-target="modalId"
-              @click.prevent="closeModal()"
-              :disabled="isAcceptingOffer"
-            >
-              {{ $t("Cancel") }}
-            </base-button>
-            <base-button
-              :data-target="modalId"
-              @click.prevent="
-                acceptTourOffer(offer);
-                closeModal();
-              "
-              :disabled="isAcceptingOffer"
-            >
-              {{ $t("Aceept tour offer") }}
-            </base-button>
-          </template>
-        </base-modal>
-      </template>
-    </card-element>
-  </div>
-  <div v-else>
+  <template v-else-if="tourOffers.length > 0">
+    <tour-offer
+      :offer="offer"
+      :driveTime="driveTimes[offer.id] ?? null"
+      v-for="offer in tourOffers"
+      :key="offer.id"
+    />
+  </template>
+  <template v-else>
     <div class="empty-state">
       <Vue3Lottie :animationData="radarJSON" :height="200" :width="200" />
       <b>{{ $t("Looking for tours around you") }}</b>
@@ -316,7 +135,7 @@ const formattedOffers = computed(() => {
 
     <p>{{ $t("Why not refer a friend to earn some money?") }}</p>
     <referral-link />
-  </div>
+  </template>
 </template>
 <style scoped>
 .empty-state {

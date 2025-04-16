@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useUserStore } from "../stores/user";
+import BaseButton from "./BaseButton.vue";
 
 const userStore = useUserStore();
 
@@ -26,12 +27,14 @@ const copyUrl = () => {
 };
 </script>
 <template>
-  <input
-    type="text"
-    :value="`https://app.guidescout.net/sign-up-as-guide?referral=${referral}`"
-    readonly
-  />
-  <button @click="copyUrl">
-    {{ copiedTimeout ? $t("Copied!") : $t("Copy link") }}
-  </button>
+  <div role="group">
+    <input
+      type="text"
+      :value="`https://app.guidescout.net/sign-up-as-guide?referral=${referral}`"
+      readonly
+    />
+    <base-button @click="copyUrl" style="white-space: nowrap">
+      {{ copiedTimeout ? $t("Copied!") : $t("Copy link") }}
+    </base-button>
+  </div>
 </template>
