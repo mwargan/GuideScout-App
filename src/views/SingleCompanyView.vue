@@ -33,7 +33,7 @@ const getDriveTimeData = async () => {
     return;
   }
 
-  if (!company.value.latitude || !company.value.longitude) {
+  if (!company.value?.latitude || !company.value?.longitude) {
     return;
   }
 
