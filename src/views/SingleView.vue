@@ -53,8 +53,8 @@ const getDriveTimeToOffice = () => {
         lon: pos.longitude,
       },
       destination: {
-        lat: data.value[0].company.latitude,
-        lon: data.value[0].company.longitude,
+        lat: data.value[0].company?.latitude,
+        lon: data.value[0].company?.longitude,
       },
     };
     const response = await axios.get(
@@ -317,7 +317,7 @@ const screens = computed(() => {
         {
           title: "Open Company Page",
           action: () => {
-            router.push(`/companies/${selectedTour.value?.company.id}`);
+            router.push(`/companies/${selectedTour.value?.company?.id}`);
           },
         },
       ],
