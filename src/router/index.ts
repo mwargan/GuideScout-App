@@ -141,6 +141,22 @@ const router = createRouter({
     },
 
     {
+      path: "/companies/:companyId/tours/:tourId",
+      name: "tour-view",
+      component: () => import("../views/SingleTourView.vue"),
+      meta: {
+        gates: [
+          "auth",
+          "confirmedEmail",
+          "confirmedPhone",
+          "hasGivenLocationPermission",
+          "hasValidCV",
+        ],
+      },
+      props: true,
+    },
+
+    {
       path: "/offers/:offerId/passengers/create",
       name: "offer-passengers-create",
       component: () => import("../views/Company/CreateOrEditPaxView.vue"),

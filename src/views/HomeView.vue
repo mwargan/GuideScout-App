@@ -224,17 +224,11 @@ const formattedOffers = computed(() => {
       </template>
       <ul>
         <li>
-          <a
-            v-if="offer.tour.url"
-            :href="offer.tour.url"
-            target="_blank"
-            rel="noopener noreferrer"
+          <router-link
+            :to="`/companies/${offer.company.id}/tours/${offer.tour.id}`"
           >
             {{ offer.tour.name }}
-          </a>
-          <template v-else>
-            {{ offer.tour.name }}
-          </template>
+          </router-link>
         </li>
         <li>
           {{

@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue";
 import axios from "axios";
 import MapComponent from "@/components/MapComponent.vue";
 import { useUserStore } from "@/stores/user";
+import type { Company } from "@/types/user";
 
 const props = defineProps({
   /** The company ID */
@@ -14,7 +15,7 @@ const props = defineProps({
 
 const userStore = useUserStore();
 
-const company = ref();
+const company = ref<Company>();
 const currentLocation = ref();
 const driveInfo = ref();
 
@@ -95,4 +96,13 @@ onMounted(async () => {
   <a v-if="company?.website" :href="company.website" target="_blank">
     {{ company.website }}
   </a>
+
+  <h2>Tours</h2>
+  <ul v-if="company?.tours?.length">
+    <li v-for="tour in company?.tours" :key="tour.id">
+      <router-link :to="`/companies/${company.id}/tours/${tour.id}`">
+        {{ tour.name }}
+      </router-link>
+    </li>
+  </ul>
 </template>

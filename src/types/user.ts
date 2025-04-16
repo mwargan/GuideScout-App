@@ -1,3 +1,4 @@
+import type { Tour } from "./offer";
 import type { Location } from "./tour";
 
 export interface User {
@@ -92,6 +93,7 @@ export interface Company {
   latitude: number;
   longitude: number;
   pivot: Pivot;
+  tours?: Tour[];
 }
 
 export enum Role {
