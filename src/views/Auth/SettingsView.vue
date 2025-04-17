@@ -10,6 +10,7 @@ import { ref } from "vue";
 import { Vue3Lottie } from "vue3-lottie";
 import radarJSON from "@/assets/lottie/verified.json";
 import UploadCV from "@/forms/UploadCV.vue";
+import ConnectWithBokun from "@/forms/ConnectWithBokun.vue";
 
 const userStore = useUserStore();
 
@@ -40,7 +41,11 @@ const handleDeleteToken = (id: string) => {
   accessTokens.value.splice(accessTokenIndex);
 };
 
-const showDeveloperSettings = ref(false);
+const showDeveloperSettings = ref(
+  // If the url has the query param ?showDeveloperSettings=true
+  new URLSearchParams(window.location.search).get("showDeveloperSettings") ===
+    "true"
+);
 </script>
 <template>
   <h1>{{ $t("My Account") }}</h1>
@@ -125,5 +130,13 @@ const showDeveloperSettings = ref(false);
     </template>
     <p v-else>{{ $t("You have no API access tokens.") }}</p>
     <personal-access-tokens @created="handleCreatedToken" />
+  </card-element>
+  <card-element
+    :titleHeadingLevel="2"
+    title="Integrations"
+    v-if="showDeveloperSettings"
+  >
+    <h3>Bokun</h3>
+    <connect-with-bokun />
   </card-element>
 </template>
