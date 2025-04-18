@@ -14,7 +14,7 @@ const userStore = useUserStore();
 
 const steps = [
   {
-    title: "Welcome to GuideScout! Upload your CV to start",
+    title: "Welcome to GuideScout! Start with a CV",
     subtitle: "Let's get you started on your journey.",
   },
   { title: "What’s your name?", subtitle: "Hey there, guide!" },
@@ -124,21 +124,18 @@ const handleSubmit = async () => {
   console.log("Form data submitted successfully");
   // If we have a CV file, upload it
   if (cvFile.value) {
-    const response = await userStore.uploadCV(cvFile.value);
-    if (response !== true) {
-      console.error("Error uploading CV");
-      alert("Error uploading CV");
-      // Go to first step
-      currentStep.value = 1;
-      emit("stepChange", {
-        stepData: steps[currentStep.value],
-        currentStep: currentStep.value,
-        totalSteps: steps.length,
-      });
-      return;
+    try {
+      const response = await userStore.uploadCV(cvFile.value);
+      if (response !== true) {
+        throw new Error("Error uploading CV, response was not true");
+      }
+      console.log("CV uploaded successfully");
+    } catch (error) {
+      console.error("Error uploading CV", error);
+      alert("Error uploading CV - you can upload it later.");
     }
-    console.log("CV uploaded successfully");
   }
+
   emit("success");
 };
 
