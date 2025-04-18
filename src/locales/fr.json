@@ -79,5 +79,6 @@
     "Run tour TIME with X people": "Exécutez la visite {time} avec {people} personnes",
     "Match": "Match",
     "min drive from your location": "{min} min de route de votre emplacement",
-    "Meet DATETIME": "Rencontrez {datetime}"
+    "Meet DATETIME": "Rencontrez {datetime}",
+    "Connect with PROVIDER": "Connectez-vous avec {provider}"
 }

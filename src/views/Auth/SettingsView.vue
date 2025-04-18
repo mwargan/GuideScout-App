@@ -10,7 +10,7 @@ import { ref } from "vue";
 import { Vue3Lottie } from "vue3-lottie";
 import radarJSON from "@/assets/lottie/verified.json";
 import UploadCV from "@/forms/UploadCV.vue";
-import ConnectWithBokun from "@/forms/ConnectWithBokun.vue";
+import ConnectWithProvider from "@/forms/ConnectWithProvider.vue";
 
 const userStore = useUserStore();
 
@@ -137,15 +137,28 @@ const showDeveloperSettings = ref(
     v-if="showDeveloperSettings"
   >
     <h3>Bokun</h3>
-    <connect-with-bokun
+    <connect-with-provider
       v-if="
         !userStore.user?.credentials.some(
           (credential) => credential.provider === 'bokun'
         )
       "
+      provider="bokun"
     />
     <p v-else>
       {{ $t("You are already connected to Bokun.") }}
+    </p>
+    <h3>LinkedIn</h3>
+    <connect-with-provider
+      v-if="
+        !userStore.user?.credentials.some(
+          (credential) => credential.provider === 'linkedin-openid'
+        )
+      "
+      provider="linkedin-openid"
+    />
+    <p v-else>
+      {{ $t("You are already connected to LinkedIn.") }}
     </p>
   </card-element>
 </template>

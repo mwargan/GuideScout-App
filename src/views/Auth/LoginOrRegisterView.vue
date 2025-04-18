@@ -2,7 +2,7 @@
 import CardElement from "@/components/CardElement.vue";
 import LoginOrRegister from "@/forms/LoginOrRegister.vue";
 import router from "@/router";
-import ConnectWithBokun from "@/forms/ConnectWithBokun.vue";
+import ConnectWithProvider from "@/forms/ConnectWithProvider.vue";
 import { useUserStore } from "@/stores/user";
 
 const redirect = () => {
@@ -23,12 +23,22 @@ const showDeveloperSettings =
   <card-element :titleHeadingLevel="2" :title="$t('Connect')">
     <login-or-register @success="redirect" />
   </card-element>
-  <connect-with-bokun
+  <connect-with-provider
     v-if="
       showDeveloperSettings &&
       !userStore.user?.credentials.some(
         (credential) => credential.provider === 'bokun'
       )
     "
+    provider="bokun"
+  />
+  <connect-with-provider
+    v-if="
+      showDeveloperSettings &&
+      !userStore.user?.credentials.some(
+        (credential) => credential.provider === 'linkedin-openid'
+      )
+    "
+    provider="linkedin-openid"
   />
 </template>
