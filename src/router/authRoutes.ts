@@ -88,6 +88,12 @@ export default [
     name: "confirm",
     component: () => import("../views/ConfirmView.vue"),
   },
+  {
+    path: "/oauth/:status",
+    name: "oauth",
+    component: () => import("../views/OauthView.vue"),
+    props: true,
+  },
 ];
 
 const logout = async (next: NavigationGuardNext) => {

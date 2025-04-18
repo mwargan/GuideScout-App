@@ -2,11 +2,20 @@
 import CardElement from "@/components/CardElement.vue";
 import LoginOrRegister from "@/forms/LoginOrRegister.vue";
 import router from "@/router";
+import ConnectWithBokun from "@/forms/ConnectWithBokun.vue";
+import { useUserStore } from "@/stores/user";
 
 const redirect = () => {
   // Redirect to the home page
   router.push((router.currentRoute.value.query.redirect as string) ?? "/");
 };
+
+const userStore = useUserStore();
+
+const showDeveloperSettings =
+  // If the url has the query param ?showDeveloperSettings=true
+  new URLSearchParams(window.location.search).get("showDeveloperSettings") ===
+  "true";
 </script>
 
 <template>
@@ -14,4 +23,12 @@ const redirect = () => {
   <card-element :titleHeadingLevel="2" :title="$t('Connect')">
     <login-or-register @success="redirect" />
   </card-element>
+  <connect-with-bokun
+    v-if="
+      showDeveloperSettings &&
+      !userStore.user?.credentials.some(
+        (credential) => credential.provider === 'bokun'
+      )
+    "
+  />
 </template>

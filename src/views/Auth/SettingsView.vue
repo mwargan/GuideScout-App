@@ -137,6 +137,15 @@ const showDeveloperSettings = ref(
     v-if="showDeveloperSettings"
   >
     <h3>Bokun</h3>
-    <connect-with-bokun />
+    <connect-with-bokun
+      v-if="
+        !userStore.user?.credentials.some(
+          (credential) => credential.provider === 'bokun'
+        )
+      "
+    />
+    <p v-else>
+      {{ $t("You are already connected to Bokun.") }}
+    </p>
   </card-element>
 </template>

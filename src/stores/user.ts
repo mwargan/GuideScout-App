@@ -1,7 +1,7 @@
 import { type Ref, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
-import type { PersonalAccessToken, User } from "@/types/user";
+import type { Credential, PersonalAccessToken, User } from "@/types/user";
 import { eventTypes, useEventsBus } from "@/eventBus/events";
 
 export const useUserStore = defineStore("user", () => {
@@ -125,6 +125,24 @@ export const useUserStore = defineStore("user", () => {
     } finally {
       isLoading.value = false;
     }
+  }
+
+  /**
+   * Log in the user using an external provider
+   *
+   * @param {Credential['provider']} provider
+   * @return {*}
+   */
+  async function loginWithProvider(provider: Credential["provider"]) {
+    const baseUrl = import.meta.env.VITE_API_URL;
+    const redirectUrl = `${baseUrl}${provider}/auth/callback`;
+    alert(redirectUrl);
+
+    const url = `${baseUrl}${provider}/auth/redirect?redirect=${encodeURIComponent(
+      redirectUrl
+    )}`;
+    // Go to the url
+    window.open(url, "_self");
   }
 
   /**
@@ -696,5 +714,6 @@ export const useUserStore = defineStore("user", () => {
     setActiveTeam,
     activeTeamId,
     getActiveTeam,
+    loginWithProvider,
   };
 });

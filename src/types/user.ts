@@ -33,6 +33,18 @@ export interface User {
   longitude: number | null;
   latest_location: Location | null;
   latest_cv_status: "pending" | "accepted" | "rejected" | null;
+  credentials: Credential[];
+}
+
+export interface Credential {
+  id: number;
+  user_id: number;
+  external_user_id: string;
+  provider: string;
+  scopes: string | null;
+  meta: string | null;
+  created_at: Date;
+  updated_at: Date;
 }
 
 export interface GuideProfile {
