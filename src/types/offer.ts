@@ -68,7 +68,7 @@ export interface Tour {
   max_pax: number | null;
   min_pax: number | null;
   company?: Company;
-  hard_required_guide_attributes?: Attribute[];
+  required_attributes?: Attribute[];
   offers?: Offer[];
   future_offers?: Offer[];
 }

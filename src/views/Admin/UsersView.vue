@@ -162,7 +162,7 @@ const userMarkers = computed(() => {
       // Attributes need to be passed as a raw ColumnDef
       {
         type: 'raw',
-        value: columnHelper.accessor('user_attributes', {
+        value: columnHelper.accessor('model_attributes_pivot', {
           header: 'Attributes',
           cell: (info) => {
             return h(AttributeDropdown, {

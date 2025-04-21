@@ -73,7 +73,7 @@ const showDeveloperSettings = ref(
     />
 
     <template
-      v-for="{ attribute } in userStore.user?.user_attributes"
+      v-for="{ attribute } in userStore.user?.model_attributes_pivot"
       :key="attribute.id"
     >
       <label :for="attribute.name">{{ attribute.type }}</label>

@@ -82,7 +82,10 @@ onMounted(async () => {
   </hgroup>
 
   <ul>
-    <li v-for="{ attribute } in user?.user_attributes" :key="attribute.id">
+    <li
+      v-for="{ attribute } in user?.model_attributes_pivot"
+      :key="attribute.id"
+    >
       <span :for="attribute.name">{{ attribute.type }}: </span>
       <b>{{ attribute.name }}</b>
     </li>

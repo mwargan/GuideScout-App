@@ -157,11 +157,8 @@ const formattedOffers = computed<Offer[]>(() => {
   </b>
 
   <h2 id="attributes">Required Guide Attributes</h2>
-  <ul v-if="tour?.hard_required_guide_attributes?.length">
-    <li
-      v-for="attribute in tour?.hard_required_guide_attributes"
-      :key="attribute.id"
-    >
+  <ul v-if="tour?.required_attributes?.length">
+    <li v-for="attribute in tour?.required_attributes" :key="attribute.id">
       <span :for="attribute.name">{{ attribute.type }}: </span>
       <b>{{ attribute.name }}</b>
     </li>

@@ -65,7 +65,7 @@ const tourRequiredAttributes = ref([] as number[]);
 const tourRequiredAttributeNames = computed(() => {
   return tourRequiredAttributes.value.map((attrId) => {
     return currentTourResults.value
-      .flatMap((tour) => tour.hard_required_guide_attributes)
+      .flatMap((tour) => tour.required_attributes)
       .find((attr) => attr && attr.id === attrId)?.name;
   });
 });
@@ -88,9 +88,7 @@ const selectResult = (result: string[]) => {
   }
 
   tourRequiredAttributes.value =
-    selectedTourResult.value?.hard_required_guide_attributes?.map(
-      (attr) => attr.id
-    ) ?? [];
+    selectedTourResult.value?.required_attributes?.map((attr) => attr.id) ?? [];
 };
 
 const optionsToShow = computed(() => {

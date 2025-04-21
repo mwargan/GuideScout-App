@@ -1,5 +1,5 @@
 import type { Company } from "./company";
-import type { Location } from "./tour";
+import type { Attribute, Location } from "./tour";
 
 export interface User {
   id?: number;
@@ -26,7 +26,7 @@ export interface User {
   potential_earnings_from_referrals?: number;
   referral_code: string | null;
   guide_profile?: GuideProfile;
-  user_attributes?: UserAttribute[];
+  model_attributes_pivot?: UserAttribute[];
   companies?: Company[];
   gravatar: string;
   latitude: number | null;
@@ -95,13 +95,4 @@ export interface UserAttribute {
   created_at: Date;
   updated_at: Date;
   attribute: Attribute;
-}
-
-export interface Attribute {
-  id: number;
-  name: string;
-  type: string;
-  self_assignable: number;
-  created_at: Date;
-  updated_at: Date;
 }

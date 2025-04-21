@@ -74,10 +74,9 @@ const fetchTour = async () => {
     formData.minutesDuration = response.data.minutesDuration;
     formData.prepMinutes = response.data.prepMinutes;
     formData.cleanupMinutes = response.data.cleanupMinutes;
-    formData.requiredAttributeIds =
-      response.data.hard_required_guide_attributes.map(
-        (attr: { id: number }) => `${attr.id}`
-      );
+    formData.requiredAttributeIds = response.data.required_attributes.map(
+      (attr: { id: number }) => `${attr.id}`
+    );
     formData.description = response.data.description;
   }
 };
