@@ -25,6 +25,11 @@ const steps = [
   { title: "What languages can you speak?", subtitle: "Tell us about you." },
   { title: "What are your qualifications?", subtitle: "Tell us about you." },
   {
+    title: "What certifications do you have?",
+    subtitle: "Tell us about you.",
+  },
+  { title: "What are your skills?", subtitle: "Tell us about you." },
+  {
     title: "How can you be reached?",
     subtitle: "Finish setting up your GuideScout account.",
   },
@@ -40,6 +45,8 @@ const formData = reactive({
   city: "",
   languages: [] as string[],
   qualifications: [] as string[],
+  certifications: [] as string[],
+  skills: [] as string[],
   email: "",
   phone: "",
   referral: router.currentRoute.value.query.referral as string,
@@ -51,6 +58,8 @@ const formErrors = reactive({
   city: false,
   languages: false,
   qualifications: false,
+  certifications: false,
+  skills: false,
   email: false,
   phone: false,
   invalidEmail: false,
@@ -70,13 +79,28 @@ const qualifications = computed(() => {
     .map((attribute) => attribute.name);
 });
 
+const certifications = computed(() => {
+  return allAttributes.value
+    ?.filter((attribute) => attribute.type === "certification")
+    .map((attribute) => attribute.name);
+});
+
+const skills = computed(() => {
+  return allAttributes.value
+    ?.filter((attribute) => attribute.type === "skill")
+    .map((attribute) => attribute.name);
+});
+
 const isLastStep = computed(() => currentStep.value === steps.length - 1);
 
 const allAttributes = ref<Attribute[] | null>(null);
 
 const getAllAttributes = () => {
   return axios.get("/api/attributes").then((response) => {
-    allAttributes.value = response.data;
+    allAttributes.value = response.data.filter((attribute: Attribute) => {
+      // Filtering the one that contains the word Test
+      return !attribute.name.toLowerCase().includes("test");
+    });
   });
 };
 
@@ -104,6 +128,8 @@ const handleSubmit = async () => {
     formData.city,
     formData.languages,
     formData.qualifications,
+    formData.certifications,
+    formData.skills,
     formData.referral
   );
 
@@ -373,8 +399,44 @@ const parseCv = async (file: File): Promise<ParsedCV | null> => {
       </div>
     </fieldset>
 
-    <!-- Step 5: Contact Info -->
+    <!-- Step 5: Certifications -->
     <fieldset :class="{ hidden: currentStep !== 5 }">
+      <label for="certifications" class="sr-only">Certifications</label>
+      <div class="flex flex-wrap gap-2 flex-col">
+        <label v-for="certification in certifications" :key="certification">
+          <input
+            type="checkbox"
+            :value="certification"
+            v-model="formData.certifications"
+            class="mr-2"
+          />
+          {{ certification }}
+        </label>
+      </div>
+      <div v-if="formErrors.certifications">
+        Please select at least one certification.
+      </div>
+    </fieldset>
+
+    <!-- Step 6: Skills -->
+    <fieldset :class="{ hidden: currentStep !== 6 }">
+      <label for="skills" class="sr-only">Skills</label>
+      <div class="flex flex-wrap gap-2 flex-col">
+        <label v-for="skill in skills" :key="skill">
+          <input
+            type="checkbox"
+            :value="skill"
+            v-model="formData.skills"
+            class="mr-2"
+          />
+          {{ skill }}
+        </label>
+      </div>
+      <div v-if="formErrors.skills">Please select at least one skill.</div>
+    </fieldset>
+
+    <!-- Step 7: Contact Info -->
+    <fieldset :class="{ hidden: currentStep !== 7 }">
       <label for="email_address">Email Address</label>
       <input
         id="email_address"

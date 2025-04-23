@@ -163,6 +163,8 @@ export const useUserStore = defineStore("user", () => {
     city: string | null = null,
     languages: string[] = [],
     qualifications: string[] = [],
+    certifications: string[] = [],
+    skills: string[] = [],
     referralCode: string | null = null
   ) {
     // Check if the email is valid
@@ -199,6 +201,8 @@ export const useUserStore = defineStore("user", () => {
         city,
         languages,
         qualifications,
+        certifications,
+        skills,
         referral_code: referralCode,
       });
       await getUser();
