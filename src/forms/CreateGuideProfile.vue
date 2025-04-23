@@ -30,6 +30,10 @@ const steps = [
   },
   { title: "What are your skills?", subtitle: "Tell us about you." },
   {
+    title: "Do you have at least 1 year experience in these?",
+    subtitle: "Tell us about you.",
+  },
+  {
     title: "How can you be reached?",
     subtitle: "Finish setting up your GuideScout account.",
   },
@@ -47,6 +51,7 @@ const formData = reactive({
   qualifications: [] as string[],
   certifications: [] as string[],
   skills: [] as string[],
+  experiences: [] as string[],
   email: "",
   phone: "",
   referral: router.currentRoute.value.query.referral as string,
@@ -60,6 +65,7 @@ const formErrors = reactive({
   qualifications: false,
   certifications: false,
   skills: false,
+  experiences: false,
   email: false,
   phone: false,
   invalidEmail: false,
@@ -88,6 +94,12 @@ const certifications = computed(() => {
 const skills = computed(() => {
   return allAttributes.value
     ?.filter((attribute) => attribute.type === "skill")
+    .map((attribute) => attribute.name);
+});
+
+const experiences = computed(() => {
+  return allAttributes.value
+    ?.filter((attribute) => attribute.type === "experience")
     .map((attribute) => attribute.name);
 });
 
@@ -130,6 +142,7 @@ const handleSubmit = async () => {
     formData.qualifications,
     formData.certifications,
     formData.skills,
+    formData.experiences,
     formData.referral
   );
 
@@ -435,8 +448,27 @@ const parseCv = async (file: File): Promise<ParsedCV | null> => {
       <div v-if="formErrors.skills">Please select at least one skill.</div>
     </fieldset>
 
-    <!-- Step 7: Contact Info -->
+    <!-- Step 7: Experience -->
     <fieldset :class="{ hidden: currentStep !== 7 }">
+      <label for="experiences" class="sr-only">Experience</label>
+      <div class="flex flex-wrap gap-2 flex-col">
+        <label v-for="experience in experiences" :key="experience">
+          <input
+            type="checkbox"
+            :value="experience"
+            v-model="formData.experiences"
+            class="mr-2"
+          />
+          {{ experience }}
+        </label>
+      </div>
+      <div v-if="formErrors.experiences">
+        Please select at least one experience.
+      </div>
+    </fieldset>
+
+    <!-- Step 7: Contact Info -->
+    <fieldset :class="{ hidden: currentStep !== 8 }">
       <label for="email_address">Email Address</label>
       <input
         id="email_address"
