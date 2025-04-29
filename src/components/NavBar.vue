@@ -9,6 +9,7 @@ const user = useUserStore();
 const detailsElement = ref();
 
 const appName = import.meta.env.VITE_APP_NAME;
+const appUrl = import.meta.env.VITE_API_URL;
 
 const blur = () => {
   detailsElement.value.removeAttribute("open");
@@ -27,14 +28,16 @@ const blur = () => {
           >
         </li>
         <li>
-          <base-badge class="success rectangular">
-            {{
-              new Intl.NumberFormat(undefined, {
-                style: "currency",
-                currency: "EUR",
-              }).format(user.user.earnings ? user.user.earnings / 100 : 0)
-            }}</base-badge
-          >
+          <a :href="`${appUrl}stripe/board`" target="_blank">
+            <base-badge class="success rectangular">
+              {{
+                new Intl.NumberFormat(undefined, {
+                  style: "currency",
+                  currency: "EUR",
+                }).format(user.user.earnings ? user.user.earnings / 100 : 0)
+              }}</base-badge
+            >
+          </a>
 
           <router-link
             to="/referrals"
