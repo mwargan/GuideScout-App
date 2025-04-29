@@ -2,7 +2,7 @@ import type { Company } from "./company";
 import type { Attribute, Location } from "./tour";
 
 export interface User {
-  id?: number;
+  readonly id?: number;
   username: string;
   name: string | null;
   surname: string | null;
@@ -11,7 +11,7 @@ export interface User {
   phone_verified_at: string | null;
   avatar: string | null;
   seen_at: Date;
-  created_at: Date;
+  readonly created_at: Date;
   updated_at: Date;
   description: string | null;
   is_public: boolean;
@@ -28,7 +28,7 @@ export interface User {
   guide_profile?: GuideProfile;
   model_attributes_pivot?: UserAttribute[];
   companies?: Company[];
-  gravatar: string;
+  readonly gravatar: string;
   latitude: number | null;
   longitude: number | null;
   latest_location: Location | null;

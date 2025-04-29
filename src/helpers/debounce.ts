@@ -9,10 +9,14 @@
  * @param delay - The delay in milliseconds
  * @param leading - If the function should be called on the leading edge or the trailing edge (first-in triggers the function vs last-in triggers the function)
  */
-export const debounce = (fn: Function, delay = 300, leading = false) => {
+export const debounce = <F extends (...args: any[]) => any>(
+  fn: F,
+  delay = 300,
+  leading = false
+) => {
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
 
-  return (...args: any[]) => {
+  return (...args: Parameters<F>) => {
     if (leading && !timeoutId) {
       fn(...args);
     }

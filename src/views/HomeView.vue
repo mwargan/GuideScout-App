@@ -13,8 +13,8 @@ import TourOffer from "@/components/TourOffer.vue";
 
 const userStore = useUserStore();
 
-const tourOffers = ref([] as Offer[]);
-const currentTour = ref(null as Offer | null);
+const tourOffers = ref<Readonly<Offer>[]>([]);
+const currentTour = ref<Readonly<Offer> | null>(null);
 
 const userLocation = ref(
   null as {
@@ -26,7 +26,7 @@ const userLocation = ref(
 const getTourOffers = async () => {
   userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
-  const response = await axios.get(
+  const response = await axios.get<Offer[]>(
     `/api/users/${userStore.user?.id}/tours/offers`
   );
 

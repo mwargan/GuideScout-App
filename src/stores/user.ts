@@ -8,12 +8,12 @@ export const useUserStore = defineStore("user", () => {
   // the state of the user
   const isAuthenticated = ref(false);
   const isLoading = ref(false);
-  const user = ref(null) as Ref<User | null>;
+  const user = ref<User | null>(null);
   const attemptedToFetchUser = ref(false);
   const location = ref(null as GeolocationPosition | null);
-  const locationUpdatedAt = ref(null as Date | null);
-  const activeTeamId = ref(
-    localStorage.getItem("activeTeamId") as number | null
+  const locationUpdatedAt = ref<Date | null>(null);
+  const activeTeamId = ref<number | string | null>(
+    localStorage.getItem("activeTeamId")
   );
 
   const locationCacheTimeInSeconds = 30; // Minimum wait time in seconds before fetching the location again
@@ -41,7 +41,7 @@ export const useUserStore = defineStore("user", () => {
   async function getUser() {
     isLoading.value = true;
     try {
-      const response = await axios.get("api/user");
+      const response = await axios.get<User>("api/user");
       user.value = response.data;
       isAuthenticated.value = true;
 
@@ -479,15 +479,13 @@ export const useUserStore = defineStore("user", () => {
 
   /**
    * Get all the users personal access tokens
-   *
-   * @return {*}
    */
-  async function getPersonalAccessTokens() {
+  async function getPersonalAccessTokens(): Promise<PersonalAccessToken[]> {
     return axios
-      .get("/user/personal-access-tokens")
+      .get<PersonalAccessToken[] | string>("/user/personal-access-tokens")
       .then((response) => {
         if (!user.value) {
-          return [] as PersonalAccessToken[];
+          return [];
         }
         // If the response is not one containing an array of personal access tokens, return an empty array. For example, the endpoint might return HTML instead of JSON.
         if (
@@ -501,7 +499,7 @@ export const useUserStore = defineStore("user", () => {
         }
 
         user.value.personal_access_tokens = response.data;
-        return response.data as PersonalAccessToken[];
+        return response.data;
       })
       .catch((error) => {
         console.log("Personal access tokens error", error);
