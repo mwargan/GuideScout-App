@@ -26,11 +26,14 @@ const userLocation = ref(
 const getTourOffers = async () => {
   userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
-  const response = await axios.get<Offer[]>(
-    `/api/users/${userStore.user?.id}/tours/offers`
-  );
+  const response = await axios.get<
+    Omit<Offer & { offer_id: Offer["id"] }, "id">[]
+  >(`/api/users/${userStore.user?.id}/tours/offers`);
 
-  tourOffers.value = response.data;
+  tourOffers.value = response.data.map((offer) => ({
+    ...offer,
+    id: offer.offer_id,
+  }));
 
   const results = await Promise.all(
     tourOffers.value.map(async (offer) => {

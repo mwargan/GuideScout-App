@@ -21,6 +21,8 @@ storybook-static
 
 __diff_output__
 
+dev-dist
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

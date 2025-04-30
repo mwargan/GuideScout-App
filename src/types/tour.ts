@@ -16,6 +16,7 @@ export enum LocationType {
 }
 
 export interface Location {
+  id: number;
   type: LocationType;
   name: string;
   startHere?: boolean;

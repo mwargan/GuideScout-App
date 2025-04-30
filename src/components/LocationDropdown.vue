@@ -7,6 +7,7 @@ import MapComponent, { type Marker } from "@/components/MapComponent.vue";
 
 import { type Vue3OpenlayersGlobalOptions } from "vue3-openlayers";
 import { transform } from "ol/proj";
+import type { Location } from "@/types/tour";
 
 const props = defineProps({
   modelValue: {
@@ -58,7 +59,7 @@ const getGeolocationData = async (query: string) => {
 };
 
 const selectedGeoResult = ref({} as any);
-const selectedGeoResultId = ref([] as string[]);
+const selectedGeoResultId = ref<string[]>([]);
 const geoSearchTerm = ref("");
 
 const selectResult = (result: string[]) => {
@@ -178,7 +179,7 @@ watch(
   (newValue) => {
     if (newValue) {
       // Fetch the location data
-      axios.get(`/api/locations/${newValue}`).then((response) => {
+      axios.get<Location>(`/api/locations/${newValue}`).then((response) => {
         selectedGeoResult.value = {
           ...response.data,
           lat: response.data.latitude,

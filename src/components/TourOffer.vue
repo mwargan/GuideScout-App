@@ -40,7 +40,7 @@ const formatPrice = (price: number) => {
   }).format(price / 100);
 };
 
-const getTourDuration = (offer: any) => {
+const getTourDuration = (offer: Offer) => {
   const start = new Date(offer.starts_at);
   const end = new Date(offer.ends_at);
 
@@ -48,16 +48,14 @@ const getTourDuration = (offer: any) => {
   return `${formatDateTimeToTime(start)} - ${formatDateTimeToTime(end)}`;
 };
 
-const acceptTourOffer = async (offer: any) => {
+const acceptTourOffer = async (offer: Offer) => {
   isAcceptingOffer.value = true;
 
   // First, send the users location to the backend
   userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
   const response = await axios
-    .post(
-      `/api/users/${userStore.user?.id}/tours/offers/${offer.offer_id}/accept`
-    )
+    .post(`/api/users/${userStore.user?.id}/tours/offers/${offer.id}/accept`)
     .then((response) => {
       return response;
     })

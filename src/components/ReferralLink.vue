@@ -8,7 +8,7 @@ const userStore = useUserStore();
 const referral = ref(userStore.user?.referral_code);
 
 // A copied message timeout
-const copiedTimeout = ref(null as any | null);
+const copiedTimeout = ref<ReturnType<typeof setTimeout> | null>(null);
 
 const copyUrl = () => {
   const url = `https://app.guidescout.net/sign-up-as-guide?referral=${referral.value}`;
