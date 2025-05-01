@@ -34,6 +34,10 @@ const steps = [
     subtitle: "Tell us about you.",
   },
   {
+    title: "Share a link to a review you got on the web.",
+    subtitle: "Share your experience.",
+  },
+  {
     title: "How can you be reached?",
     subtitle: "Finish setting up your GuideScout account.",
   },
@@ -55,6 +59,7 @@ const formData = reactive({
   email: "",
   phone: "",
   referral: router.currentRoute.value.query.referral as string,
+  external_review_url: null as string | null,
 });
 
 const formErrors = reactive({
@@ -71,6 +76,7 @@ const formErrors = reactive({
   invalidEmail: false,
   invalidPhone: false,
   referral: false,
+  external_review_url: false,
 });
 
 const languages = computed(() => {
@@ -143,14 +149,15 @@ const handleSubmit = async () => {
     formData.certifications,
     formData.skills,
     formData.experiences,
+    formData.external_review_url,
     formData.referral
   );
 
   console.log(response, "got resp");
 
   if (response !== true) {
-    console.error("Error submitting form data");
-    alert("Error submitting form data - " + response.data.message);
+    console.error("Error submitting form data", response);
+    alert("Error submitting form data - " + response?.data?.message);
     // Go to first step
     currentStep.value = 1;
     emit("stepChange", {
@@ -467,8 +474,29 @@ const parseCv = async (file: File): Promise<ParsedCV | null> => {
       </div>
     </fieldset>
 
-    <!-- Step 7: Contact Info -->
+    <!-- Step 7: Experience -->
     <fieldset :class="{ hidden: currentStep !== 8 }">
+      <label for="external_review_url">URL to review</label>
+      <input
+        type="url"
+        placeholder="URL to review"
+        name="external_review_url"
+        v-model="formData.external_review_url"
+        pattern="https?://.+"
+        required
+      />
+      <div v-if="formErrors.external_review_url">
+        Please provide a URL to a review you got on the web.
+      </div>
+      <small v-else>
+        Provide a link to a Google, Viator, TripAdvisor, or similar review about
+        you as a guide. Make sure your name is clearly stated by the person who
+        wrote the review.
+      </small>
+    </fieldset>
+
+    <!-- Step 7: Contact Info -->
+    <fieldset :class="{ hidden: currentStep !== 9 }">
       <label for="email_address">Email Address</label>
       <input
         id="email_address"

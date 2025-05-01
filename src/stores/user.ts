@@ -166,6 +166,7 @@ export const useUserStore = defineStore("user", () => {
     certifications: string[] = [],
     skills: string[] = [],
     experiences: string[] = [],
+    externalReviewUrl: string | null = null,
     referralCode: string | null = null
   ) {
     // Check if the email is valid
@@ -205,6 +206,7 @@ export const useUserStore = defineStore("user", () => {
         certifications,
         skills,
         experiences,
+        external_review_url: externalReviewUrl,
         referral_code: referralCode,
       });
       await getUser();

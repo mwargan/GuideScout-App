@@ -2,13 +2,14 @@
 import { type PropType, computed, ref } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import axios from "axios";
+import type { Attribute } from "@/types/tour";
 
 const props = defineProps({
   modelValue: {
     type: Array as PropType<string[]>,
   },
   typeFilter: {
-    type: String,
+    type: String as PropType<Attribute["type"]>,
     required: false,
   },
 });
@@ -16,10 +17,10 @@ const props = defineProps({
 const emit = defineEmits<{
   "update:modelValue": string[][];
   // Emit whenever the attributes list is updated
-  "update:attributes": any[];
+  "update:attributes": Attribute[][];
 }>();
 
-const attributes = ref([] as any[]);
+const attributes = ref<Attribute[]>([]);
 
 const isLoading = ref(false);
 const isOpen = ref(false);
@@ -51,7 +52,7 @@ const getAttributes = async () => {
 
   isLoading.value = true;
 
-  const response = await axios.get(`/api/attributes`);
+  const response = await axios.get<Attribute[]>(`/api/attributes`);
 
   attributes.value = response.data;
 
