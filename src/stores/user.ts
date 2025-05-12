@@ -2,7 +2,7 @@ import { type Ref, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import type { Credential, PersonalAccessToken, User } from "@/types/user";
-import { eventTypes, useEventsBus } from "@/eventBus/events";
+import { useEventsBus } from "@/eventBus/adapters/vue";
 
 export const useUserStore = defineStore("user", () => {
   // the state of the user
@@ -118,7 +118,7 @@ export const useUserStore = defineStore("user", () => {
         remember: true,
       });
       await getUser();
-      $bus.$emit(eventTypes.logged_in);
+      $bus.$emit("logged_in");
       return true;
     } catch (error) {
       return false;
@@ -210,7 +210,7 @@ export const useUserStore = defineStore("user", () => {
         referral_code: referralCode,
       });
       await getUser();
-      $bus.$emit(eventTypes.registered);
+      $bus.$emit("registered");
       return true;
     } catch (error: any) {
       return error.response;
@@ -281,7 +281,7 @@ export const useUserStore = defineStore("user", () => {
       await axios.post("forgot-password", {
         email: email,
       });
-      $bus.$emit(eventTypes.sent_reset_password_email);
+      $bus.$emit("sent_reset_password_email", { email });
       return true;
     } catch (error: any) {
       return error.response;
@@ -325,7 +325,7 @@ export const useUserStore = defineStore("user", () => {
         password: password,
         password_confirmation: password,
       });
-      $bus.$emit(eventTypes.reset_password);
+      $bus.$emit("reset_password", { email });
       return true;
     } catch (error: any) {
       return error.response;
@@ -352,7 +352,7 @@ export const useUserStore = defineStore("user", () => {
       await axios.post("user/confirm-password", {
         password: password,
       });
-      $bus.$emit(eventTypes.confirmed_password);
+      $bus.$emit("confirmed_password");
       return true;
     } catch (error: any) {
       return error.response;
@@ -396,7 +396,7 @@ export const useUserStore = defineStore("user", () => {
     isAuthenticated.value = false;
     user.value = null;
     isLoading.value = false;
-    $bus.$emit(eventTypes.logged_out);
+    $bus.$emit("logged_out");
   }
 
   /**
@@ -424,7 +424,7 @@ export const useUserStore = defineStore("user", () => {
       await axios.post("/user/payment-methods", {
         payment_method: paymentMethodId,
       });
-      $bus.$emit(eventTypes.added_payment_method);
+      $bus.$emit("added_payment_method", { methodId: paymentMethodId });
       await getUser();
       return true;
     } catch (error) {
@@ -470,7 +470,14 @@ export const useUserStore = defineStore("user", () => {
         phone: phone ?? user.value?.phone,
       });
       await getUser();
-      $bus.$emit(eventTypes.updated_user);
+      $bus.$emit("updated_user", {
+        changes: {
+          name: name,
+          surname: surname,
+          email: email,
+          phone: phone,
+        },
+      });
       return true;
     } catch (error: any) {
       return error.response;
@@ -521,7 +528,7 @@ export const useUserStore = defineStore("user", () => {
         name: name,
       })
       .then((response) => {
-        $bus.$emit(eventTypes.created_personal_access_token, response.data);
+        $bus.$emit("created_personal_access_token", response.data);
         return response.data;
       })
       .catch((error) => {
@@ -537,7 +544,7 @@ export const useUserStore = defineStore("user", () => {
     return axios
       .delete("/user/personal-access-tokens/" + id)
       .then((response) => {
-        $bus.$emit(eventTypes.deleted_personal_access_token, response.data);
+        $bus.$emit("deleted_personal_access_token", response.data);
         return response.data;
       })
       .catch((error) => {
@@ -623,7 +630,9 @@ export const useUserStore = defineStore("user", () => {
 
     await axios.post(`user/send-phone-otp`);
 
-    $bus.$emit(eventTypes.sent_phone_otp);
+    $bus.$emit("sent_phone_otp", {
+      phone: user.value.phone,
+    });
 
     return true;
   }
@@ -643,7 +652,7 @@ export const useUserStore = defineStore("user", () => {
 
     user.value.phone_verified_at = new Date().toISOString();
 
-    $bus.$emit(eventTypes.confirmed_phone);
+    $bus.$emit("confirmed_phone");
 
     return true;
   }
@@ -664,7 +673,7 @@ export const useUserStore = defineStore("user", () => {
 
     user.value.latest_cv_status = "pending";
 
-    $bus.$emit(eventTypes.uploaded_cv);
+    $bus.$emit("uploaded_cv");
 
     return true;
   }

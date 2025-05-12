@@ -1,9 +1,11 @@
-import { Listeners } from "../events";
-
 // import analytics from "./analytics";
-import console from "./console";
 import notifications from "./notifications";
 import broadcastChannel from "./broadcastChannel";
+import { ConsoleListener, Listeners } from "type-safe-event-bus";
 // import postMessage from "./postMessage";
 
-export default new Listeners(notifications, broadcastChannel, console);
+export default new Listeners(
+  notifications,
+  broadcastChannel,
+  (import.meta.env.DEV && ConsoleListener) || {}
+);

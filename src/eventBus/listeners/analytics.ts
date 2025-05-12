@@ -1,5 +1,5 @@
+import type { ListenersMap } from "type-safe-event-bus";
 import { event, optIn, optOut, pageview, set } from "vue-gtag";
-import type { eventTypes } from "../events";
 
 export default {
   enabled_analytics: () => {
@@ -39,4 +39,4 @@ export default {
   created_personal_access_token: () => {
     event("create_personal_access_token");
   },
-} as Record<eventTypes, any>;
+} satisfies ListenersMap;
