@@ -2,6 +2,7 @@
 import { useUserStore } from "@/stores/user";
 import { ref } from "vue";
 import BaseForm from "./BaseForm.vue";
+import { handleError } from "@/utils/errorTransformer";
 
 const success = ref(false);
 
@@ -15,13 +16,20 @@ const submitForm = async () => {
   if (!userStore.userEmail) {
     return;
   }
-  const response = await userStore.sendPasswordResetEmail(userStore.userEmail);
-  if (response === true) {
-    success.value = response;
+
+  try {
+    success.value = await userStore.sendPasswordResetEmail(userStore.userEmail);
     emit("success");
-  } else if (typeof response === "object") {
-    baseFormRef.value.setInputErrors(response.data.errors);
+  } catch (e) {
+    const inputErrors = handleError(e);
+    if (inputErrors.email) {
+      inputErrors.password = inputErrors.email;
+      delete inputErrors.email;
+    }
+
+    baseFormRef.value.setInputErrors(inputErrors);
   }
+
   return success.value;
 };
 </script>

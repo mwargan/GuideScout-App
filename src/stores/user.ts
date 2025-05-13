@@ -216,6 +216,20 @@ export const useUserStore = defineStore("user", () => {
     return true;
   }
 
+  async function getPaymentIntent() {
+    if (!user.value) return false;
+    const paymentIntent = await meService.getPaymentIntent();
+    return paymentIntent;
+  }
+
+  async function addPaymentMethod(
+    paymentMethodId: Parameters<typeof meService.addPaymentMethod>[0]
+  ) {
+    if (!user.value) return false;
+    const paymentMethod = await meService.addPaymentMethod(paymentMethodId);
+    return paymentMethod;
+  }
+
   function setActiveTeam(id: number) {
     activeTeamId.value = id;
     localStorage.setItem("activeTeamId", id.toString());
@@ -259,5 +273,7 @@ export const useUserStore = defineStore("user", () => {
     getActiveTeam,
     activeTeamId,
     loginWithProvider,
+    getPaymentIntent,
+    addPaymentMethod,
   };
 });

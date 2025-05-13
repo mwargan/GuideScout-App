@@ -3,9 +3,12 @@ import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import { ref } from "vue";
 import BaseForm from "./BaseForm.vue";
+import { handleError } from "@/utils/errorTransformer";
 
 // Password, password, and remember me
 const password = ref("");
+
+const emit = defineEmits(["success"]);
 
 const success = ref(false);
 
@@ -17,19 +20,21 @@ const email = router.currentRoute.value.query.email as string;
 const userStore = useUserStore();
 // The submit function. If there is just the password, check if the password is valid. If it is not, set the register mode. If it is, set the login mode.
 const submitForm = async () => {
-  const response = await userStore.sendPasswordReset(
-    email,
-    token,
-    password.value
-  );
-  if (response === true) {
-    success.value = response;
-  } else if (typeof response === "object") {
-    if (response.data.errors.email) {
-      response.data.errors.password = response.data.errors.email;
-      delete response.data.errors.email;
+  try {
+    success.value = await userStore.sendPasswordReset(
+      email,
+      token,
+      password.value
+    );
+    emit("success");
+  } catch (e) {
+    const inputErrors = handleError(e);
+    if (inputErrors.email) {
+      inputErrors.password = inputErrors.email;
+      delete inputErrors.email;
     }
-    baseFormRef.value.setInputErrors(response.data.errors);
+
+    baseFormRef.value.setInputErrors(inputErrors);
   }
   return success.value;
 };

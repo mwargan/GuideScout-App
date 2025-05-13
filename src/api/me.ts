@@ -6,7 +6,12 @@ export const getSelf: ApiFunction<void, User> = async () => {
   return response.data;
 };
 
-export const getUserPaymentIntent: ApiFunction = async () => {
+export const getUserPaymentIntent: ApiFunction<
+  void,
+  {
+    client_secret: string;
+  }
+> = async () => {
   const response = await ApiClient.get("user/payment-intent");
   return response.data;
 };

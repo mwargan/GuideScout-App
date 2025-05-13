@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { transform } from "ol/proj";
+import type { Fill } from "ol/style";
 import { type PropType, computed, provide } from "vue";
 import {
   Geometries,
@@ -79,6 +80,9 @@ const options: Vue3OpenlayersGlobalOptions = {
 };
 
 provide("ol-options", options);
+
+// pure White
+const bgFill = "white" as unknown as Fill;
 </script>
 
 <template>
@@ -104,7 +108,7 @@ provide("ol-options", options);
               <Styles.OlStyleText
                 v-if="feature.markerName"
                 :text="feature.markerName"
-                backgroundFill="#ffffff"
+                :backgroundFill="bgFill"
                 :padding="[5, 5, 5, 5]"
               />
             </Styles.OlStyle>
@@ -125,7 +129,7 @@ provide("ol-options", options);
                 :text="
                   lineString.minutes + ' minutes, ' + lineString.km + ' km'
                 "
-                backgroundFill="#ffffff"
+                :backgroundFill="bgFill"
                 :padding="[5, 5, 5, 5]"
               />
             </Styles.OlStyle>

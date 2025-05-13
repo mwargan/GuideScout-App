@@ -2,6 +2,7 @@
 import { useUserStore } from "@/stores/user";
 import { ref } from "vue";
 import BaseForm from "./BaseForm.vue";
+import { handleError } from "@/utils/errorTransformer";
 
 // Password, password, and remember me
 const password = ref("");
@@ -15,12 +16,12 @@ const emit = defineEmits(["success"]);
 const userStore = useUserStore();
 // The submit function. If there is just the password, check if the password is valid. If it is not, set the register mode. If it is, set the login mode.
 const submitForm = async () => {
-  const response = await userStore.confirmPassword(password.value);
-  if (response === true) {
-    success.value = response;
+  try {
+    success.value = await userStore.confirmPassword(password.value);
     emit("success");
-  } else if (typeof response === "object") {
-    baseFormRef.value.setInputErrors(response.data.errors);
+  } catch (error) {
+    const inputErrors = handleError(error);
+    baseFormRef.value.setInputErrors(inputErrors);
   }
   return success.value;
 };

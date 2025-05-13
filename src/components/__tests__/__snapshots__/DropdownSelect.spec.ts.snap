@@ -21,3 +21,69 @@ exports[`Dropdown Select > renders correctly 1`] = `
   </ul>
 </details>"
 `;
+
+exports[`Dropdown Select > renders correctly 2`] = `
+"<details data-v-10d9b766="" class="dropdown">
+  <summary data-v-10d9b766="" data-has-value="false">Select an option</summary>
+  <ul data-v-10d9b766="">
+    <!--v-if-->
+    <!--v-if-->
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="One"> One
+        <!--v-if-->
+      </label></li>
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="Two"> Two
+        <!--v-if-->
+      </label></li>
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="Three"> Three
+        <!--v-if-->
+      </label></li>
+    <!--v-if-->
+    <!-- if the results are limited because of the visible limit, but there are more filteredResults, show a message -->
+    <!--v-if-->
+  </ul>
+</details>"
+`;
+
+exports[`Dropdown Select > renders correctly 3`] = `
+"<details data-v-10d9b766="" class="dropdown">
+  <summary data-v-10d9b766="" data-has-value="false">Select an option</summary>
+  <ul data-v-10d9b766="">
+    <!--v-if-->
+    <!--v-if-->
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="One"> One
+        <!--v-if-->
+      </label></li>
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="Two"> Two
+        <!--v-if-->
+      </label></li>
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="Three"> Three
+        <!--v-if-->
+      </label></li>
+    <!--v-if-->
+    <!-- if the results are limited because of the visible limit, but there are more filteredResults, show a message -->
+    <!--v-if-->
+  </ul>
+</details>"
+`;
+
+exports[`Dropdown Select > renders correctly 4`] = `
+"<details data-v-10d9b766="" class="dropdown">
+  <summary data-v-10d9b766="" data-has-value="false">Select an option</summary>
+  <ul data-v-10d9b766="">
+    <!--v-if-->
+    <!--v-if-->
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="One"> One
+        <!--v-if-->
+      </label></li>
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="Two"> Two
+        <!--v-if-->
+      </label></li>
+    <li data-v-10d9b766=""><label data-v-10d9b766=""><input data-v-10d9b766="" type="radio" tabindex="0" value="Three"> Three
+        <!--v-if-->
+      </label></li>
+    <!--v-if-->
+    <!-- if the results are limited because of the visible limit, but there are more filteredResults, show a message -->
+    <!--v-if-->
+  </ul>
+</details>"
+`;
