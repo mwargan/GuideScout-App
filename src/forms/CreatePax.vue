@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from "vue";
 import BaseForm from "@/forms/BaseForm.vue";
-import axios from "axios";
 import LocationDropdown from "@/components/LocationDropdown.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import { formatDateTimeForInput } from "@/helpers/date";
+import { getOfferPassenger } from "@/api/offer";
 import ApiClient from "@/api/client";
 
 const props = defineProps({
@@ -30,8 +30,8 @@ const formData = reactive({
   adults: 0,
   children: 0,
   infants: 0,
-  pickup_location_id: null,
-  dropoff_location_id: null,
+  pickup_location_id: null as number | null,
+  dropoff_location_id: null as number | null,
   pickup_at: minDateTime,
   dropoff_at: minDateTime,
   food_preferences: "",
@@ -82,7 +82,7 @@ const createPax = async () => {
       : formData.dropoff_location_id,
   };
 
-  const response = await axios[method](url, data)
+  const response = await ApiClient[method](url, data)
     .then((response) => {
       return response;
     })
@@ -104,11 +104,11 @@ const createPax = async () => {
 // If there is a paxId, fetch the pax and fill the form
 onMounted(async () => {
   if (props.paxId) {
-    const response = await ApiClient.get(
-      `/api/offers/${props.offerId}/passengers/${props.paxId}`
-    );
-    if (response.data) {
-      const pax = response.data;
+    const pax = await getOfferPassenger({
+      offerId: props.offerId,
+      paxId: props.paxId,
+    });
+    if (pax) {
       formData.name = pax.primary.name;
       formData.surname = pax.primary.surname;
       formData.phone = pax.primary.phone;

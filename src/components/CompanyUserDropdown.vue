@@ -2,7 +2,7 @@
 import { type PropType, computed, ref, watch } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import BaseAvatar from "./BaseAvatar.vue";
-import ApiClient from "@/api/client";
+import { getCompanyUsers } from "@/api/company";
 
 const props = defineProps({
   modelValue: {
@@ -42,14 +42,13 @@ const getData = async () => {
 
   isLoadingGeoResults.value = true;
 
-  const response = await ApiClient.get(`/api/companies/${companyId}/users`, {
+  users.value = await getCompanyUsers({
+    companyId: companyId,
     params: {
       role: props.role,
-      attributes: props.attributeIds,
+      attributeIds: props.attributeIds,
     },
   });
-
-  users.value = response.data;
 
   emit("update:users", users.value);
 

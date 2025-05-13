@@ -3,7 +3,8 @@ import { onMounted, ref } from "vue";
 import MapComponent from "@/components/MapComponent.vue";
 import { useUserStore } from "@/stores/user";
 import type { Company } from "@/types/company";
-import ApiClient from "@/api/client";
+import { getCompany } from "@/api/company";
+import { getDriveInfo } from "@/api/drive.time";
 
 const props = defineProps({
   /** The company ID */
@@ -20,8 +21,9 @@ const currentLocation = ref();
 const driveInfo = ref();
 
 const fetchCompany = async () => {
-  const response = await ApiClient.get(`/api/companies/${props.companyId}`);
-  company.value = await response.data;
+  company.value = await getCompany({
+    companyId: props.companyId,
+  });
 };
 
 const fetchCurrentLocation = async () => {
@@ -40,18 +42,15 @@ const getDriveTimeData = async () => {
   const getData = {
     origin: {
       lat: currentLocation.value.latitude,
-      lon: currentLocation.value.longitude,
+      lng: currentLocation.value.longitude,
     },
     destination: {
       lat: company.value.latitude,
-      lon: company.value.longitude,
+      lng: company.value.longitude,
     },
   };
-  const response = await ApiClient.get(
-    `/api/drive-data?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
-  );
 
-  driveInfo.value = response.data;
+  driveInfo.value = await getDriveInfo(getData);
 };
 
 onMounted(async () => {

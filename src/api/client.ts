@@ -34,3 +34,7 @@ ApiClient.interceptors.response.use(
 );
 
 export default ApiClient;
+
+export interface ApiFunction<RequestPayload = void, ResponsePayload = void> {
+  (data?: RequestPayload): Promise<ResponsePayload>;
+}

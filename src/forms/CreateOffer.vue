@@ -2,11 +2,11 @@
 import { computed, reactive, ref, shallowRef } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import BaseForm from "@/forms/BaseForm.vue";
-import axios from "axios";
 import type { Tour } from "@/types/offer";
 import AttributeDropdown from "@/components/AttributeDropdown.vue";
 import CompanyUserDropdown from "@/components/CompanyUserDropdown.vue";
-import ApiClient from "@/api/client";
+import { getCompanyTours } from "@/api/company";
+import { postOffer } from "@/api/offer";
 
 const props = defineProps({
   companyId: {
@@ -49,13 +49,10 @@ const getTourData = async () => {
   }
   isLoadingTourResults.value = true;
 
-  const response = await ApiClient.get(
-    `/api/companies/${props.companyId}/tours`
-  );
+  currentTourResults.value = await getCompanyTours({
+    companyId: props.companyId,
+  });
 
-  const json = (await response.data) as Tour[];
-
-  currentTourResults.value = json;
   isLoadingTourResults.value = false;
 };
 
@@ -138,27 +135,27 @@ const totalCost = computed(() => {
 getTourData();
 
 const createOffer = async () => {
-  const response = await axios
-    .post(`/api/companies/${props.companyId}/offers`, {
-      ...formData,
-      hourly_rate_eur_cents: formData.payment_amount * 100,
-      total_cost: Math.round(totalCost.value * 100),
+  const data = {
+    ...formData,
+    hourly_rate_eur_cents: formData.payment_amount * 100,
+    total_cost: Math.round(totalCost.value * 100),
 
-      // The starts at must include timezone info - pass as zulu time
-      starts_at: new Date(formData.starts_at).toISOString(),
-    })
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("Failed to create offer - " + error.response.data.message);
-      return error.response;
+    // The starts at must include timezone info - pass as zulu time
+    starts_at: new Date(formData.starts_at).toISOString(),
+  };
+
+  try {
+    const response = await postOffer({
+      ...data,
+      companyId: props.companyId,
     });
-
-  if (response.status === 201) {
-    emit("success", response.data.id);
+    emit("success", response.id);
     alert("Offer created");
+    return response;
+  } catch (error: any) {
+    console.error(error);
+    alert("Failed to create offer - " + error.response.data.message);
+    return error.response;
   }
 };
 </script>

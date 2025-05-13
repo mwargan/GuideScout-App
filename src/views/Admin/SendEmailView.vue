@@ -1,21 +1,23 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import ApiClient from "@/api/client";
+import { postSendEmail } from "@/api/email";
 
 const to = ref("");
 const subject = ref("");
 const message = ref("");
 
 const sendEmail = async () => {
-  const response = await ApiClient.post(`/api/emails/${to.value}/send`, {
-    subject: subject.value,
-    message: message.value,
-  });
-
-  if (response.status === 200) {
-    alert("Email sent!");
-  } else {
-    alert("Email failed to send.");
+  try {
+    await postSendEmail({
+      email: to.value,
+      subject: subject.value,
+      body: message.value,
+    });
+    alert("Email sent successfully!");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    alert("Failed to send email. Please try again.");
+    // Handle error (e.g., show a notification)
   }
 };
 </script>

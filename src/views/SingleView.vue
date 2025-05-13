@@ -18,7 +18,8 @@ import { relativeRealtime } from "@/helpers/relativeRealtime";
 import { useUserStore } from "@/stores/user";
 import { formatDateTimeToTime } from "@/helpers/date";
 import type { Offer } from "@/types/offer";
-import ApiClient from "@/api/client";
+import { getUsersTours } from "@/api/user";
+import { getDriveTime } from "@/api/drive.time";
 
 const router = useRouter();
 
@@ -29,15 +30,14 @@ const driveTimeFromLocationToOffice = ref<number | null>(null);
 
 const userStore = useUserStore();
 
-const getData = (setLoadingToTrue = true): void => {
+const getData = async (setLoadingToTrue = true): Promise<void> => {
   if (setLoadingToTrue) {
     console.log("Called");
     isLoading.value = true;
   }
-  ApiClient.get(`/api/users/${userStore.user?.id}/tours`).then((response) => {
-    data.value = sortToursByPickupTime(response.data);
-    isLoading.value = false;
-  });
+  const offers = await getUsersTours({ userId: userStore.user?.id });
+  data.value = sortToursByPickupTime(offers);
+  isLoading.value = false;
 };
 
 const getDriveTimeToOffice = () => {
@@ -47,21 +47,27 @@ const getDriveTimeToOffice = () => {
   }
 
   const success = async (pos: GeolocationCoordinates) => {
+    const destinationLat = data.value[0].company?.latitude;
+    const destinationLng = data.value[0].company?.longitude;
+
+    if (!destinationLat || !destinationLng) {
+      return;
+    }
+
+    const destination = {
+      lat: destinationLat,
+      lng: destinationLng,
+    };
+
     const getData = {
       origin: {
         lat: pos.latitude,
-        lon: pos.longitude,
+        lng: pos.longitude,
       },
-      destination: {
-        lat: data.value[0].company?.latitude,
-        lon: data.value[0].company?.longitude,
-      },
+      destination,
     };
-    const response = await ApiClient.get(
-      `/api/drive-time?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
-    );
 
-    driveTimeFromLocationToOffice.value = response.data;
+    driveTimeFromLocationToOffice.value = await getDriveTime(getData);
   };
 
   const error = () => {

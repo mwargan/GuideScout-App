@@ -5,10 +5,10 @@ import type { Offer } from "@/types/offer";
 import { formatDateTimeToTime } from "@/helpers/date";
 import source from "@/views/IndependentContractorAgreement.md?raw";
 import { useUserStore } from "@/stores/user";
-import axios from "axios";
 import BaseModal from "@/components/modals/BaseModal.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import Markdown from "vue3-markdown-it";
+import { postAcceptOffer } from "@/api/offer";
 
 defineProps({
   /** The title of the card */
@@ -54,21 +54,23 @@ const acceptTourOffer = async (offer: Offer) => {
   // First, send the users location to the backend
   userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
-  const response = await axios
-    .post(`/api/users/${userStore.user?.id}/tours/offers/${offer.id}/accept`)
-    .then((response) => {
-      return response;
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("Failed to match tour - " + error.response.data.message);
-    });
-
-  if (response && response.data) {
-    alert("Tour matched!");
+  if (!userStore.user?.id) {
+    alert("User not found");
+    return;
   }
 
-  isAcceptingOffer.value = false;
+  try {
+    await postAcceptOffer({
+      offerId: offer.id,
+      userId: userStore.user.id,
+    });
+    alert("Tour matched!");
+  } catch (error: any) {
+    console.error(error);
+    alert("Failed to match tour - " + error.response.data.message);
+  } finally {
+    isAcceptingOffer.value = false;
+  }
 };
 </script>
 

@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import BaseButton from "@/components/BaseButton.vue";
 import { useRoute } from "vue-router";
-import axios from "axios";
 import CardElement from "@/components/CardElement.vue";
+import { postViaSignedUrl } from "@/api/attribute";
 
 const route = useRoute();
 
@@ -11,12 +11,13 @@ const signedUrl = route.query.signedUrl as string;
 const signature = route.query.signature as string;
 
 const addAttribute = async () => {
-  const response = await axios
-    .post(signedUrl + "&signature=" + signature)
-    .catch((error) => {
-      console.log(error, "error");
-      return error;
-    });
+  const response = await postViaSignedUrl({
+    url: signedUrl,
+    signature: signature,
+  }).catch((error) => {
+    console.log(error, "error");
+    return error;
+  });
   if (response.status === 200 || response.status === 400) {
     alert("Attribute added");
     // Redirect to the home page

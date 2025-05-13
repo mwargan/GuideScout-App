@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import BaseForm from "@/forms/BaseForm.vue";
-import axios from "axios";
 import AttributeDropdown from "@/components/AttributeDropdown.vue";
+import { getCompanyTour } from "@/api/company";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   companyId: {
@@ -34,7 +35,7 @@ const createTour = async () => {
   const url = props.tourId
     ? `/api/companies/${props.companyId}/tours/${props.tourId}`
     : `/api/companies/${props.companyId}/tours`;
-  const response = await axios[method](url, {
+  const response = await ApiClient[method](url, {
     ...formData,
   })
     .then((response) => {
@@ -58,8 +59,14 @@ const createTour = async () => {
 };
 
 const fetchTour = async () => {
-  const response = await axios
-    .get(`/api/companies/${props.companyId}/tours/${props.tourId}`)
+  if (!props.tourId) {
+    return;
+  }
+
+  const response = await getCompanyTour({
+    companyId: props.companyId,
+    tourId: props.tourId,
+  })
     .then((response) => {
       return response;
     })
@@ -69,16 +76,14 @@ const fetchTour = async () => {
       return error.response;
     });
 
-  if (response.status === 200) {
-    formData.name = response.data.name;
-    formData.minutesDuration = response.data.minutesDuration;
-    formData.prepMinutes = response.data.prepMinutes;
-    formData.cleanupMinutes = response.data.cleanupMinutes;
-    formData.requiredAttributeIds = response.data.required_attributes.map(
-      (attr: { id: number }) => `${attr.id}`
-    );
-    formData.description = response.data.description;
-  }
+  formData.name = response.name;
+  formData.minutesDuration = response.minutesDuration;
+  formData.prepMinutes = response.prepMinutes;
+  formData.cleanupMinutes = response.cleanupMinutes;
+  formData.requiredAttributeIds = response.required_attributes.map(
+    (attr: { id: number }) => `${attr.id}`
+  );
+  formData.description = response.description;
 };
 
 // If there is a tourId, fetch the tour and fill the form

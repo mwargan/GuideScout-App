@@ -2,7 +2,7 @@
 import { type PropType, computed, ref } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import type { Attribute } from "@/types/tour";
-import ApiClient from "@/api/client";
+import { getAttributes } from "@/api/attribute";
 
 const props = defineProps({
   modelValue: {
@@ -45,16 +45,14 @@ const formattedOptions = computed(() => {
     }));
 });
 
-const getAttributes = async () => {
+const getAttributesFromApi = async () => {
   if (isLoading.value) {
     return;
   }
 
   isLoading.value = true;
 
-  const response = await ApiClient.get<Attribute[]>(`/api/attributes`);
-
-  attributes.value = response.data;
+  attributes.value = await getAttributes();
 
   emit("update:attributes", attributes.value);
 
@@ -63,7 +61,7 @@ const getAttributes = async () => {
 
 const searchTerm = ref("");
 
-getAttributes();
+getAttributesFromApi();
 </script>
 
 <template>

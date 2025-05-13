@@ -9,7 +9,8 @@ import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { Offer } from "@/types/offer";
 import type { Company } from "@/types/company";
 import TourOffer from "@/components/TourOffer.vue";
-import ApiClient from "@/api/client";
+import { getDriveTime } from "@/api/drive.time";
+import { getUsersCurrentTours, getUsersTourOffers } from "@/api/user";
 
 const userStore = useUserStore();
 
@@ -26,11 +27,11 @@ const userLocation = ref(
 const getTourOffers = async () => {
   userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
-  const response = await ApiClient.get<
-    Omit<Offer & { offer_id: Offer["id"] }, "id">[]
-  >(`/api/users/${userStore.user?.id}/tours/offers`);
+  const response = await getUsersTourOffers({
+    userId: userStore.user?.id,
+  });
 
-  tourOffers.value = response.data.map((offer) => ({
+  tourOffers.value = response.map((offer) => ({
     ...offer,
     id: offer.offer_id,
   }));
@@ -52,11 +53,9 @@ const getTourOffers = async () => {
 };
 
 const getCurrentTour = async () => {
-  const response = await ApiClient.get(
-    `/api/users/${userStore.user?.id}/tours/current`
-  );
-
-  currentTour.value = response.data;
+  currentTour.value = await getUsersCurrentTours({
+    userId: userStore.user?.id,
+  });
 };
 
 getTourOffers();
@@ -69,18 +68,15 @@ const computeDriveTime = async (company: Company) => {
   const getData = {
     origin: {
       lat: userLocation.value.latitude,
-      lon: userLocation.value.longitude,
+      lng: userLocation.value.longitude,
     },
     destination: {
       lat: company.latitude,
-      lon: company.longitude,
+      lng: company.longitude,
     },
   };
-  const response = await ApiClient.get(
-    `/api/drive-time?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
-  );
 
-  return response.data;
+  return getDriveTime(getData);
 };
 
 const driveTimes = ref<Record<number, number>>({});

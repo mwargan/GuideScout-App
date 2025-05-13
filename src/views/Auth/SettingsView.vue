@@ -6,7 +6,7 @@ import PersonalAccessTokens from "@/forms/PersonalAccessTokens.vue";
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import type { PersonalAccessToken } from "@/types/user";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { Vue3Lottie } from "vue3-lottie";
 import radarJSON from "@/assets/lottie/verified.json";
 import UploadCV from "@/forms/UploadCV.vue";
@@ -25,9 +25,9 @@ const addingNewPaymentMethod = ref(false);
 
 const accessTokens = ref<PersonalAccessToken[]>([]);
 
-userStore
-  .getPersonalAccessTokens()
-  .then((tokens) => (accessTokens.value = tokens));
+onMounted(async () => {
+  accessTokens.value = await userStore.getPersonalAccessTokens();
+});
 
 const handleCreatedToken = (e: PersonalAccessToken) => {
   accessTokens.value.push(e);

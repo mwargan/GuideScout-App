@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import BaseForm from "@/forms/BaseForm.vue";
-import ApiClient from "@/api/client";
+import { postAttribute } from "@/api/attribute";
 
 const name = ref("");
 const type = ref(
@@ -23,15 +23,16 @@ const typeOptions = [
 ];
 
 const createAttribute = async () => {
-  const response = await ApiClient.post(`/api/attributes`, {
-    name: name.value,
-    type: type.value,
-  });
-
-  if (response.status === 201) {
+  try {
+    await postAttribute({
+      name: name.value,
+      type: type.value,
+    });
     alert("Attribute created!");
-  } else {
-    alert("Attribute failed to create.");
+  } catch (error) {
+    console.error("Error creating attribute:", error);
+    alert("Failed to create attribute. Please try again.");
+    // Handle error (e.g., show a notification)
   }
 };
 </script>

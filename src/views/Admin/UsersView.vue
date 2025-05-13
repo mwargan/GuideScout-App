@@ -7,18 +7,21 @@ import { relativeRealtime, relativeTime } from "@/helpers/relativeRealtime";
 import { createColumnHelper } from "@tanstack/vue-table";
 import BaseButton from "@/components/BaseButton.vue";
 import DataTable from "@/components/DataTable.vue";
-import ApiClient from "@/api/client";
+import {
+  getUsers,
+  postVerifyUsersGuideProfile,
+  putUserAttributes,
+} from "@/api/user";
 
 const users = ref<User[]>([]);
 const attributeIds = ref<string[]>([]);
 
 const fetchUsers = async () => {
-  const response = await ApiClient.get("/api/users", {
+  users.value = await getUsers({
     params: {
       attributes: attributeIds.value,
     },
   });
-  users.value = response.data;
 };
 
 const columnHelper = createColumnHelper<User>();
@@ -27,11 +30,10 @@ const verifyGuideProfile = async (id: number | undefined) => {
   if (!id) {
     return;
   }
-  const response = await ApiClient.post(`/api/guide-profiles/${id}/verify`);
-  if (response.data) {
-    alert("Guide profile verified");
-    fetchUsers();
-  }
+
+  await postVerifyUsersGuideProfile({ guideProfileId: id });
+
+  fetchUsers();
 };
 
 const updateUsersAttributes = async (
@@ -41,7 +43,9 @@ const updateUsersAttributes = async (
   if (!userId) {
     return;
   }
-  await ApiClient.put(`/api/users/${userId}/attributes`, {
+
+  await putUserAttributes({
+    userId,
     attributeIds: newAttributeIds,
   });
 

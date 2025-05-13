@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue";
 import CardElement from "@/components/CardElement.vue";
 import ReferralLink from "@/components/ReferralLink.vue";
 import { useUserStore } from "@/stores/user";
-import ApiClient from "@/api/client";
+import { getUsersReferrals } from "@/api/user";
 
 const users = ref([] as any[]);
 const loading = ref(true);
@@ -12,10 +12,9 @@ const userStore = useUserStore();
 
 const fetchUsers = async () => {
   loading.value = true;
-  const response = await ApiClient.get(
-    `/api/users/${userStore.user?.id}/referrals`
-  );
-  users.value = response.data;
+  users.value = await getUsersReferrals({
+    userId: userStore.user?.id,
+  });
   loading.value = false;
 };
 

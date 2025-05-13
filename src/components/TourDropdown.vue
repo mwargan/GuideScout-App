@@ -3,7 +3,7 @@ import { computed, ref, shallowRef } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import BaseForm from "@/forms/BaseForm.vue";
 import type { Tour } from "@/types/offer";
-import ApiClient from "@/api/client";
+import { getCompanyTours } from "@/api/company";
 
 const props = defineProps({
   companyId: {
@@ -22,13 +22,10 @@ const getGeolocationData = async () => {
   }
   isLoadingGeoResults.value = true;
 
-  const response = await ApiClient.get(
-    `/api/companies/${props.companyId}/tours`
-  );
+  currentGeoResults.value = await getCompanyTours({
+    companyId: props.companyId,
+  });
 
-  const json = (await response.data) as Tour[];
-
-  currentGeoResults.value = json;
   isLoadingGeoResults.value = false;
 };
 

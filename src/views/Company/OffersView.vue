@@ -1,31 +1,31 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
-import axios from "axios";
 import type { Offer } from "@/types/offer";
 import { useRoute } from "vue-router";
 import BaseButton from "@/components/BaseButton.vue";
-import ApiClient from "@/api/client";
+import { getCompanyOffers } from "@/api/company";
+import type { Company } from "@/types/company";
+import { deleteOffer } from "@/api/offer";
 
 const offers = ref<Offer[]>([]);
 
 const route = useRoute();
 
 const fetchOffers = async () => {
-  const companyIdFromRoute = route.params.id;
-  const response = await ApiClient.get(
-    `/api/companies/${companyIdFromRoute}/offers`
-  );
-  offers.value = response.data;
+  const companyIdFromRoute = route.params.id as unknown as Company["id"];
+
+  offers.value = await getCompanyOffers({
+    companyId: companyIdFromRoute,
+  });
 };
 
-const deleteOffer = async (id: number) => {
+const deleteOfferLocally = async (id: number) => {
   // Confirm
   if (!confirm("Are you sure you want to delete this offer?")) {
     return;
   }
 
-  axios
-    .delete(`/api/offers/${id}`)
+  deleteOffer({ offerId: id })
     .then(() => {
       fetchOffers();
     })
@@ -125,7 +125,7 @@ onMounted(() => {
             }}
           </td>
           <td>
-            <base-button @click="deleteOffer(offer.id)" class="danger">{{
+            <base-button @click="deleteOfferLocally(offer.id)" class="danger">{{
               $t("Delete")
             }}</base-button>
           </td>

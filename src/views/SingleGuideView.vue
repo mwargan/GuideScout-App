@@ -5,7 +5,8 @@ import { useUserStore } from "@/stores/user";
 import BaseAvatar from "@/components/BaseAvatar.vue";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { User } from "@/types/user";
-import ApiClient from "@/api/client";
+import { getUser } from "@/api/user";
+import { getDriveInfo } from "@/api/drive.time";
 
 const props = defineProps({
   /** The user ID */
@@ -22,8 +23,9 @@ const currentLocation = ref();
 const driveInfo = ref();
 
 const fetchUser = async () => {
-  const response = await ApiClient.get(`/api/users/${props.userId}`);
-  user.value = await response.data;
+  user.value = await getUser({
+    userId: props.userId,
+  });
 };
 
 const fetchCurrentLocation = async () => {
@@ -42,18 +44,15 @@ const getDriveTimeData = async () => {
   const getData = {
     origin: {
       lat: currentLocation.value.latitude,
-      lon: currentLocation.value.longitude,
+      lng: currentLocation.value.longitude,
     },
     destination: {
       lat: user.value.latitude,
-      lon: user.value.longitude,
+      lng: user.value.longitude,
     },
   };
-  const response = await ApiClient.get(
-    `/api/drive-data?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
-  );
 
-  driveInfo.value = response.data;
+  driveInfo.value = await getDriveInfo(getData);
 };
 
 onMounted(async () => {

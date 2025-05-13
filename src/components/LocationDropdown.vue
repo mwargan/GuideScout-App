@@ -6,8 +6,7 @@ import MapComponent, { type Marker } from "@/components/MapComponent.vue";
 
 import { type Vue3OpenlayersGlobalOptions } from "vue3-openlayers";
 import { transform } from "ol/proj";
-import type { Location } from "@/types/tour";
-import ApiClient from "@/api/client";
+import { getLocation, getLocationByCoordinates } from "@/api/location";
 
 const props = defineProps({
   modelValue: {
@@ -62,7 +61,7 @@ const selectedGeoResult = ref({} as any);
 const selectedGeoResultId = ref<string[]>([]);
 const geoSearchTerm = ref("");
 
-const selectResult = (result: string[]) => {
+const selectResult = async (result: string[]) => {
   selectedGeoResultId.value = result;
   // Close the dropdown
   isOpen.value = false;
@@ -73,42 +72,13 @@ const selectResult = (result: string[]) => {
     (item) => item.place_id == result
   );
 
-  ApiClient.get(
-    "/api/locations?lat=" +
-      selectedGeoResult.value.lat +
-      "&lon=" +
-      selectedGeoResult.value.lon
-  ).then((response) => {
-    console.log(response.data);
-    getDriveTimeData();
-    emit("update:modelValue", response.data.id);
+  const response = await getLocationByCoordinates({
+    lat: selectedGeoResult.value.lat,
+    lng: selectedGeoResult.value.lon,
   });
-};
 
-const getDriveTimeData = async () => {
-  if (!selectedGeoResult.value) {
-    return;
-  }
-
-  if (!props.currentLat || !props.currentLng) {
-    return;
-  }
-
-  const getData = {
-    origin: {
-      lat: props.currentLat,
-      lon: props.currentLng,
-    },
-    destination: {
-      lat: selectedGeoResult.value.lat,
-      lon: selectedGeoResult.value.lon,
-    },
-  };
-  const response = await ApiClient.get(
-    `/api/drive-time?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
-  );
-
-  console.log(response.data);
+  console.log(response);
+  emit("update:modelValue", response.id);
 };
 
 const optionsToShow = computed(() => {
@@ -177,16 +147,16 @@ watch(
   (newValue) => {
     if (newValue) {
       // Fetch the location data
-      ApiClient.get<Location>(`/api/locations/${newValue}`).then((response) => {
+      getLocation({ id: newValue }).then((response) => {
         selectedGeoResult.value = {
-          ...response.data,
-          lat: response.data.latitude,
-          lon: response.data.longitude,
-          place_id: response.data.id.toString(),
-          display_name: response.data.name,
-          id: response.data.id.toString(),
+          ...response,
+          lat: response.latitude,
+          lon: response.longitude,
+          place_id: response.id.toString(),
+          display_name: response.name,
+          id: response.id.toString(),
         };
-        selectedGeoResultId.value = [response.data.id.toString()];
+        selectedGeoResultId.value = [response.id.toString()];
       });
     }
   },

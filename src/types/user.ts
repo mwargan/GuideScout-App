@@ -48,6 +48,7 @@ export interface Credential {
 }
 
 export interface GuideProfile {
+  id: number;
   user_id: number;
   city_id: number;
   description: null;

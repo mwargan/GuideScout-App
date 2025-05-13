@@ -80,6 +80,7 @@ export interface Pax {
   primary_contact_id: number;
   adults: number;
   children: number;
+  infants: number;
   pickup_location_id: number;
   pickup_at: Date;
   dropoff_location_id: number;

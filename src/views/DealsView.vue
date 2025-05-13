@@ -2,15 +2,14 @@
 import { computed, onMounted, ref } from "vue";
 import CardElement from "@/components/CardElement.vue";
 import MapComponent from "@/components/MapComponent.vue";
-import ApiClient from "@/api/client";
+import { getDeals } from "@/api/deal";
 
 const deals = ref([] as any[]);
 const loading = ref(true);
 
 const fetchDeals = async () => {
   loading.value = true;
-  const response = await ApiClient.get(`/api/deals`);
-  deals.value = response.data;
+  deals.value = await getDeals();
   loading.value = false;
 };
 

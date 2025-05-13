@@ -3,7 +3,31 @@ import { defineStore } from "pinia";
 
 import type { Credential, PersonalAccessToken, User } from "@/types/user";
 import { useEventsBus } from "@/eventBus/events";
-import ApiClient from "@/api/client";
+import { getCsrfToken, getSelf, postUserLocation } from "@/api/user";
+
+import {
+  deleteUserPersonalAccessToken,
+  getUserPaymentIntent,
+  getUserPaymentMethods,
+  getUserPersonalAccessTokens,
+  getUserShouldConfirmPassword,
+  postPaymentMethod,
+  postPersonalAccessToken,
+  postUserConfirmPassword,
+  postUserResendPhoneVerification,
+  postUserSendPhoneOtpCode,
+  postUserUploadCv,
+  postUserVerifyPhoneOtpCode,
+  putUserProfileInformation,
+} from "@/api/me";
+import { postEmailExists, postEmailResendVerification } from "@/api/email";
+import {
+  postForgotPassword,
+  postLogin,
+  postLogout,
+  postRegister,
+  postResetPassword,
+} from "@/api/auth";
 
 export const useUserStore = defineStore("user", () => {
   // the state of the user
@@ -42,8 +66,7 @@ export const useUserStore = defineStore("user", () => {
   async function getUser() {
     isLoading.value = true;
     try {
-      const response = await ApiClient.get<User>("api/user");
-      user.value = response.data;
+      user.value = await getSelf();
       isAuthenticated.value = true;
 
       if (user.value?.companies?.length === 1) {
@@ -77,10 +100,9 @@ export const useUserStore = defineStore("user", () => {
       console.error("CSRF cookie fetching error", e);
     });
 
-    // Check if the email is already in use by calling POST "email-exists/" + email with ApiClient. If it returns 404, the email is not in use.
     try {
-      const response = await ApiClient.post("email-exists/" + email);
-      return response.status === 200;
+      const response = await postEmailExists({ email });
+      return response.exists;
     } catch (error: any) {
       if (error.response.status === 404) {
         return false;
@@ -113,9 +135,9 @@ export const useUserStore = defineStore("user", () => {
 
     // Check if the email is already in use
     try {
-      await ApiClient.post("login", {
-        email: email,
-        password: password,
+      await postLogin({
+        email,
+        password,
         remember: true,
       });
       await getUser();
@@ -193,8 +215,7 @@ export const useUserStore = defineStore("user", () => {
     isLoading.value = true;
 
     try {
-      // Check if the email is already in use
-      await ApiClient.post("register", {
+      await postRegister({
         email,
         password,
         password_confirmation: password,
@@ -231,9 +252,7 @@ export const useUserStore = defineStore("user", () => {
     }
     isLoading.value = true;
     try {
-      await ApiClient.post("email/verification-notification", {
-        email: user.value.email,
-      });
+      await postEmailResendVerification({ email: user.value.email });
       return true;
     } catch (error) {
       return false;
@@ -248,14 +267,12 @@ export const useUserStore = defineStore("user", () => {
    * @return {*}
    */
   async function resendPhoneConfirmation() {
-    if (!user.value) {
+    if (!user.value?.phone) {
       return;
     }
     isLoading.value = true;
     try {
-      await ApiClient.post("phone/verification-notification", {
-        phone: user.value.phone,
-      });
+      await postUserResendPhoneVerification({ phone: user.value.phone });
       return true;
     } catch (error) {
       return false;
@@ -279,9 +296,7 @@ export const useUserStore = defineStore("user", () => {
 
     // Submit a reset password
     try {
-      await ApiClient.post("forgot-password", {
-        email: email,
-      });
+      await postForgotPassword({ email });
       $bus.$emit("sent_reset_password_email", { email });
       return true;
     } catch (error: any) {
@@ -320,10 +335,10 @@ export const useUserStore = defineStore("user", () => {
 
     // Submit a reset password
     try {
-      await ApiClient.post("reset-password", {
-        email: email,
-        token: token,
-        password: password,
+      await postResetPassword({
+        email,
+        token,
+        password,
         password_confirmation: password,
       });
       $bus.$emit("reset_password", { email });
@@ -348,11 +363,8 @@ export const useUserStore = defineStore("user", () => {
 
     isLoading.value = true;
 
-    // Submit a reset password
     try {
-      await ApiClient.post("user/confirm-password", {
-        password: password,
-      });
+      await postUserConfirmPassword({ password });
       $bus.$emit("confirmed_password");
       return true;
     } catch (error: any) {
@@ -370,8 +382,8 @@ export const useUserStore = defineStore("user", () => {
   async function shouldConfirmPassword() {
     isLoading.value = true;
     try {
-      const response = await ApiClient.get("user/confirmed-password-status");
-      return !response.data.confirmed;
+      const response = await getUserShouldConfirmPassword();
+      return !response.confirmed;
     } catch (error: any) {
       return error.response;
     } finally {
@@ -380,20 +392,12 @@ export const useUserStore = defineStore("user", () => {
   }
 
   /**
-   * Get a CSRF cookie from the server
-   *
-   */
-  async function getCsrfToken() {
-    await ApiClient.get("sanctum/csrf-cookie");
-  }
-
-  /**
    * Logout the user
    *
    */
   async function logout() {
     isLoading.value = true;
-    await ApiClient.post("logout");
+    await postLogout();
     isAuthenticated.value = false;
     user.value = null;
     isLoading.value = false;
@@ -407,8 +411,7 @@ export const useUserStore = defineStore("user", () => {
    */
   async function getPaymentIntent() {
     try {
-      const response = await ApiClient.get("user/payment-intent");
-      return response.data;
+      return getUserPaymentIntent();
     } catch (error) {
       console.log(error);
     }
@@ -422,9 +425,7 @@ export const useUserStore = defineStore("user", () => {
    */
   async function addPaymentMethod(paymentMethodId: string) {
     try {
-      await ApiClient.post("/user/payment-methods", {
-        payment_method: paymentMethodId,
-      });
+      await postPaymentMethod({ paymentMethodId });
       $bus.$emit("added_payment_method", { methodId: paymentMethodId });
       await getUser();
       return true;
@@ -441,8 +442,7 @@ export const useUserStore = defineStore("user", () => {
    */
   async function getPaymentMethods() {
     try {
-      const response = await ApiClient.get("/user/payment-methods");
-      return response.data;
+      return getUserPaymentMethods();
     } catch (error) {
       console.log(error);
     }
@@ -464,21 +464,21 @@ export const useUserStore = defineStore("user", () => {
   ) {
     isLoading.value = true;
     try {
-      await ApiClient.put("user/profile-information", {
+      const data = {
         name: name ?? user.value?.name,
         surname: surname ?? user.value?.surname,
         email: email ?? user.value?.email,
         phone: phone ?? user.value?.phone,
-      });
+      };
+
+      await putUserProfileInformation(data);
+
       await getUser();
+
       $bus.$emit("updated_user", {
-        changes: {
-          name: name,
-          surname: surname,
-          email: email,
-          phone: phone,
-        },
+        changes: data,
       });
+
       return true;
     } catch (error: any) {
       return error.response;
@@ -491,31 +491,17 @@ export const useUserStore = defineStore("user", () => {
    * Get all the users personal access tokens
    */
   async function getPersonalAccessTokens(): Promise<PersonalAccessToken[]> {
-    return ApiClient.get<PersonalAccessToken[] | string>(
-      "/user/personal-access-tokens"
-    )
-      .then((response) => {
-        if (!user.value) {
-          return [];
-        }
-        // If the response is not one containing an array of personal access tokens, return an empty array. For example, the endpoint might return HTML instead of JSON.
-        if (
-          !Array.isArray(response.data) ||
-          response.data.length === 0 ||
-          !response.data[0].id
-        ) {
-          throw new Error(
-            "Invalid response while fetching personal access tokens."
-          );
-        }
-
-        user.value.personal_access_tokens = response.data;
-        return response.data;
-      })
-      .catch((error) => {
-        console.log("Personal access tokens error", error);
-        return [] as PersonalAccessToken[];
-      });
+    try {
+      const tokens = await getUserPersonalAccessTokens();
+      if (typeof tokens === "string") {
+        return [];
+      }
+      return tokens;
+    } catch (error: any) {
+      console.log("Personal access tokens error", error);
+      alert(error.response.data.message);
+      return [];
+    }
   }
 
   /**
@@ -525,35 +511,20 @@ export const useUserStore = defineStore("user", () => {
    * @return {*}
    */
   async function createPersonalAccessToken(name: string) {
-    return ApiClient.post("/user/personal-access-tokens", {
+    const data = await postPersonalAccessToken({
       name: name,
-    })
-      .then((response) => {
-        $bus.$emit("created_personal_access_token", response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.log("Personal access tokens error", error);
-        alert(error.response.data.message);
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
+      scopes: ["*"],
+    });
+
+    $bus.$emit("created_personal_access_token", { tokenId: data.id });
+
+    return data;
   }
 
-  async function deletePersonalAccessToken(id: string) {
-    return ApiClient.delete("/user/personal-access-tokens/" + id)
-      .then((response) => {
-        $bus.$emit("deleted_personal_access_token", response.data);
-        return response.data;
-      })
-      .catch((error) => {
-        console.log("Personal access tokens error", error);
-        alert(error.response.data.message);
-      })
-      .finally(() => {
-        isLoading.value = false;
-      });
+  async function deletePersonalAccessToken(tokenId: string) {
+    await deleteUserPersonalAccessToken({ tokenId });
+    $bus.$emit("deleted_personal_access_token", { tokenId });
+    return true;
   }
 
   async function saveUserLocation() {
@@ -564,7 +535,8 @@ export const useUserStore = defineStore("user", () => {
       return;
     }
     try {
-      await ApiClient.post(`api/users/${user.value.id}/locations`, {
+      postUserLocation({
+        userId: user.value.id,
         latitude: location.value.coords.latitude,
         longitude: location.value.coords.longitude,
       });
@@ -628,7 +600,7 @@ export const useUserStore = defineStore("user", () => {
       return false;
     }
 
-    await ApiClient.post(`user/send-phone-otp`);
+    await postUserSendPhoneOtpCode();
 
     $bus.$emit("sent_phone_otp", {
       phone: user.value.phone,
@@ -642,17 +614,13 @@ export const useUserStore = defineStore("user", () => {
       return false;
     }
 
-    const response = await ApiClient.post(`user/verify-phone-otp`, {
+    await postUserVerifyPhoneOtpCode({
       otp,
     });
 
-    if (response.status !== 200) {
-      return false;
-    }
+    $bus.$emit("confirmed_phone");
 
     user.value.phone_verified_at = new Date().toISOString();
-
-    $bus.$emit("confirmed_phone");
 
     return true;
   }
@@ -661,19 +629,14 @@ export const useUserStore = defineStore("user", () => {
     if (!user.value) {
       return false;
     }
-
     const formData = new FormData();
     formData.append("file", file);
 
-    await ApiClient.post(`api/users/${user.value.id}/cvs`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    });
-
-    user.value.latest_cv_status = "pending";
+    await postUserUploadCv(formData);
 
     $bus.$emit("uploaded_cv");
+
+    user.value.latest_cv_status = "pending";
 
     return true;
   }
