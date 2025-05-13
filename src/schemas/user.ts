@@ -4,7 +4,7 @@ export const PersonalAccessTokenSchema = z.object({
   id: z.string(),
   name: z.string(),
   scopes: z.array(z.string()),
-  created_at: z.string(),
+  created_at: z.string().datetime(),
   // Add other fields as needed
 });
 
@@ -32,7 +32,7 @@ export const UserSchema = z.object({
   certifications: z.array(z.string()).optional(),
   skills: z.array(z.string()).optional(),
   experiences: z.array(z.string()).optional(),
-  external_review_url: z.string().startsWith("http").optional(),
+  external_review_url: z.string().url().optional(),
   referral_code: z.string().optional().nullable(),
 });
 

@@ -70,7 +70,7 @@ export const meService = {
   },
 
   async resendEmailConfirmation(email: string) {
-    return postEmailResendVerification({ email });
+    await postEmailResendVerification({ email });
   },
 
   async resendPhoneConfirmation(phone: string) {
@@ -101,7 +101,7 @@ export const meService = {
     return getUserShouldConfirmPassword();
   },
 
-  async updateProfile(data: Partial<z.infer<typeof UserSchema>>) {
+  async updateProfile(data: Partial<z.input<typeof UserSchema>>) {
     if (!data) return;
     const parsedData = UserSchema.omit({ id: true }).parse(data);
     await putUserProfileInformation(parsedData);
@@ -113,7 +113,10 @@ export const meService = {
   },
 
   async addPaymentMethod(paymentMethodId: string) {
-    return postPaymentMethod({ paymentMethodId });
+    await postPaymentMethod({ paymentMethodId });
+    $bus.$emit("added_payment_method", {
+      methodId: paymentMethodId,
+    });
   },
 
   async getPaymentMethods() {
