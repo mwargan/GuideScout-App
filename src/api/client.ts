@@ -6,6 +6,7 @@ const ApiClient = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
+    "Accept-Language": navigator.language,
   },
   withCredentials: true,
   withXSRFToken: true,
