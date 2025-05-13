@@ -74,8 +74,7 @@ export const postUserVerifyPhoneOtpCode: ApiFunction<
   },
   void
 > = async (data) => {
-  const response = await ApiClient.post<void>(`user/verify-phone-otp`, data);
-  return response.data;
+  await ApiClient.post<void>(`user/verify-phone-otp`, data);
 };
 
 export const postUserUploadCv: ApiFunction<FormData, void> = async (data) => {
@@ -93,8 +92,7 @@ export const postPaymentMethod: ApiFunction<
   },
   void
 > = async (data) => {
-  const response = await ApiClient.post<void>("user/payment-methods", data);
-  return response.data;
+  await ApiClient.post<void>("user/payment-methods", data);
 };
 
 export const postUserConfirmPassword: ApiFunction<
