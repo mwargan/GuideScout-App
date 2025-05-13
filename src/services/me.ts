@@ -25,44 +25,48 @@ import {
   putUserProfileInformation,
 } from "@/api/me"; // Reorganize this as needed
 import { postUserLocation } from "@/api/user";
+import { UserSchema } from "@/schemas/user";
 
 import type { Credential } from "@/types/user";
 
 import $bus from "type-safe-event-bus";
+import { z } from "zod";
 
 export const meService = {
   async getUser() {
     return await getSelf();
   },
 
-  async login(email: string, password: string) {
-    try {
-      await postLogin({ email, password, remember: true });
-      $bus.$emit("logged_in");
-    } catch (error: any) {
-      console.error("Login error:", error);
-      throw new Error(error.response.data.message);
-    }
+  async login(email?: string, password?: string) {
+    const parsedData = UserSchema.pick({
+      email: true,
+      password: true,
+    })
+      .required({
+        email: true,
+        password: true,
+      })
+      .parse({ email, password });
+
+    await postLogin({ ...parsedData, remember: true });
+
+    $bus.$emit("logged_in");
   },
 
   async logout() {
-    try {
-      await postLogout();
-      $bus.$emit("logged_out");
-    } catch (error: any) {
-      console.error("Logout error:", error);
-      throw new Error(error.response.data.message);
-    }
+    await postLogout();
+    $bus.$emit("logged_out");
   },
 
   async register(userData: Parameters<typeof postRegister>[0]) {
-    try {
-      await postRegister(userData);
-      $bus.$emit("registered");
-    } catch (error: any) {
-      console.error("Registration error:", error);
-      throw new Error(error.response.data.message);
-    }
+    const parsedData = UserSchema.omit({ id: true })
+      .required({
+        password: true,
+        password_confirmation: true,
+      })
+      .parse(userData);
+    await postRegister(parsedData);
+    $bus.$emit("registered");
   },
 
   async resendEmailConfirmation(email: string) {
@@ -74,52 +78,34 @@ export const meService = {
   },
 
   async sendPasswordResetEmail(email: string) {
-    try {
-      await postForgotPassword({ email });
-      $bus.$emit("sent_reset_password_email", { email });
-    } catch (error: any) {
-      console.error("Password reset email error:", error);
-      throw new Error(error.response.data.message);
-    }
+    await postForgotPassword({ email });
+    $bus.$emit("sent_reset_password_email", { email });
   },
 
   async sendPasswordReset(email: string, token: string, password: string) {
-    try {
-      await postResetPassword({
-        email,
-        token,
-        password,
-        password_confirmation: password,
-      });
-      $bus.$emit("reset_password", { email });
-    } catch (error: any) {
-      console.error("Password reset error:", error);
-      throw new Error(error.response.data.message);
-    }
+    await postResetPassword({
+      email,
+      token,
+      password,
+      password_confirmation: password,
+    });
+    $bus.$emit("reset_password", { email });
   },
 
   async confirmPassword(password: string) {
-    try {
-      await postUserConfirmPassword({ password });
-      $bus.$emit("confirmed_password");
-    } catch (error: any) {
-      console.error("Confirm password error:", error);
-      throw new Error(error.response.data.message);
-    }
+    await postUserConfirmPassword({ password });
+    $bus.$emit("confirmed_password");
   },
 
   async shouldConfirmPassword() {
     return getUserShouldConfirmPassword();
   },
 
-  async updateProfile(data: any) {
-    try {
-      await putUserProfileInformation(data);
-      $bus.$emit("updated_user", { changes: data });
-    } catch (error: any) {
-      console.error("Update profile error:", error);
-      throw new Error(error.response.data.message);
-    }
+  async updateProfile(data: Partial<z.infer<typeof UserSchema>>) {
+    if (!data) return;
+    const parsedData = UserSchema.omit({ id: true }).parse(data);
+    await putUserProfileInformation(parsedData);
+    $bus.$emit("updated_user", { changes: data });
   },
 
   async getPaymentIntent() {
@@ -135,23 +121,13 @@ export const meService = {
   },
 
   async sendPhoneOtpCode() {
-    try {
-      await postUserSendPhoneOtpCode();
-      $bus.$emit("sent_phone_otp", { phone: null });
-    } catch (error: any) {
-      console.error("Send phone OTP error:", error);
-      throw new Error(error.response.data.message);
-    }
+    await postUserSendPhoneOtpCode();
+    $bus.$emit("sent_phone_otp", { phone: null });
   },
 
   async verifyPhoneOtpCode(otp: string) {
-    try {
-      await postUserVerifyPhoneOtpCode({ otp });
-      $bus.$emit("confirmed_phone");
-    } catch (error: any) {
-      console.error("Verify phone OTP error:", error);
-      throw new Error(error.response.data.message);
-    }
+    await postUserVerifyPhoneOtpCode({ otp });
+    $bus.$emit("confirmed_phone");
   },
 
   async uploadCV(file: File) {
@@ -197,17 +173,11 @@ export const meService = {
   },
 
   async getPersonalAccessTokens() {
-    try {
-      const tokens = await getUserPersonalAccessTokens();
-      if (typeof tokens === "string") {
-        return [];
-      }
-      return tokens;
-    } catch (error: any) {
-      console.log("Personal access tokens error", error);
-      alert(error.response.data.message);
+    const tokens = await getUserPersonalAccessTokens();
+    if (typeof tokens === "string") {
       return [];
     }
+    return tokens;
   },
 
   async checkEmailExists(email: string) {

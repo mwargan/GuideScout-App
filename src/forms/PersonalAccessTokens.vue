@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import BaseForm from "./BaseForm.vue";
-import { createPersonalAccessToken } from "@/services/me";
+import { meService } from "@/services/me";
 
 const { t } = useI18n();
 
@@ -20,7 +20,7 @@ const submitForm = async () => {
   }
 
   try {
-    const response = await createPersonalAccessToken(tokenName.value);
+    const response = await meService.createPersonalAccessToken(tokenName.value);
     emit("created", response);
     const text = t(
       "Your personal access token has been created. This is the only time you can see it."

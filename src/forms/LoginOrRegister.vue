@@ -4,6 +4,7 @@ import BaseForm from "@/forms/BaseForm.vue";
 import { meService } from "@/services/me";
 
 import { useUserStore } from "@/stores/user";
+import { handleError } from "@/utils/errorTransformer";
 import { nextTick, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
@@ -26,9 +27,6 @@ const checkedEmail = ref(false);
 // Is the user registering or logging in?
 const isRegistering = ref(false);
 
-// The error message
-const errorMessage = ref("");
-
 const baseFormRef = ref();
 
 const emit = defineEmits(["success"]);
@@ -39,34 +37,30 @@ const checkEmailLocally = async () => {
     return;
   }
   // Check if the email is already in use
-  const response = await meService.checkEmailExists(userStore.userEmail);
+  const emailExists = await meService.checkEmailExists(userStore.userEmail);
 
-  isRegistering.value = !response;
+  isRegistering.value = !emailExists;
 
-  errorMessage.value = "";
   checkedEmail.value = true;
 };
 
 // The login function
 const login = async () => {
-  if (!userStore.userEmail) {
-    return;
-  }
   // Check if the email is already in use
-  const response = await userStore.login(
-    userStore.userEmail,
-    authForm.password
-  );
-
-  if (response === false) {
-    baseFormRef.value.setInputErrors({
-      password: t("Invalid email or password"),
-    });
-    // const data = await response.json();
-    // handleError(data.errors);
-    authForm.password = "";
-  } else {
+  try {
+    await userStore.login(userStore.userEmail ?? undefined, authForm.password);
     emit("success");
+  } catch (error) {
+    authForm.password = "";
+    const inputErrors = handleError(error);
+
+    if (Object.keys(inputErrors).includes("email")) {
+      inputErrors.password = inputErrors.email;
+    }
+
+    await nextTick();
+
+    baseFormRef.value.setInputErrors(inputErrors);
   }
 };
 
@@ -80,40 +74,21 @@ const register = async () => {
     ...authForm,
     password_confirmation: authForm.password,
   };
-  // Check if the email is already in use
-  const response = await userStore.register(data);
 
-  // const data = await response.json();
-
-  if (response !== true) {
-    // If the response has a body with json
-    if (response.data) {
-      const data = await response.data;
-      // If there are no errors, we need to throw a generic error
-      if (!data.errors) {
-        checkedEmail.value = false;
-        await nextTick();
-        alert("Something went wrong on our side, please try again");
-        return;
-      }
-
-      // If in the data there is errors.email, return to the first screen by setting checkedEmail to false
-      if (data.errors?.email) {
-        checkedEmail.value = false;
-      }
-      await nextTick();
-      baseFormRef.value.setInputErrors(data.errors);
-    } else {
-      checkedEmail.value = false;
-      await nextTick();
-
-      baseFormRef.value.setInputErrors({
-        email: "Something went wrong",
-      });
-    }
-    // handleError(data.errors);
-  } else {
+  try {
+    await userStore.register(data);
     emit("success");
+  } catch (error) {
+    authForm.password = "";
+    const inputErrors = handleError(error);
+
+    if (Object.keys(inputErrors).includes("email")) {
+      inputErrors.password = inputErrors.email;
+    }
+
+    await nextTick();
+
+    baseFormRef.value.setInputErrors(inputErrors);
   }
 };
 

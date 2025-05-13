@@ -48,15 +48,12 @@ export const useUserStore = defineStore("user", () => {
     }
   }
 
-  async function login(email: string, password: string) {
-    if (!email || !password) return false;
+  async function login(email?: string, password?: string) {
     isLoading.value = true;
     try {
       await meService.login(email, password);
       await getUser();
       return true;
-    } catch {
-      return false;
     } finally {
       isLoading.value = false;
     }
@@ -68,8 +65,6 @@ export const useUserStore = defineStore("user", () => {
       await meService.register(...args);
       await getUser();
       return true;
-    } catch (err: any) {
-      return err.response;
     } finally {
       isLoading.value = false;
     }
@@ -115,8 +110,6 @@ export const useUserStore = defineStore("user", () => {
     try {
       await meService.sendPasswordResetEmail(email);
       return true;
-    } catch (err: any) {
-      return err.response;
     } finally {
       isLoading.value = false;
     }
@@ -132,8 +125,6 @@ export const useUserStore = defineStore("user", () => {
     try {
       await meService.sendPasswordReset(email, token, password);
       return true;
-    } catch (err: any) {
-      return err.response;
     } finally {
       isLoading.value = false;
     }
@@ -145,8 +136,6 @@ export const useUserStore = defineStore("user", () => {
     try {
       await meService.confirmPassword(password);
       return true;
-    } catch (err: any) {
-      return err.response;
     } finally {
       isLoading.value = false;
     }
@@ -157,32 +146,28 @@ export const useUserStore = defineStore("user", () => {
     try {
       const response = await meService.shouldConfirmPassword();
       return !response.confirmed;
-    } catch (err: any) {
-      return err.response;
     } finally {
       isLoading.value = false;
     }
   }
 
   async function update(
-    name: string,
-    surname: string,
-    email: string,
-    phone: string
+    name?: string | null,
+    surname?: string | null,
+    email?: string | null,
+    phone?: string | null
   ) {
     isLoading.value = true;
     const data = {
-      name: name ?? user.value?.name,
-      surname: surname ?? user.value?.surname,
-      email: email ?? user.value?.email,
-      phone: phone ?? user.value?.phone,
+      name: name ?? user.value?.name ?? undefined,
+      surname: surname ?? user.value?.surname ?? undefined,
+      email: email ?? user.value?.email ?? undefined,
+      phone: phone ?? user.value?.phone ?? undefined,
     };
     try {
       await meService.updateProfile(data);
       await getUser();
       return true;
-    } catch (err: any) {
-      return err.response;
     } finally {
       isLoading.value = false;
     }

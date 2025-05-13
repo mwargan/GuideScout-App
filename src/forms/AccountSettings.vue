@@ -2,6 +2,7 @@
 import { useUserStore } from "@/stores/user";
 import { ref } from "vue";
 import BaseForm from "./BaseForm.vue";
+import { handleError } from "@/utils/errorTransformer";
 
 const userStore = useUserStore();
 
@@ -22,12 +23,8 @@ const emit = defineEmits(["updated"]);
 
 // The submit function. If there is just the email, check if the email is valid. If it is not, set the register mode. If it is, set the login mode.
 const submitForm = async () => {
-  if (!email.value || !name.value || !surname.value || !phone.value) {
-    return;
-  }
-
   // Create an object containing only the changed values
-  const changedValues = {} as Record<string, string>;
+  const changedValues = {} as Record<string, string | null | undefined>;
   if (userStore.user?.name !== name.value) {
     changedValues.name = name.value;
   }
@@ -47,23 +44,17 @@ const submitForm = async () => {
     return;
   }
 
-  const response = await userStore.update(
-    name.value,
-    surname.value,
-    email.value,
-    phone.value
-  );
+  try {
+    await userStore.update(name.value, surname.value, email.value, phone.value);
 
-  if (response === true) {
-    // Emit the updated event with the changed fields
-    emit("updated", changedValues);
-    baseFormRef.value.setSuccessOnInputs();
-  } else if (typeof response === "object") {
     // We want to show the user the correct fields to the user so they feel better
     baseFormRef.value.setSuccessOnInputs();
 
-    // Show the fields with errors
-    baseFormRef.value.setInputErrors(response.data.errors);
+    emit("updated", changedValues);
+  } catch (error) {
+    const inputErrors = handleError(error);
+
+    baseFormRef.value.setInputErrors(inputErrors);
   }
 };
 </script>
