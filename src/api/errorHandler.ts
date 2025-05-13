@@ -15,3 +15,8 @@ export function handle401Error(error: any) {
     name: "login",
   });
 }
+
+export function handle500Error(error: any) {
+  alert("An error occurred. Please try again later.");
+  router.go(-1);
+}

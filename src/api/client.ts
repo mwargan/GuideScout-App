@@ -1,5 +1,5 @@
 import axios from "axios";
-import { handle401Error, handle403Error } from "./errorHandler";
+import { handle401Error, handle403Error, handle500Error } from "./errorHandler";
 const ApiClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -17,13 +17,18 @@ const ApiClient = axios.create({
 ApiClient.interceptors.response.use(
   (response) => response,
   (error) => {
+    if (error.response?.status === 401) {
+      return handle401Error(error);
+    }
+
     if (error.response?.status === 403) {
       return handle403Error(error);
     }
 
-    if (error.response?.status === 401) {
-      return handle401Error(error);
+    if (error.response?.status === 500) {
+      return handle500Error(error);
     }
+
     return Promise.reject(error);
   }
 );
