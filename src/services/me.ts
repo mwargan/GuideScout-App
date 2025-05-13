@@ -1,12 +1,5 @@
 // services/userService.ts
 
-import {
-  postForgotPassword,
-  postLogin,
-  postLogout,
-  postRegister,
-  postResetPassword,
-} from "@/api/auth";
 import { postEmailExists, postEmailResendVerification } from "@/api/email";
 import {
   deleteUserPersonalAccessToken,
@@ -31,42 +24,13 @@ import type { Credential } from "@/types/user";
 
 import $bus from "type-safe-event-bus";
 import { z } from "zod";
+import { authService } from "./auth";
 
 export const meService = {
+  ...authService,
+
   async getUser() {
     return await getSelf();
-  },
-
-  async login(email?: string, password?: string) {
-    const parsedData = UserSchema.pick({
-      email: true,
-      password: true,
-    })
-      .required({
-        email: true,
-        password: true,
-      })
-      .parse({ email, password });
-
-    await postLogin({ ...parsedData, remember: true });
-
-    $bus.$emit("logged_in");
-  },
-
-  async logout() {
-    await postLogout();
-    $bus.$emit("logged_out");
-  },
-
-  async register(userData: Parameters<typeof postRegister>[0]) {
-    const parsedData = UserSchema.omit({ id: true })
-      .required({
-        password: true,
-        password_confirmation: true,
-      })
-      .parse(userData);
-    await postRegister(parsedData);
-    $bus.$emit("registered");
   },
 
   async resendEmailConfirmation(email: string) {
@@ -75,21 +39,6 @@ export const meService = {
 
   async resendPhoneConfirmation(phone: string) {
     return postUserResendPhoneVerification({ phone });
-  },
-
-  async sendPasswordResetEmail(email: string) {
-    await postForgotPassword({ email });
-    $bus.$emit("sent_reset_password_email", { email });
-  },
-
-  async sendPasswordReset(email: string, token: string, password: string) {
-    await postResetPassword({
-      email,
-      token,
-      password,
-      password_confirmation: password,
-    });
-    $bus.$emit("reset_password", { email });
   },
 
   async confirmPassword(password: string) {
