@@ -136,22 +136,16 @@ const handleSubmit = async () => {
 
   console.log("Submitting form data");
 
+  // password, password_confirmation, referral_code
+  const finalData = {
+    ...formData,
+    password: formData.phone,
+    password_confirmation: formData.phone,
+    referral_code: formData.referral,
+  };
+
   // if last step, submit form data
-  const response = await userStore.register(
-    formData.email,
-    null,
-    formData.name,
-    formData.surname,
-    formData.phone,
-    formData.city,
-    formData.languages,
-    formData.qualifications,
-    formData.certifications,
-    formData.skills,
-    formData.experiences,
-    formData.external_review_url,
-    formData.referral
-  );
+  const response = await userStore.register(finalData);
 
   console.log(response, "got resp");
 

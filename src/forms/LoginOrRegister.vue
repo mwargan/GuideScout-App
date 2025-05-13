@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import BaseButton from "@/components/BaseButton.vue";
 import BaseForm from "@/forms/BaseForm.vue";
+import { meService } from "@/services/me";
 
 import { useUserStore } from "@/stores/user";
 import { nextTick, reactive, ref } from "vue";
@@ -33,18 +34,13 @@ const baseFormRef = ref();
 const emit = defineEmits(["success"]);
 
 // The check email function
-const checkEmail = async () => {
+const checkEmailLocally = async () => {
   if (!userStore.userEmail) {
     return;
   }
   // Check if the email is already in use
-  const response = await userStore.checkEmail(userStore.userEmail);
+  const response = await meService.checkEmailExists(userStore.userEmail);
 
-  // If the response is not a bool
-  if (typeof response !== "boolean") {
-    alert(response.data.message);
-    return;
-  }
   isRegistering.value = !response;
 
   errorMessage.value = "";
@@ -79,14 +75,13 @@ const register = async () => {
   if (!userStore.userEmail) {
     return;
   }
+  const data = {
+    email: userStore.userEmail,
+    ...authForm,
+    password_confirmation: authForm.password,
+  };
   // Check if the email is already in use
-  const response = await userStore.register(
-    userStore.userEmail,
-    authForm.password,
-    authForm.name,
-    authForm.surname,
-    authForm.phone
-  );
+  const response = await userStore.register(data);
 
   // const data = await response.json();
 
@@ -125,7 +120,7 @@ const register = async () => {
 // The submit function. If there is just the email, check if the email is valid. If it is not, set the register mode. If it is, set the login mode.
 const submitForm = async () => {
   if (userStore.userEmail && !checkedEmail.value) {
-    await checkEmail();
+    await checkEmailLocally();
     baseFormRef.value.focusOnFirstInput();
   } else if (isRegistering.value) {
     await register();

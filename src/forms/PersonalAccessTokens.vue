@@ -1,10 +1,8 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/user";
 import { ref } from "vue";
 import { useI18n } from "vue-i18n";
 import BaseForm from "./BaseForm.vue";
-
-const userStore = useUserStore();
+import { createPersonalAccessToken } from "@/services/me";
 
 const { t } = useI18n();
 
@@ -21,19 +19,18 @@ const submitForm = async () => {
     return;
   }
 
-  const response = await userStore.createPersonalAccessToken(tokenName.value);
-
-  if (response) {
+  try {
+    const response = await createPersonalAccessToken(tokenName.value);
     emit("created", response);
     const text = t(
       "Your personal access token has been created. This is the only time you can see it."
     );
     alert(text + "\n\n" + response.token);
-  } else if (typeof response === "object") {
-    // We want to show the user the correct fields to the user so they feel better
-    baseFormRef.value.setSuccessOnInputs();
-    // Show the fields with errors
-    baseFormRef.value.setInputErrors(response.data.errors);
+  } catch (error) {
+    const text = t(
+      "There was an error creating your personal access token. Please try again."
+    );
+    alert(text);
   }
 };
 </script>
@@ -42,7 +39,6 @@ const submitForm = async () => {
   <base-form
     ref="baseFormRef"
     @submit="submitForm"
-    :isLoading="userStore.isLoading"
     submitText="Create a new API token"
   >
     <label for="name">{{ $t("New token name") }}</label>

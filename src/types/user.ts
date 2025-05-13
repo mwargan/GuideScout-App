@@ -75,6 +75,7 @@ export interface PersonalAccessToken {
   updated_at: Date;
   expires_at: Date;
   client?: Client;
+  token?: string;
 }
 
 export interface Client {

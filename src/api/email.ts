@@ -5,7 +5,7 @@ export const postEmailExists: ApiFunction<
   {
     email: string;
   },
-  { exists: boolean }
+  void
 > = async (data) => {
   const response = await ApiClient.post("email-exists/" + data?.email);
   return response.data;

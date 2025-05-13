@@ -1,6 +1,11 @@
 import type { PersonalAccessToken, User } from "@/types/user";
 import ApiClient, { type ApiFunction } from "./client";
 
+export const getSelf: ApiFunction<void, User> = async () => {
+  const response = await ApiClient.get("api/user");
+  return response.data;
+};
+
 export const getUserPaymentIntent: ApiFunction = async () => {
   const response = await ApiClient.get("user/payment-intent");
   return response.data;

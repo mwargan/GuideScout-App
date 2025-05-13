@@ -11,6 +11,7 @@ import { Vue3Lottie } from "vue3-lottie";
 import radarJSON from "@/assets/lottie/verified.json";
 import UploadCV from "@/forms/UploadCV.vue";
 import ConnectWithProvider from "@/forms/ConnectWithProvider.vue";
+import { meService } from "@/services/me";
 
 const userStore = useUserStore();
 
@@ -26,7 +27,7 @@ const addingNewPaymentMethod = ref(false);
 const accessTokens = ref<PersonalAccessToken[]>([]);
 
 onMounted(async () => {
-  accessTokens.value = await userStore.getPersonalAccessTokens();
+  accessTokens.value = await meService.getPersonalAccessTokens();
 });
 
 const handleCreatedToken = (e: PersonalAccessToken) => {
@@ -34,7 +35,7 @@ const handleCreatedToken = (e: PersonalAccessToken) => {
 };
 
 const handleDeleteToken = (id: string) => {
-  userStore.deletePersonalAccessToken(id);
+  meService.deletePersonalAccessToken(id);
   const accessTokenIndex = accessTokens.value.findIndex((token) => {
     return token.id === id;
   });

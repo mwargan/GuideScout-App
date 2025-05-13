@@ -21,14 +21,14 @@ export const postRegister: ApiFunction<
     name: string;
     surname: string;
     phone: string;
-    city: string | null;
-    languages: string[];
-    qualifications: string[];
-    certifications: string[];
-    skills: string[];
-    experiences: string[];
-    external_review_url: string | null;
-    referral_code: string | null;
+    city?: string | null;
+    languages?: string[];
+    qualifications?: string[];
+    certifications?: string[];
+    skills?: string[];
+    experiences?: string[];
+    external_review_url?: string | null;
+    referral_code?: string | null;
   },
   void
 > = async (data) => {

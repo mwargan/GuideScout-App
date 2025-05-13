@@ -2,11 +2,6 @@ import type { GuideProfile, User } from "@/types/user";
 import ApiClient, { type ApiFunction } from "./client";
 import type { Offer } from "@/types/offer";
 
-export const getSelf: ApiFunction<void, User> = async () => {
-  const response = await ApiClient.get("api/user");
-  return response.data;
-};
-
 export const getCsrfToken: ApiFunction = async () => {
   await ApiClient.get("sanctum/csrf-cookie");
 };
