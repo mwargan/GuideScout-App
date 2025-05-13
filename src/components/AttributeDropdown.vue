@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { type PropType, computed, ref } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
-import axios from "axios";
 import type { Attribute } from "@/types/tour";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   modelValue: {
@@ -52,7 +52,7 @@ const getAttributes = async () => {
 
   isLoading.value = true;
 
-  const response = await axios.get<Attribute[]>(`/api/attributes`);
+  const response = await ApiClient.get<Attribute[]>(`/api/attributes`);
 
   attributes.value = response.data;
 

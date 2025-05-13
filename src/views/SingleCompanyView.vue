@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from "vue";
-import axios from "axios";
 import MapComponent from "@/components/MapComponent.vue";
 import { useUserStore } from "@/stores/user";
 import type { Company } from "@/types/company";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   /** The company ID */
@@ -20,7 +20,7 @@ const currentLocation = ref();
 const driveInfo = ref();
 
 const fetchCompany = async () => {
-  const response = await axios.get(`/api/companies/${props.companyId}`);
+  const response = await ApiClient.get(`/api/companies/${props.companyId}`);
   company.value = await response.data;
 };
 
@@ -47,7 +47,7 @@ const getDriveTimeData = async () => {
       lon: company.value.longitude,
     },
   };
-  const response = await axios.get(
+  const response = await ApiClient.get(
     `/api/drive-data?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
   );
 

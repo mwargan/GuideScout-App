@@ -1,9 +1,9 @@
 import { nextTick } from "vue";
 import { type I18n, createI18n } from "vue-i18n";
-import axios from "axios";
 import { setLocaleToUse, setMetaAttributes } from "@m-media/vue3-meta-tags";
 import router from "@/router";
 import $bus from "@/eventBus/events";
+import ApiClient from "@/api/client";
 
 /**
  * The supported locales in the app. Note that the first locale in this array is the default locale.
@@ -70,7 +70,7 @@ export async function setI18nLanguage(
   // Set a local storage item
   localStorage.setItem("locale", locale);
   // Set the axios locale
-  axios.defaults.headers.common["Accept-Language"] = locale;
+  ApiClient.defaults.headers.common["Accept-Language"] = locale;
   // Load the locale messages
   await loadLocaleMessages(i18n, locale);
   // Re run the meta tags handler when the language changes to update SEO meta tags

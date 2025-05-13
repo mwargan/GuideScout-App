@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import axios from "axios";
 import BaseForm from "@/forms/BaseForm.vue";
+import ApiClient from "@/api/client";
 
 const name = ref("");
 const type = ref(
@@ -23,7 +23,7 @@ const typeOptions = [
 ];
 
 const createAttribute = async () => {
-  const response = await axios.post(`/api/attributes`, {
+  const response = await ApiClient.post(`/api/attributes`, {
     name: name.value,
     type: type.value,
   });

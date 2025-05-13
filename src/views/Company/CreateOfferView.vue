@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { onMounted, ref } from "vue";
-import axios from "axios";
 import type { Offer } from "@/types/offer";
 import { useRouter } from "vue-router";
 import CreateOffer from "@/forms/CreateOffer.vue";
+import ApiClient from "@/api/client";
 
 const offers = ref<Offer[]>([]);
 
@@ -15,7 +15,9 @@ const props = defineProps({
 });
 
 const fetchOffers = async () => {
-  const response = await axios.get(`/api/companies/${props.companyId}/offers`);
+  const response = await ApiClient.get(
+    `/api/companies/${props.companyId}/offers`
+  );
   offers.value = response.data;
 };
 

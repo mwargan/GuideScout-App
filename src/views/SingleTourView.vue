@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import axios from "axios";
 import MapComponent from "@/components/MapComponent.vue";
 import { useUserStore } from "@/stores/user";
 import type { Offer, Tour } from "@/types/offer";
 import BaseButton from "@/components/BaseButton.vue";
 import TourOffer from "@/components/TourOffer.vue";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   companyId: {
@@ -26,7 +26,7 @@ const currentLocation = ref();
 const driveInfo = ref();
 
 const fetchTour = async () => {
-  const response = await axios.get(
+  const response = await ApiClient.get(
     `/api/companies/${props.companyId}/tours/${props.tourId}`
   );
   tour.value = await response.data;
@@ -55,7 +55,7 @@ const getDriveTimeData = async () => {
       lon: tour.value.company.longitude,
     },
   };
-  const response = await axios.get(
+  const response = await ApiClient.get(
     `/api/drive-data?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
   );
 

@@ -6,6 +6,7 @@ import axios from "axios";
 import type { Tour } from "@/types/offer";
 import AttributeDropdown from "@/components/AttributeDropdown.vue";
 import CompanyUserDropdown from "@/components/CompanyUserDropdown.vue";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   companyId: {
@@ -48,7 +49,9 @@ const getTourData = async () => {
   }
   isLoadingTourResults.value = true;
 
-  const response = await axios.get(`/api/companies/${props.companyId}/tours`);
+  const response = await ApiClient.get(
+    `/api/companies/${props.companyId}/tours`
+  );
 
   const json = (await response.data) as Tour[];
 

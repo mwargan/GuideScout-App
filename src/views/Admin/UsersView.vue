@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed, h, ref, watch } from "vue";
-import axios from "axios";
 import type { User } from "@/types/user";
 import AttributeDropdown from "@/components/AttributeDropdown.vue";
 import MapComponent from "@/components/MapComponent.vue";
@@ -8,12 +7,13 @@ import { relativeRealtime, relativeTime } from "@/helpers/relativeRealtime";
 import { createColumnHelper } from "@tanstack/vue-table";
 import BaseButton from "@/components/BaseButton.vue";
 import DataTable from "@/components/DataTable.vue";
+import ApiClient from "@/api/client";
 
 const users = ref<User[]>([]);
 const attributeIds = ref<string[]>([]);
 
 const fetchUsers = async () => {
-  const response = await axios.get("/api/users", {
+  const response = await ApiClient.get("/api/users", {
     params: {
       attributes: attributeIds.value,
     },
@@ -27,7 +27,7 @@ const verifyGuideProfile = async (id: number | undefined) => {
   if (!id) {
     return;
   }
-  const response = await axios.post(`/api/guide-profiles/${id}/verify`);
+  const response = await ApiClient.post(`/api/guide-profiles/${id}/verify`);
   if (response.data) {
     alert("Guide profile verified");
     fetchUsers();
@@ -41,7 +41,7 @@ const updateUsersAttributes = async (
   if (!userId) {
     return;
   }
-  await axios.put(`/api/users/${userId}/attributes`, {
+  await ApiClient.put(`/api/users/${userId}/attributes`, {
     attributeIds: newAttributeIds,
   });
 

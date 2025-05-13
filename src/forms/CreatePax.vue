@@ -5,6 +5,7 @@ import axios from "axios";
 import LocationDropdown from "@/components/LocationDropdown.vue";
 import BaseButton from "@/components/BaseButton.vue";
 import { formatDateTimeForInput } from "@/helpers/date";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   offerId: {
@@ -103,7 +104,7 @@ const createPax = async () => {
 // If there is a paxId, fetch the pax and fill the form
 onMounted(async () => {
   if (props.paxId) {
-    const response = await axios.get(
+    const response = await ApiClient.get(
       `/api/offers/${props.offerId}/passengers/${props.paxId}`
     );
     if (response.data) {

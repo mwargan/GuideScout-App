@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
-import axios from "axios";
 import MapComponent from "@/components/MapComponent.vue";
 import { useUserStore } from "@/stores/user";
 import BaseAvatar from "@/components/BaseAvatar.vue";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { User } from "@/types/user";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   /** The user ID */
@@ -22,7 +22,7 @@ const currentLocation = ref();
 const driveInfo = ref();
 
 const fetchUser = async () => {
-  const response = await axios.get(`/api/users/${props.userId}`);
+  const response = await ApiClient.get(`/api/users/${props.userId}`);
   user.value = await response.data;
 };
 
@@ -49,7 +49,7 @@ const getDriveTimeData = async () => {
       lon: user.value.longitude,
     },
   };
-  const response = await axios.get(
+  const response = await ApiClient.get(
     `/api/drive-data?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
   );
 

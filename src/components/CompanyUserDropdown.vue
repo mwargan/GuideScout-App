@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { type PropType, computed, ref, watch } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
-import axios from "axios";
 import BaseAvatar from "./BaseAvatar.vue";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   modelValue: {
@@ -42,7 +42,7 @@ const getData = async () => {
 
   isLoadingGeoResults.value = true;
 
-  const response = await axios.get(`/api/companies/${companyId}/users`, {
+  const response = await ApiClient.get(`/api/companies/${companyId}/users`, {
     params: {
       role: props.role,
       attributes: props.attributeIds,

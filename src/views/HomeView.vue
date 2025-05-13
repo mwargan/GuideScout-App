@@ -3,13 +3,13 @@ import ReferralLink from "@/components/ReferralLink.vue";
 import { useUserStore } from "@/stores/user";
 import { Vue3Lottie } from "vue3-lottie";
 import radarJSON from "@/assets/lottie/radar.json";
-import axios from "axios";
 import { ref } from "vue";
 import CardElement from "@/components/CardElement.vue";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { Offer } from "@/types/offer";
 import type { Company } from "@/types/company";
 import TourOffer from "@/components/TourOffer.vue";
+import ApiClient from "@/api/client";
 
 const userStore = useUserStore();
 
@@ -26,7 +26,7 @@ const userLocation = ref(
 const getTourOffers = async () => {
   userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
 
-  const response = await axios.get<
+  const response = await ApiClient.get<
     Omit<Offer & { offer_id: Offer["id"] }, "id">[]
   >(`/api/users/${userStore.user?.id}/tours/offers`);
 
@@ -52,7 +52,7 @@ const getTourOffers = async () => {
 };
 
 const getCurrentTour = async () => {
-  const response = await axios.get(
+  const response = await ApiClient.get(
     `/api/users/${userStore.user?.id}/tours/current`
   );
 
@@ -76,7 +76,7 @@ const computeDriveTime = async (company: Company) => {
       lon: company.longitude,
     },
   };
-  const response = await axios.get(
+  const response = await ApiClient.get(
     `/api/drive-time?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
   );
 

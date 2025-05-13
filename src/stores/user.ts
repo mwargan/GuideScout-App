@@ -1,8 +1,9 @@
 import { type Ref, ref } from "vue";
 import { defineStore } from "pinia";
-import axios from "axios";
+
 import type { Credential, PersonalAccessToken, User } from "@/types/user";
 import { useEventsBus } from "@/eventBus/events";
+import ApiClient from "@/api/client";
 
 export const useUserStore = defineStore("user", () => {
   // the state of the user
@@ -41,7 +42,7 @@ export const useUserStore = defineStore("user", () => {
   async function getUser() {
     isLoading.value = true;
     try {
-      const response = await axios.get<User>("api/user");
+      const response = await ApiClient.get<User>("api/user");
       user.value = response.data;
       isAuthenticated.value = true;
 
@@ -76,9 +77,9 @@ export const useUserStore = defineStore("user", () => {
       console.error("CSRF cookie fetching error", e);
     });
 
-    // Check if the email is already in use by calling POST "email-exists/" + email with axios. If it returns 404, the email is not in use.
+    // Check if the email is already in use by calling POST "email-exists/" + email with ApiClient. If it returns 404, the email is not in use.
     try {
-      const response = await axios.post("email-exists/" + email);
+      const response = await ApiClient.post("email-exists/" + email);
       return response.status === 200;
     } catch (error: any) {
       if (error.response.status === 404) {
@@ -112,7 +113,7 @@ export const useUserStore = defineStore("user", () => {
 
     // Check if the email is already in use
     try {
-      await axios.post("login", {
+      await ApiClient.post("login", {
         email: email,
         password: password,
         remember: true,
@@ -193,7 +194,7 @@ export const useUserStore = defineStore("user", () => {
 
     try {
       // Check if the email is already in use
-      await axios.post("register", {
+      await ApiClient.post("register", {
         email,
         password,
         password_confirmation: password,
@@ -230,7 +231,7 @@ export const useUserStore = defineStore("user", () => {
     }
     isLoading.value = true;
     try {
-      await axios.post("email/verification-notification", {
+      await ApiClient.post("email/verification-notification", {
         email: user.value.email,
       });
       return true;
@@ -252,7 +253,7 @@ export const useUserStore = defineStore("user", () => {
     }
     isLoading.value = true;
     try {
-      await axios.post("phone/verification-notification", {
+      await ApiClient.post("phone/verification-notification", {
         phone: user.value.phone,
       });
       return true;
@@ -278,7 +279,7 @@ export const useUserStore = defineStore("user", () => {
 
     // Submit a reset password
     try {
-      await axios.post("forgot-password", {
+      await ApiClient.post("forgot-password", {
         email: email,
       });
       $bus.$emit("sent_reset_password_email", { email });
@@ -319,7 +320,7 @@ export const useUserStore = defineStore("user", () => {
 
     // Submit a reset password
     try {
-      await axios.post("reset-password", {
+      await ApiClient.post("reset-password", {
         email: email,
         token: token,
         password: password,
@@ -349,7 +350,7 @@ export const useUserStore = defineStore("user", () => {
 
     // Submit a reset password
     try {
-      await axios.post("user/confirm-password", {
+      await ApiClient.post("user/confirm-password", {
         password: password,
       });
       $bus.$emit("confirmed_password");
@@ -369,7 +370,7 @@ export const useUserStore = defineStore("user", () => {
   async function shouldConfirmPassword() {
     isLoading.value = true;
     try {
-      const response = await axios.get("user/confirmed-password-status");
+      const response = await ApiClient.get("user/confirmed-password-status");
       return !response.data.confirmed;
     } catch (error: any) {
       return error.response;
@@ -383,7 +384,7 @@ export const useUserStore = defineStore("user", () => {
    *
    */
   async function getCsrfToken() {
-    await axios.get("sanctum/csrf-cookie");
+    await ApiClient.get("sanctum/csrf-cookie");
   }
 
   /**
@@ -392,7 +393,7 @@ export const useUserStore = defineStore("user", () => {
    */
   async function logout() {
     isLoading.value = true;
-    await axios.post("logout");
+    await ApiClient.post("logout");
     isAuthenticated.value = false;
     user.value = null;
     isLoading.value = false;
@@ -406,7 +407,7 @@ export const useUserStore = defineStore("user", () => {
    */
   async function getPaymentIntent() {
     try {
-      const response = await axios.get("user/payment-intent");
+      const response = await ApiClient.get("user/payment-intent");
       return response.data;
     } catch (error) {
       console.log(error);
@@ -421,7 +422,7 @@ export const useUserStore = defineStore("user", () => {
    */
   async function addPaymentMethod(paymentMethodId: string) {
     try {
-      await axios.post("/user/payment-methods", {
+      await ApiClient.post("/user/payment-methods", {
         payment_method: paymentMethodId,
       });
       $bus.$emit("added_payment_method", { methodId: paymentMethodId });
@@ -440,7 +441,7 @@ export const useUserStore = defineStore("user", () => {
    */
   async function getPaymentMethods() {
     try {
-      const response = await axios.get("/user/payment-methods");
+      const response = await ApiClient.get("/user/payment-methods");
       return response.data;
     } catch (error) {
       console.log(error);
@@ -463,7 +464,7 @@ export const useUserStore = defineStore("user", () => {
   ) {
     isLoading.value = true;
     try {
-      await axios.put("user/profile-information", {
+      await ApiClient.put("user/profile-information", {
         name: name ?? user.value?.name,
         surname: surname ?? user.value?.surname,
         email: email ?? user.value?.email,
@@ -490,8 +491,9 @@ export const useUserStore = defineStore("user", () => {
    * Get all the users personal access tokens
    */
   async function getPersonalAccessTokens(): Promise<PersonalAccessToken[]> {
-    return axios
-      .get<PersonalAccessToken[] | string>("/user/personal-access-tokens")
+    return ApiClient.get<PersonalAccessToken[] | string>(
+      "/user/personal-access-tokens"
+    )
       .then((response) => {
         if (!user.value) {
           return [];
@@ -523,10 +525,9 @@ export const useUserStore = defineStore("user", () => {
    * @return {*}
    */
   async function createPersonalAccessToken(name: string) {
-    return axios
-      .post("/user/personal-access-tokens", {
-        name: name,
-      })
+    return ApiClient.post("/user/personal-access-tokens", {
+      name: name,
+    })
       .then((response) => {
         $bus.$emit("created_personal_access_token", response.data);
         return response.data;
@@ -541,8 +542,7 @@ export const useUserStore = defineStore("user", () => {
   }
 
   async function deletePersonalAccessToken(id: string) {
-    return axios
-      .delete("/user/personal-access-tokens/" + id)
+    return ApiClient.delete("/user/personal-access-tokens/" + id)
       .then((response) => {
         $bus.$emit("deleted_personal_access_token", response.data);
         return response.data;
@@ -564,7 +564,7 @@ export const useUserStore = defineStore("user", () => {
       return;
     }
     try {
-      await axios.post(`api/users/${user.value.id}/locations`, {
+      await ApiClient.post(`api/users/${user.value.id}/locations`, {
         latitude: location.value.coords.latitude,
         longitude: location.value.coords.longitude,
       });
@@ -628,7 +628,7 @@ export const useUserStore = defineStore("user", () => {
       return false;
     }
 
-    await axios.post(`user/send-phone-otp`);
+    await ApiClient.post(`user/send-phone-otp`);
 
     $bus.$emit("sent_phone_otp", {
       phone: user.value.phone,
@@ -642,7 +642,7 @@ export const useUserStore = defineStore("user", () => {
       return false;
     }
 
-    const response = await axios.post(`user/verify-phone-otp`, {
+    const response = await ApiClient.post(`user/verify-phone-otp`, {
       otp,
     });
 
@@ -665,7 +665,7 @@ export const useUserStore = defineStore("user", () => {
     const formData = new FormData();
     formData.append("file", file);
 
-    await axios.post(`api/users/${user.value.id}/cvs`, formData, {
+    await ApiClient.post(`api/users/${user.value.id}/cvs`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

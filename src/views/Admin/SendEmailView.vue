@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import axios from "axios";
+import ApiClient from "@/api/client";
 
 const to = ref("");
 const subject = ref("");
 const message = ref("");
 
 const sendEmail = async () => {
-  const response = await axios.post(`/api/emails/${to.value}/send`, {
+  const response = await ApiClient.post(`/api/emails/${to.value}/send`, {
     subject: subject.value,
     message: message.value,
   });

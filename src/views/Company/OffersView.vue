@@ -4,6 +4,7 @@ import axios from "axios";
 import type { Offer } from "@/types/offer";
 import { useRoute } from "vue-router";
 import BaseButton from "@/components/BaseButton.vue";
+import ApiClient from "@/api/client";
 
 const offers = ref<Offer[]>([]);
 
@@ -11,7 +12,7 @@ const route = useRoute();
 
 const fetchOffers = async () => {
   const companyIdFromRoute = route.params.id;
-  const response = await axios.get(
+  const response = await ApiClient.get(
     `/api/companies/${companyIdFromRoute}/offers`
   );
   offers.value = response.data;

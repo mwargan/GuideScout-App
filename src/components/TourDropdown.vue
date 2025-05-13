@@ -2,8 +2,8 @@
 import { computed, ref, shallowRef } from "vue";
 import DropdownSelect from "@/components/DropdownSelect.vue";
 import BaseForm from "@/forms/BaseForm.vue";
-import axios from "axios";
 import type { Tour } from "@/types/offer";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   companyId: {
@@ -22,7 +22,9 @@ const getGeolocationData = async () => {
   }
   isLoadingGeoResults.value = true;
 
-  const response = await axios.get(`/api/companies/${props.companyId}/tours`);
+  const response = await ApiClient.get(
+    `/api/companies/${props.companyId}/tours`
+  );
 
   const json = (await response.data) as Tour[];
 

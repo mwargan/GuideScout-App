@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
-import axios from "axios";
 import CardElement from "@/components/CardElement.vue";
 import MapComponent from "@/components/MapComponent.vue";
+import ApiClient from "@/api/client";
 
 const deals = ref([] as any[]);
 const loading = ref(true);
 
 const fetchDeals = async () => {
   loading.value = true;
-  const response = await axios.get(`/api/deals`);
+  const response = await ApiClient.get(`/api/deals`);
   deals.value = response.data;
   loading.value = false;
 };

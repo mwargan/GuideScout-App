@@ -2,12 +2,12 @@
 import { type PropType, computed, provide, ref, shallowRef, watch } from "vue";
 import { debounce } from "@/helpers/debounce";
 import DropdownSelect from "@/components/DropdownSelect.vue";
-import axios from "axios";
 import MapComponent, { type Marker } from "@/components/MapComponent.vue";
 
 import { type Vue3OpenlayersGlobalOptions } from "vue3-openlayers";
 import { transform } from "ol/proj";
 import type { Location } from "@/types/tour";
+import ApiClient from "@/api/client";
 
 const props = defineProps({
   modelValue: {
@@ -73,18 +73,16 @@ const selectResult = (result: string[]) => {
     (item) => item.place_id == result
   );
 
-  axios
-    .get(
-      "/api/locations?lat=" +
-        selectedGeoResult.value.lat +
-        "&lon=" +
-        selectedGeoResult.value.lon
-    )
-    .then((response) => {
-      console.log(response.data);
-      getDriveTimeData();
-      emit("update:modelValue", response.data.id);
-    });
+  ApiClient.get(
+    "/api/locations?lat=" +
+      selectedGeoResult.value.lat +
+      "&lon=" +
+      selectedGeoResult.value.lon
+  ).then((response) => {
+    console.log(response.data);
+    getDriveTimeData();
+    emit("update:modelValue", response.data.id);
+  });
 };
 
 const getDriveTimeData = async () => {
@@ -106,7 +104,7 @@ const getDriveTimeData = async () => {
       lon: selectedGeoResult.value.lon,
     },
   };
-  const response = await axios.get(
+  const response = await ApiClient.get(
     `/api/drive-time?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
   );
 
@@ -179,7 +177,7 @@ watch(
   (newValue) => {
     if (newValue) {
       // Fetch the location data
-      axios.get<Location>(`/api/locations/${newValue}`).then((response) => {
+      ApiClient.get<Location>(`/api/locations/${newValue}`).then((response) => {
         selectedGeoResult.value = {
           ...response.data,
           lat: response.data.latitude,

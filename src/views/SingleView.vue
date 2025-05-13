@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import axios from "axios";
 import { computed, onMounted, onUnmounted, ref, watch } from "vue";
 import type { Resource } from "@/types/tour.js";
 import MainScreen from "@/components/MainScreen.vue";
@@ -19,6 +18,7 @@ import { relativeRealtime } from "@/helpers/relativeRealtime";
 import { useUserStore } from "@/stores/user";
 import { formatDateTimeToTime } from "@/helpers/date";
 import type { Offer } from "@/types/offer";
+import ApiClient from "@/api/client";
 
 const router = useRouter();
 
@@ -34,7 +34,7 @@ const getData = (setLoadingToTrue = true): void => {
     console.log("Called");
     isLoading.value = true;
   }
-  axios.get(`/api/users/${userStore.user?.id}/tours`).then((response) => {
+  ApiClient.get(`/api/users/${userStore.user?.id}/tours`).then((response) => {
     data.value = sortToursByPickupTime(response.data);
     isLoading.value = false;
   });
@@ -57,7 +57,7 @@ const getDriveTimeToOffice = () => {
         lon: data.value[0].company?.longitude,
       },
     };
-    const response = await axios.get(
+    const response = await ApiClient.get(
       `/api/drive-time?origin[latitude]=${getData.origin.lat}&origin[longitude]=${getData.origin.lon}&destination[latitude]=${getData.destination.lat}&destination[longitude]=${getData.destination.lon}`
     );
 

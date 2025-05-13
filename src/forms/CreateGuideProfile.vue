@@ -1,6 +1,7 @@
 <script lang="ts">
 import i18n from "@/locales/i18n";
 import type { Attribute } from "@/types/tour";
+import ApiClient from "@/api/client";
 const t = i18n.global.t;
 </script>
 <script setup lang="ts">
@@ -8,7 +9,6 @@ import { computed, onMounted, reactive, ref } from "vue";
 import BaseButton from "@/components/BaseButton.vue";
 import { useUserStore } from "@/stores/user";
 import router from "@/router";
-import axios from "axios";
 
 const userStore = useUserStore();
 
@@ -114,7 +114,7 @@ const isLastStep = computed(() => currentStep.value === steps.length - 1);
 const allAttributes = ref<Attribute[] | null>(null);
 
 const getAllAttributes = () => {
-  return axios.get("/api/attributes").then((response) => {
+  return ApiClient.get("/api/attributes").then((response) => {
     allAttributes.value = response.data.filter((attribute: Attribute) => {
       // Filtering the one that contains the word Test
       return !attribute.name.toLowerCase().includes("test");
@@ -290,7 +290,7 @@ const handleCVUpload = (event: Event) => {
 };
 
 const parseCv = async (file: File): Promise<ParsedCV | null> => {
-  const response = axios.post(
+  const response = ApiClient.post(
     "/parse-cv",
     {
       file,
