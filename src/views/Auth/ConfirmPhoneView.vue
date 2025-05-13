@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CardElement from "@/components/CardElement.vue";
-import { eventTypes, useEventsBus } from "@/eventBus/events";
+import { useEventsBus } from "@/eventBus/events";
 import BaseForm from "@/forms/BaseForm.vue";
 import { useUserStore } from "@/stores/user";
 import { ref } from "vue";
@@ -37,11 +37,11 @@ const confirmOtp = async () => {
 
 const refreshPage = () => {
   console.log("Verified, refreshing page");
-  $bus?.$off(eventTypes.confirmed_phone, refreshPage);
+  $bus?.$off("confirmed_phone", refreshPage);
   router.go(0);
 };
 
-$bus?.$on(eventTypes.confirmed_phone, refreshPage);
+$bus?.$on("confirmed_phone", refreshPage);
 </script>
 <template>
   <h1>{{ $t("Confirm your phone") }}</h1>
