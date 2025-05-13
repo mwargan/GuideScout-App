@@ -2,7 +2,7 @@ import { type Ref, ref } from "vue";
 import { defineStore } from "pinia";
 import axios from "axios";
 import type { Credential, PersonalAccessToken, User } from "@/types/user";
-import { useEventsBus } from "@/eventBus/adapters/vue";
+import { useEventsBus } from "@/eventBus/events";
 
 export const useUserStore = defineStore("user", () => {
   // the state of the user
