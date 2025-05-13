@@ -24,8 +24,6 @@ const ApiClient = axios.create({
   },
   withCredentials: true,
   withXSRFToken: true,
-  xsrfCookieName: "XSRF-TOKEN",
-  xsrfHeaderName: "X-XSRF-TOKEN",
 });
 
 ApiClient.interceptors.response.use(
