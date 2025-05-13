@@ -125,7 +125,7 @@ export const postParseCv: ApiFunction<
     text: string;
   }
 > = async (data) => {
-  const response = await ApiClient.post("user/parse-cv", data, {
+  const response = await ApiClient.post("/parse-cv", data, {
     headers: {
       "Content-Type": "multipart/form-data",
     },

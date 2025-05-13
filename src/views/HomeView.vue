@@ -3,46 +3,40 @@ import ReferralLink from "@/components/ReferralLink.vue";
 import { useUserStore } from "@/stores/user";
 import { Vue3Lottie } from "vue3-lottie";
 import radarJSON from "@/assets/lottie/radar.json";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import CardElement from "@/components/CardElement.vue";
 import { relativeRealtime } from "@/helpers/relativeRealtime";
 import type { Offer } from "@/types/offer";
 import type { Company } from "@/types/company";
 import TourOffer from "@/components/TourOffer.vue";
 import { getDriveTime } from "@/api/drive.time";
-import { getUsersCurrentTours, getUsersTourOffers } from "@/api/user";
+import { getUsersTourOffers } from "@/api/user";
+import { useCurrentTourOffer } from "@/composables/useCurrentTourOffer";
 
 const userStore = useUserStore();
-
-const tourOffers = ref<Readonly<Offer>[]>([]);
-const currentTour = ref<Readonly<Offer> | null>(null);
-
-const userLocation = ref(
-  null as {
-    latitude: number;
-    longitude: number;
-  } | null
-);
+const { currentTourQuery } = useCurrentTourOffer();
+const tourOffers = ref<
+  Omit<
+    Offer & {
+      offer_id: Offer["id"];
+    },
+    "id"
+  >[]
+>([]);
 
 const getTourOffers = async () => {
-  userLocation.value = (await userStore.fetchAndSaveUserLocation()) ?? null;
-
-  const response = await getUsersTourOffers({
+  await userStore.fetchAndSaveUserLocation();
+  tourOffers.value = await getUsersTourOffers({
     userId: userStore.user?.id,
   });
-
-  tourOffers.value = response.map((offer) => ({
-    ...offer,
-    id: offer.offer_id,
-  }));
 
   const results = await Promise.all(
     tourOffers.value.map(async (offer) => {
       if (!offer.company) {
-        return { id: offer.id, time: 0 };
+        return { id: offer.offer_id, time: 0 };
       }
       const time = await computeDriveTime(offer.company);
-      return { id: offer.id, time };
+      return { id: offer.offer_id, time };
     })
   );
 
@@ -52,23 +46,15 @@ const getTourOffers = async () => {
   }, {} as Record<number, number>);
 };
 
-const getCurrentTour = async () => {
-  currentTour.value = await getUsersCurrentTours({
-    userId: userStore.user?.id,
-  });
-};
-
-getTourOffers();
-getCurrentTour();
-
 const computeDriveTime = async (company: Company) => {
-  if (!userLocation.value) {
+  const userLocation = await userStore.fetchAndSaveUserLocation();
+  if (!userLocation) {
     return 0;
   }
   const getData = {
     origin: {
-      lat: userLocation.value.latitude,
-      lng: userLocation.value.longitude,
+      lat: userLocation.latitude,
+      lng: userLocation.longitude,
     },
     destination: {
       lat: company.latitude,
@@ -80,19 +66,23 @@ const computeDriveTime = async (company: Company) => {
 };
 
 const driveTimes = ref<Record<number, number>>({});
+
+onMounted(() => {
+  getTourOffers();
+});
 </script>
 
 <template>
   <h1>{{ $t("Tour Offers") }}</h1>
-  <template v-if="currentTour && currentTour.company">
+  <template v-if="currentTourQuery && currentTourQuery.data.value?.company">
     <card-element class="fixed-card" to="/tours">
       <template #header>
         <hgroup>
-          <p>{{ currentTour.tour.name }}</p>
+          <p>{{ currentTourQuery.data.value?.tour.name }}</p>
           <h2>
-            Meet {{ relativeRealtime(currentTour.starts_at) }} @{{
-              currentTour.company.name
-            }}
+            Meet
+            {{ relativeRealtime(currentTourQuery.data.value?.starts_at) }}
+            @{{ currentTourQuery.data.value?.company.name }}
           </h2>
         </hgroup>
         <svg
@@ -119,10 +109,10 @@ const driveTimes = ref<Record<number, number>>({});
 
   <template v-else-if="tourOffers.length > 0">
     <tour-offer
-      :offer="offer"
-      :driveTime="driveTimes[offer.id] ?? null"
+      :offer="{ ...offer, id: offer.offer_id }"
+      :driveTime="driveTimes[offer.offer_id] ?? null"
       v-for="offer in tourOffers"
-      :key="offer.id"
+      :key="offer.offer_id"
     />
   </template>
   <template v-else>

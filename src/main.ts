@@ -19,6 +19,7 @@ import { gatePlugin } from "@m-media/vue3-gate-keeper";
 import gates from "./router/gates";
 import { metaTagPlugin } from "@m-media/vue3-meta-tags";
 import { EventsPlugin } from "./eventBus/events";
+import { VueQueryPlugin } from "@tanstack/vue-query";
 
 const app = createApp(App);
 
@@ -69,5 +70,7 @@ app.use(
 app.use(EventsPlugin);
 
 app.use(ThemePlugin);
+
+app.use(VueQueryPlugin);
 
 app.mount("#app");

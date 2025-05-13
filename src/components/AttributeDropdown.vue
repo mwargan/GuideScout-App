@@ -4,6 +4,8 @@ import DropdownSelect from "@/components/DropdownSelect.vue";
 import type { Attribute } from "@/types/tour";
 import { getAttributes } from "@/api/attribute";
 
+import { useQuery } from "@tanstack/vue-query";
+
 const props = defineProps({
   modelValue: {
     type: Array as PropType<string[]>,
@@ -20,14 +22,11 @@ const emit = defineEmits<{
   "update:attributes": Attribute[][];
 }>();
 
-const attributes = ref<Attribute[]>([]);
-
-const isLoading = ref(false);
 const isOpen = ref(false);
 
 const formattedOptions = computed(() => {
-  return attributes.value
-    .filter((attribute) => {
+  return attributes.data?.value
+    ?.filter((attribute) => {
       if (!props.typeFilter) {
         return true;
       }
@@ -46,27 +45,22 @@ const formattedOptions = computed(() => {
 });
 
 const getAttributesFromApi = async () => {
-  if (isLoading.value) {
-    return;
-  }
-
-  isLoading.value = true;
-
-  attributes.value = await getAttributes();
-
-  emit("update:attributes", attributes.value);
-
-  isLoading.value = false;
+  const data = await getAttributes();
+  emit("update:attributes", data);
+  return data;
 };
+const attributes = useQuery({
+  queryKey: ["attributes"],
+  queryFn: getAttributesFromApi,
+  staleTime: 1000 * 60, // 1 minute
+});
 
 const searchTerm = ref("");
-
-getAttributesFromApi();
 </script>
 
 <template>
   <dropdown-select
-    :ariaBusy="isLoading"
+    :ariaBusy="attributes.isFetching.value"
     @update:modelValue="emit('update:modelValue', $event)"
     :modelValue="modelValue"
     :options="formattedOptions"

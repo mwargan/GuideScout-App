@@ -8,6 +8,8 @@ import { handleError } from "@/utils/errorTransformer";
 import { nextTick, reactive, ref } from "vue";
 import { useI18n } from "vue-i18n";
 
+import { useQuery } from "@tanstack/vue-query";
+
 const userStore = useUserStore();
 
 const { t } = useI18n();
@@ -42,7 +44,15 @@ const checkEmailLocally = async () => {
   isRegistering.value = !emailExists;
 
   checkedEmail.value = true;
+
+  return emailExists;
 };
+
+const emailQuery = useQuery({
+  queryKey: ["email"],
+  queryFn: checkEmailLocally,
+  enabled: false,
+});
 
 // The login function
 const login = async () => {
@@ -95,7 +105,7 @@ const register = async () => {
 // The submit function. If there is just the email, check if the email is valid. If it is not, set the register mode. If it is, set the login mode.
 const submitForm = async () => {
   if (userStore.userEmail && !checkedEmail.value) {
-    await checkEmailLocally();
+    await emailQuery.refetch();
     baseFormRef.value.focusOnFirstInput();
   } else if (isRegistering.value) {
     await register();
@@ -115,7 +125,7 @@ const goBack = async () => {
   <base-form
     ref="baseFormRef"
     @submit="submitForm"
-    :isLoading="userStore.isLoading"
+    :isLoading="emailQuery.isFetching.value || userStore.isLoading"
   >
     <!-- The form starts with just the email. The user presses a button and we check if we should show the register or login inputs -->
     <!-- <TransitionGroup> -->

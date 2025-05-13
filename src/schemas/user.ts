@@ -16,8 +16,8 @@ export const UserSchema = z.object({
   phone: z
     .string()
     .startsWith("+")
-    .min(7)
-    .max(15)
+    .min(8)
+    .max(16)
     .regex(
       /^\+\d+$/,
       "Phone number must start with '+' and be followed by digits"
@@ -32,7 +32,7 @@ export const UserSchema = z.object({
   certifications: z.array(z.string()).optional(),
   skills: z.array(z.string()).optional(),
   experiences: z.array(z.string()).optional(),
-  external_review_url: z.string().optional().nullable(),
+  external_review_url: z.string().startsWith("http").optional(),
   referral_code: z.string().optional().nullable(),
 });
 

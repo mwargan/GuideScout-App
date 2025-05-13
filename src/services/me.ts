@@ -190,12 +190,16 @@ export const meService = {
     }
   },
 
-  loginWithProvider(provider: Credential["provider"]) {
+  buildOAuthUrl(provider: Credential["provider"]): string {
     const baseUrl = import.meta.env.VITE_API_URL;
     const redirectUrl = `${baseUrl}${provider}/auth/callback`;
-    const url = `${baseUrl}${provider}/auth/redirect?redirect=${encodeURIComponent(
+    return `${baseUrl}${provider}/auth/redirect?redirect=${encodeURIComponent(
       redirectUrl
     )}`;
+  },
+
+  loginWithProvider(provider: Credential["provider"]) {
+    const url = this.buildOAuthUrl(provider);
     window.open(url, "_self");
   },
 };
