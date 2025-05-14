@@ -1,5 +1,6 @@
 import type { PersonalAccessToken, User } from "@/types/user";
 import ApiClient, { type ApiFunction } from "./client";
+import { z } from "zod";
 
 export const getSelf: ApiFunction<void, User> = async () => {
   const response = await ApiClient.get("api/user");
@@ -39,13 +40,17 @@ export const getUserPersonalAccessTokens: ApiFunction<
   return response.data;
 };
 
+const profileInformationSchema = z
+  .object({
+    name: z.string(),
+    surname: z.string(),
+    email: z.string().email(),
+    phone: z.string().startsWith("+"),
+  })
+  .strict();
+
 export const putUserProfileInformation: ApiFunction<
-  {
-    name: string;
-    surname: string;
-    email: string;
-    phone: string;
-  },
+  z.infer<typeof profileInformationSchema>,
   User
 > = async (data) => {
   const response = await ApiClient.put("user/profile-information", data);

@@ -52,7 +52,7 @@ export const meService = {
 
   async updateProfile(data: Partial<z.input<typeof UserSchema>>) {
     if (!data) return;
-    const parsedData = UserSchema.omit({ id: true }).parse(data);
+    const parsedData = UserSchema.parse(data);
     await putUserProfileInformation(parsedData);
     $bus.$emit("updated_user", { changes: data });
   },
